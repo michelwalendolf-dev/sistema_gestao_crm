@@ -1,7 +1,7 @@
 Inicialzador do servidor local na porta 8000
 php -S 0.0.0.0:8000
 Codigo para descobrir o IPV4 do computador: ipconfig
-http://{IPV4 do computador}:8000/gera_relatorio.php 
+http://{IPV4 do computador}:8000/login.html
 
 Para baixar o Dompdf: composer require dompdf/dompdf
 
