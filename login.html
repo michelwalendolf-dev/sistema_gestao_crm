@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Login - Wolftech</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 
     <style>
         *{
@@ -142,7 +143,7 @@
         }
 
         .cookies{
-            margin-top:90px;
+            margin-top:65px;
             background:#0e2438;
             padding:12px;
             border-radius: none;
@@ -175,6 +176,19 @@
             color: #3c5a77;
         }
 
+        .captcha-container{
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .h-captcha{
+            transform: scale(1.25);
+            transform-origin: center;
+        }
+        
+
     </style>
 </head>
 <body>
@@ -201,14 +215,18 @@
                     onmouseleave="esconderSenha()">👁</button>
         </div>        
 
-        <div class="captcha">
-            <input type="checkbox">
-            <span>Não sou um robô</span>
+        <div class="h-captcha captcha-container"
+            data-sitekey="1900febc-5eba-4cba-a6e2-f7644518c20e"
+            data-theme="light"
+            data-size="normal"
+            data-always-show-challenge="true">
         </div>
-
+        
+        <a href="sistema.html">
         <button class="btn">Entrar</button>
+        </a>
 
-        <div href="#" class="forgot" onclick="alert('Tela de recuperação em desenvolvimento')">Esqueci minha senha</div>
+        <div href="#" class="forgot" onclick="alert('Não há dados!')">Esqueci minha senha</div>
 
         <div class="cookies">
             Usamos cookies apenas para segurança, sem compartilhamento de informações privadas.
@@ -226,7 +244,5 @@
         document.getElementById("senha").type = "password";
     }
     </script>
-    
-
 </body>
 </html>

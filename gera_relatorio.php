@@ -44,4 +44,4 @@ $dompdf->loadHtml($html);
 $dompdf->setPaper('A4');
 $dompdf->render();
 
-$dompdf->stream("OS_{$dados['numero']}.pdf", ["Attachment" => false]);
+$dompdf->stream("Ordem_de_Serviço_{$dados['numero']}.pdf", ["Attachment" => false]);
