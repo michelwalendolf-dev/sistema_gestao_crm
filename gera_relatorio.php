@@ -26,7 +26,7 @@ $dados = [
 ];
 
 $logo = 'data:image/png;base64,' .
-    base64_encode(file_get_contents(__DIR__ . '/logo.png'));
+    base64_encode(file_get_contents(__DIR__ . '\assets\logo.png'));
 
 $html = file_get_contents(__DIR__ . '/index.html');
 

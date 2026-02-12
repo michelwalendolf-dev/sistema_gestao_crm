@@ -33,7 +33,7 @@
         .left{
             width:50%;
             height:100%;
-            background: url('layout_login.png') no-repeat center center;
+            background: url('assets/layout_login.png') no-repeat center center;
             background-size: cover;
         }
 
@@ -92,6 +92,7 @@
             border-radius:6px;
             border:1px solid #1e3a56;
             background:#0e2438;
+            font-size: 15px;
             color:#fff;
             outline:none;
             transition:0.3s;
@@ -137,17 +138,43 @@
             font-size:13px;
             opacity:0.7;
             cursor:pointer;
+            text-decoration: underline;
         }
 
         .cookies{
-            margin-top:35px;
+            margin-top:90px;
             background:#0e2438;
             padding:12px;
-            border-radius:8px;
-            font-size:12px;
+            border-radius: none;
+            font-size:16px;
             opacity:0.7;
             text-align:center;
         }
+
+        .password-group{
+            position: relative;
+        }
+
+        .password-group input{
+            padding-right: 45px;
+        }
+
+        .toggle-password{
+            position: absolute;
+            right: 12px;
+            top: 10%;
+            transform: translate(-5%);
+            background: none;
+            border: none;
+            color: #304e6b;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .toggle-password:hover{
+            color: #3c5a77;
+        }
+
     </style>
 </head>
 <body>
@@ -165,9 +192,14 @@
             <input type="text" placeholder="Usuário">
         </div>
 
-        <div class="input-group">
-            <input type="password" placeholder="Senha">
-        </div>
+        <div class="input-group password-group">
+            <input type="password" id="senha" placeholder="Senha">
+            <button type="button"
+                    class="toggle-password"
+                    onmousedown="mostrarSenha()"
+                    onmouseup="esconderSenha()"
+                    onmouseleave="esconderSenha()">👁</button>
+        </div>        
 
         <div class="captcha">
             <input type="checkbox">
@@ -176,15 +208,25 @@
 
         <button class="btn">Entrar</button>
 
-        <div class="forgot">Esqueci minha senha</div>
+        <div href="#" class="forgot" onclick="alert('Tela de recuperação em desenvolvimento')">Esqueci minha senha</div>
 
         <div class="cookies">
             Usamos cookies apenas para segurança, sem compartilhamento de informações privadas.
-            Ao continuar, você concorda com seu uso.
+            <br>Ao continuar, você concorda com seu uso.
         </div>
     </div>
-
 </div>
+
+<script>
+    function mostrarSenha(){
+        document.getElementById("senha").type = "text";
+    }
+    
+    function esconderSenha(){
+        document.getElementById("senha").type = "password";
+    }
+    </script>
+    
 
 </body>
 </html>
