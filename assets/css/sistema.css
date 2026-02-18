@@ -14,22 +14,43 @@ body{
 
 .container-left{
     width:275px;
-    height:850px;
+    height:835px;
     display:flex;
     margin-top: 80px;
+    margin-left: -4px;
     border-radius:1px;
     overflow:hidden;
     border: 4px solid #737373;
     gap: 12px;
     flex-direction: column;
     align-items: center;
+    transition: width 0.35s ease;
+    position: relative
+}
+
+.container-left.fechado{
+    width: 0;
+    border: none;
+    overflow: visible;
+}
+
+.container-left.fechado .barra-acoes,
+.container-left.fechado .container-datas,
+.container-left.fechado .menu-sistema,
+.container-left.fechado .footer-left,
+.container-left.fechado .topo-filtros span{
+    display: none;
+}
+
+.container-left.fechado ~ .container-top{
+    margin-left: 0;
 }
 
 .container-top{
     flex: 1;
     height:86px;
     margin-top: -4px;
-    margin-left: -272px;
+    margin-left: -277px;
     margin-right: -8px;
     display:flex;
     align-items: center;
@@ -37,13 +58,25 @@ body{
     border-radius:1px;
     overflow:hidden;
     border: 2px solid #737373;
+    justify-content: flex-start;
+    gap: 20px;
 }
 
 .top-logo{
     width: 100px;
+    margin-left: -9px;
     height: auto;
 }
 
+.user-info{
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.user-name{
+    color: #ff3b3b;
+    font-weight: bold;
+}
 
 .topo-filtros{
     width: 100%;
@@ -89,6 +122,8 @@ body{
     color: #a6a6a6;
     font-size: 28px;
     font-weight: 300;
+    font-family: Arial, Helvetica, sans-serif;
+
 }
 
 .campo-busca{
@@ -100,7 +135,7 @@ body{
     border-radius: 4px;
 }
 
-.campo-busca input{
+.campo-busca input:focus{
     flex: 1;
     border: none;
     outline: none;
@@ -234,4 +269,144 @@ body{
 
 .container-datas .barra-acoes input {
     width: 70%;
+}
+
+.baixo-filtros{
+    width: calc(100% + 90px);
+    margin-left: -47px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    border: 1px solid #353e52;
+
+    background: linear-gradient(
+        to bottom,
+        #253150 0px,
+        #253150 26px,   
+        #2d3e69 26px,   
+        #2d3e69 28px,   
+        #16213b 28px,   
+        #16213b 52px
+    );
+}
+
+.btn-lista{
+    width: 28px;
+    height: 28px;
+    border: 1px solid #737373;
+    background: #253150;
+    color: #a6a6a6;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;              
+    align-items: center;        
+    justify-content: center;    
+    line-height: 1;             
+    padding: 0;   
+    border-radius: 4px; 
+    transition: 0.3s;             
+}
+
+.btn-lista:hover{
+    background: #2f3e63;
+}
+
+.baixo-filtros span{
+    color: #a6a6a6;
+    font-size: 20px;
+    font-weight: 200;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.btn-lista.ativo{
+    transform: rotate(180deg);
+}
+
+.dropdown-sistema{
+    background: #1b2744;
+    border: 1px solid #2c3b5f;
+    padding: 12px;
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    margin-left: -26px;
+    gap: 10px;
+    width: 230px;
+    max-height: 0;
+    overflow: hidden;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: max-height 0.35s ease;
+}
+
+.dropdown-sistema.ativo{
+    max-height: 350px;
+    display: flex;
+    transform: scaleY(1);
+}
+
+.dropdown-sistema::-webkit-scrollbar{
+    height: 6px;
+}
+
+.dropdown-sistema::-webkit-scrollbar-thumb{
+    background: #6b7280;
+    border-radius: 4px;
+}
+
+.dropdown-sistema a.btn-dropdown{
+    background:#1f6bff;
+    border: none;
+    padding: 12px;
+    color: white;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.dropdown-sistema a.btn-dropdown:hover{
+    background:#2d7dff;
+    box-shadow:0 0 12px #2d7dff80;
+}
+
+.footer-left{
+    margin-top: auto;
+    width: 100%;
+    padding: 15px 10px;
+    text-align: center;
+    font-size: 14px;
+    color: #a6a6a6;
+    border: none;
+    background: #0b1b2b;
+}
+
+.footer-left span{
+    text-decoration: underline;
+}
+
+.barra-reabrir{
+    position: absolute;
+    right: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 100%;
+    background: #253150;
+    color: #fff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 0 6px 6px 0;
+}
+
+.container-left.fechado .barra-reabrir{
+    display: flex;
 }

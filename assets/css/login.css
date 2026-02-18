@@ -7,13 +7,37 @@
 
 body{
     height:100vh;
+    margin: 0;
     background: radial-gradient(circle at top, #0b1b2b, #081421);
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    overflow: hidden;
+}
+
+body.swal2-shown {
+    overflow: hidden !important;
+    padding-right: 0 !important;
+}
+
+.swal2-popup {
+    border-radius: 12px !important;
+}
+
+.swal2-confirm {
+    background: #1f6bff !important;
+}
+
+.swal2-confirm:hover {
+    background: #2d7dff !important;
+}
+
+.swal2-container {
+    background: rgba(0, 0, 0, 0.75) !important;
 }
 
 .container{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width:1100px;
     height:600px;
     display:flex;
@@ -32,24 +56,6 @@ body{
 .left img{
     width:180px;
     margin-bottom:20px;
-}
-
-.left h1{
-    font-size:38px;
-    letter-spacing:4px;
-}
-
-.left h2{
-    font-weight:300;
-    letter-spacing:6px;
-    margin-top:10px;
-}
-
-.left footer{
-    position:absolute;
-    bottom:25px;
-    font-size:12px;
-    opacity:0.7;
 }
 
 .right{
@@ -134,7 +140,7 @@ body{
 }
 
 .cookies{
-    margin-top:65px;
+    margin-top:58px;
     background:#0e2438;
     padding:12px;
     border-radius: none;
@@ -172,9 +178,24 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 90px;
 }
 
 .h-captcha{
     transform: scale(1.25);
     transform-origin: center;
+    height: 78px; 
+}
+
+.h-captcha iframe{
+    display:block;
+}
+
+html, body {
+    height: 100% !important;
+    background: radial-gradient(circle at top, #0b1b2b, #081421) !important;
+}
+
+html.swal2-height-auto {
+    height: 100% !important;
 }

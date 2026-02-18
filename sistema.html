@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de OS</title>
     <link rel="stylesheet" href="assets/css/sistema.css">
-
+    <link rel="icon" type="image/png" href="assets/icon.png">
 </head>
 <body>
     <div class="container-left">
+        <div class="barra-reabrir" id="abrirMenu">»</div>
         <div class="topo-filtros">
             <span>Filtros</span>
             <button class="btn-voltar">«</button>
@@ -154,11 +155,58 @@
                 </button>
             </div>
         </div>
-    </div>
-    <div class="container-top">
-        <div class="top-logo">
-            <img src="logosis.png" alt="Logo" class="top-logo">
+        <div class="menu-sistema">
+            <div class="baixo-filtros" id="toggleMenu">
+                <span>Opções do Sistema</span>
+                <button class="btn-lista" id="btnLista">▼</button>
+            </div>
+            <div class="dropdown-sistema" id="dropdownSistema">
+                <a href="#" class="btn-dropdown">Administração</a>
+                <a href="#" class="btn-dropdown">ERP</a>
+                <a href="gera_relatorio.php" target="_blank" class="btn-dropdown">Relatórios</a>
+                <a href="#" class="btn-dropdown">Configurações Técnicas</a>
+            </div>
+        </div>
+        <div class="footer-left">
+            © 2026 <span>Wolftech Systems Ltda.</span><br>
+            Todos os direitos reservados
         </div>
     </div>
+        <div class="container-top">
+            <img src="logosis.png" alt="Logo" class="top-logo">
+
+            <div class="user-info">
+                Usuário: <span class="user-name">admin</span>
+            </div>
+        </div>
+    </div>
+    <script>
+        const toggleMenu = document.getElementById("toggleMenu");
+        const dropdown = document.getElementById("dropdownSistema");
+        const btnLista = document.getElementById("btnLista");
+
+        toggleMenu.addEventListener("click", () => {
+            dropdown.classList.toggle("ativo");
+
+            if (dropdown.classList.contains("ativo")) {
+                btnLista.textContent = "▲";
+            } else {
+                btnLista.textContent = "▼";
+            }
+        });
+    </script>
+    <script>
+        const btnVoltar = document.querySelector(".btn-voltar");
+        const containerLeft = document.querySelector(".container-left");
+        const abrirMenu = document.getElementById("abrirMenu");
+
+        btnVoltar.addEventListener("click", () => {
+            containerLeft.classList.add("fechado");
+        });
+
+        abrirMenu.addEventListener("click", () => {
+            containerLeft.classList.remove("fechado");
+        });
+    </script>
 </body>
 </html>

@@ -5,60 +5,78 @@
     <title>Login - Wolftech</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="icon" type="image/png" href="assets/icon.png">
 </head>
 <body>
-
 <div class="container">
-
     <div class="left"></div>
-
     <div class="right">
         <h2>Acesso ao Sistema de CRM</h2>
-
         <hr class="divider">
-
-        <div class="input-group">
-            <input type="text" placeholder="Usuário">
-        </div>
-
-        <div class="input-group password-group">
-            <input type="password" id="senha" placeholder="Senha">
-            <button type="button"
-                    class="toggle-password"
-                    onmousedown="mostrarSenha()"
-                    onmouseup="esconderSenha()"
-                    onmouseleave="esconderSenha()">👁</button>
-        </div>        
-
-        <div class="h-captcha captcha-container"
-            data-sitekey="1900febc-5eba-4cba-a6e2-f7644518c20e"
-            data-theme="light"
-            data-size="normal"
-            data-always-show-challenge="true">
-        </div>
-        
-        <a href="sistema.html">
-        <button class="btn">Entrar</button>
-        </a>
-
-        <div href="#" class="forgot" onclick="alert('Não há dados!')">Esqueci minha senha</div>
-
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" name="usuario" placeholder="Usuário">
+            </div>
+            <div class="input-group password-group">
+                <input type="password" id="senha" name="senha" placeholder="Senha">
+                <button type="button"
+                        class="toggle-password"
+                        onmousedown="mostrarSenha()"
+                        onmouseup="esconderSenha()"
+                        onmouseleave="esconderSenha()">👁</button>
+            </div>
+            <div class="captcha-container">
+                <div id="captchaBox"
+                    class="h-captcha"
+                    data-sitekey="1900febc-5eba-4cba-a6e2-f7644518c20e">
+                </div>
+            </div>
+            <button type="submit" class="btn">Entrar</button>
+        </form>
+        <div class="forgot">Esqueci minha senha</div>
         <div class="cookies">
             Usamos cookies apenas para segurança, sem compartilhamento de informações privadas.
             <br>Ao continuar, você concorda com seu uso.
         </div>
     </div>
 </div>
-
 <script>
-    function mostrarSenha(){
-        document.getElementById("senha").type = "text";
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const resposta = await fetch("login.php", {
+        method: "POST",
+        body: new FormData(form)
+    });
+
+    const resultado = await resposta.json();
+
+    if(resultado.sucesso){
+        window.location.href = "sistema.html";
+        return;
     }
-    
-    function esconderSenha(){
-        document.getElementById("senha").type = "password";
-    }
-    </script>
+
+    Swal.fire({
+        icon: "error",
+        title: resultado.titulo,
+        html: resultado.mensagem,
+        confirmButtonText: "Ok",
+        scrollbarPadding: false,
+        confirmButtonColor: "#2d7dff"
+    });
+});
+</script>
+<script>
+function mostrarSenha(){
+    document.getElementById("senha").type = "text";
+}
+function esconderSenha(){
+    document.getElementById("senha").type = "password";
+}
+</script>
 </body>
 </html>
