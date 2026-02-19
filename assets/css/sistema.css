@@ -8,7 +8,6 @@
 body{
     height:100vh;
     background: radial-gradient(circle at top, #0b1b2b);
-    display:flex;
     overflow: hidden; 
 }
 
@@ -29,9 +28,18 @@ body{
 }
 
 .container-left.fechado{
+    transform: translateX(-100%);
     width: 0;
-    border: none;
     overflow: visible;
+    border: 2px;
+}
+
+.container-left .barra-acoes,
+.container-left .container-datas,
+.container-left .menu-sistema,
+.container-left .footer-left,
+.container-left .topo-filtros span{
+    transition: opacity 0.0s ease;
 }
 
 .container-left.fechado .barra-acoes,
@@ -39,19 +47,25 @@ body{
 .container-left.fechado .menu-sistema,
 .container-left.fechado .footer-left,
 .container-left.fechado .topo-filtros span{
-    display: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
-.container-left.fechado ~ .container-top{
-    margin-left: 0;
+.container-left.fechado > *:not(.barra-reabrir){
+    opacity: 0;
+    pointer-events: none;
 }
 
 .container-top{
     flex: 1;
     height:86px;
     margin-top: -4px;
-    margin-left: -277px;
-    margin-right: -8px;
+    margin-left: -4px;
+    margin-right: -4px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     display:flex;
     align-items: center;
     padding-left:20px;
@@ -60,6 +74,10 @@ body{
     border: 2px solid #737373;
     justify-content: flex-start;
     gap: 20px;
+}
+
+.container-top.expandido{
+    left: 0;
 }
 
 .top-logo{
@@ -392,7 +410,10 @@ body{
 }
 
 .barra-reabrir{
-    position: absolute;
+    position: fixed;
+    left: 0;
+    top: 80px;
+    height: calc(100vh - 80px);
     right: -22px;
     top: 50%;
     transform: translateY(-50%);
@@ -404,9 +425,36 @@ body{
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    border-color: #6b7280;
+    border: 1px;
     border-radius: 0 6px 6px 0;
 }
 
 .container-left.fechado .barra-reabrir{
     display: flex;
+}
+
+.container-main{
+    position: fixed;
+    top: 80px;                 
+    left: 270px;               
+    right: -2px;
+    bottom: 0;
+    border: 2px solid #737373;
+    background: #0b1b2b;
+    overflow: hidden;
+    transition: left 0.35s ease;
+}
+
+.container-left.fechado ~ .container-main{
+    left: 0;
+}
+
+.main-top{
+    height: 50%;
+    border-bottom: 2px solid #737373;
+}
+
+.main-bottom{
+    height: 50%;
 }

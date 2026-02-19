@@ -19,7 +19,6 @@ $senha   = trim($_POST['senha'] ?? '');
 $captcha = $_POST['h-captcha-response'] ?? '';
 $usuarioExiste = isset($usuarios[$usuario]);
 
-// usuário e senha incorretos
 if (!$usuarioExiste && $usuario !== '' && $senha !== '') {
     echo json_encode([
         "sucesso" => false,
@@ -29,7 +28,6 @@ if (!$usuarioExiste && $usuario !== '' && $senha !== '') {
     exit;
 }
 
-// usuário incorreto
 if (!$usuarioExiste && $usuario !== '') {
     echo json_encode([
         "sucesso" => false,
@@ -39,7 +37,6 @@ if (!$usuarioExiste && $usuario !== '') {
     exit;
 }
 
-// senha incorreta
 if ($usuarioExiste && $usuarios[$usuario] !== $senha && $senha !== '') {
     echo json_encode([
         "sucesso" => false,
