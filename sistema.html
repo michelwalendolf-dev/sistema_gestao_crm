@@ -6,6 +6,7 @@
     <title>Sistema de OS</title>
     <link rel="stylesheet" href="assets/css/sistema.css">
     <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <div class="container-left">
@@ -89,16 +90,24 @@
                 </button>
             </div>
         </div>
-        <div class="barra-acoes">
-            <input type="text" placeholder="Status">
+        <div class="barra-acoes dropdown-container">
+            <input type="text" id="status" placeholder="Status" value="Aberto">
+            
             <div class="grupo-botoes">
-                <button>▼</button>
+                <button class="btn-dropdown">▼</button>
+            </div>
+
+            <div class="dropdown-menu">
+                <div class="item" selected>Aberto</div>
+                <div class="item">Em andamento</div>
+                <div class="item">Finalizado</div>
+                <div class="item">Cancelado</div>
             </div>
         </div>
         <div class="container-datas">
             <div class="barra-acoes">
-                <input type="text" placeholder="Dt. Ini">
-                <button class="btn-data">
+                <input type="text" id="dataInicio" placeholder="Dt. Início">
+                <button class="btn-data" onclick="abrirCalendario('dataInicio')">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         width="20"
@@ -126,8 +135,8 @@
                 </button>
             </div>
             <div class="barra-acoes">
-                <input type="text" placeholder="Dt. Fim">
-                <button class="btn-data">
+                <input type="text" id="dataFim" placeholder="Dt. Fim">
+                <button class="btn-data" onclick="abrirCalendario('dataFim')">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         width="20"
@@ -172,12 +181,12 @@
             Todos os direitos reservados
         </div>
     </div>
-        <div class="container-top">
-            <img src="logosis.png" alt="Logo" class="top-logo">
-
-            <div class="user-info">
-                Usuário: <span class="user-name">admin</span>
-            </div>
+        <div class="container-top"> 
+            <img src="logosis.png" alt="Logo" class="top-logo"> 
+            <div class="user-info"> Usuário: 
+                <span class="user-name">admin</span> 
+            </div> 
+            <a href="#" class="btn-exist" id="btnSair">✕Sair</a> 
         </div>
     </div>
     <div>
@@ -190,10 +199,8 @@
         const toggleMenu = document.getElementById("toggleMenu");
         const dropdown = document.getElementById("dropdownSistema");
         const btnLista = document.getElementById("btnLista");
-
         toggleMenu.addEventListener("click", () => {
             dropdown.classList.toggle("ativo");
-
             if (dropdown.classList.contains("ativo")) {
                 btnLista.textContent = "▲";
             } else {
@@ -205,13 +212,101 @@
         const btnVoltar = document.querySelector(".btn-voltar");
         const containerLeft = document.querySelector(".container-left");
         const abrirMenu = document.getElementById("abrirMenu");
-
         btnVoltar.addEventListener("click", () => {
             containerLeft.classList.add("fechado");
         });
-
         abrirMenu.addEventListener("click", () => {
             containerLeft.classList.remove("fechado");
+        });
+    </script>
+    <script>
+        const statusDropdown = document.querySelector('.dropdown-container');
+        const statusButton = statusDropdown.querySelector('.btn-dropdown');
+        const statusMenu = statusDropdown.querySelector('.dropdown-menu');
+        const statusInput = statusDropdown.querySelector('input');
+        statusButton.addEventListener('click', () => {
+            statusDropdown.classList.toggle('ativo');
+        });
+        statusMenu.querySelectorAll('.item').forEach(item => {
+            item.addEventListener('click', () => {
+                statusInput.value = item.textContent;
+                statusDropdown.classList.remove('ativo');
+            });
+        });
+        document.addEventListener('click', (e) => {
+            if (!statusDropdown.contains(e.target)) {
+                statusDropdown.classList.remove('ativo');
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const hoje = new Date();
+            const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+            const calendarioInicio = flatpickr("#dataInicio", {
+                dateFormat: "d/m/Y",
+                defaultDate: primeiroDia
+            });
+            const calendarioFim = flatpickr("#dataFim", {
+                dateFormat: "d/m/Y",
+                defaultDate: ultimoDia
+            });
+            window.abrirCalendario = function(id) {
+                if (id === "dataInicio") {
+                    calendarioInicio.open();
+                }
+                if (id === "dataFim") {
+                    calendarioFim.open();
+                }
+            };
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const btnSair = document.getElementById("btnSair");
+
+        btnSair.addEventListener("click", async function(e){
+            e.preventDefault();
+
+            const resposta = await fetch("sistema.php", {
+                method: "POST"
+            });
+
+            const resultado = await resposta.json();
+
+            if(!resultado.sucesso){
+                Swal.fire({
+                    icon: "error",
+                    title: resultado.titulo,
+                    html: resultado.mensagem,
+                    confirmButtonColor: "#2d7dff",
+                    scrollbarPadding: false
+                });
+                return;
+            }
+
+            Swal.fire({
+                icon: "question",
+                title: resultado.titulo,
+                html: resultado.mensagem,
+                showCancelButton: true,
+                confirmButtonText: "Sim",
+                cancelButtonText: "Não",
+                confirmButtonColor: "#dc3545",
+                cancelButtonColor: "#6c757d",
+                reverseButtons: true,
+                scrollbarPadding: false,
+                heightAuto: false
+            }).then((result) => {
+
+                if(result.isConfirmed){
+                    window.location.href = "login.html";
+                }
+
+            });
+
         });
     </script>
 </body>

@@ -18,7 +18,7 @@ body{
     margin-top: 80px;
     margin-left: -4px;
     border-radius:1px;
-    overflow:hidden;
+    overflow: visible;
     border: 4px solid #737373;
     gap: 12px;
     flex-direction: column;
@@ -187,7 +187,7 @@ body{
     border: 1px solid #737373;
     background: #253150;
     border-radius: 4px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .barra-acoes input{
@@ -457,4 +457,65 @@ body{
 
 .main-bottom{
     height: 50%;
+}
+
+.btn-exist{
+    margin-left:auto;
+    border-radius: 5px;
+    margin-right: 8px;
+    margin-top: 30px;
+    width: 52px;
+    font-weight:600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    border: 1px solid transparent;
+    cursor: pointer;
+    background-color: #cc3535;
+    text-decoration: none;
+    text-align: center;
+    transition: 0.2s ease;
+}
+
+.btn-exist:focus,
+.btn-exist:hover{
+    border-color:#cc3535;
+    box-shadow:0 0 8px #ff6d6d;
+}
+
+.dropdown-container{
+    position: relative;
+    z-index: 2000;
+}
+
+.dropdown-menu{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #1b2744;
+    border: 1px solid #737373;
+    border-radius: 4px;
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    
+}
+
+.dropdown-menu .item{
+    padding: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-menu .item:hover{
+    background: #2f3e63;
+}
+
+.dropdown-container.ativo .dropdown-menu{
+    display: flex;
+}
+
+.swal2-backdrop-show {
+    background: rgba(0, 0, 0, 0.75) !important;
 }
