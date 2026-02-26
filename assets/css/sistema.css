@@ -12,48 +12,32 @@ body{
 }
 
 .container-left{
-    width:275px;
-    height:835px;
-    display:flex;
-    margin-top: 80px;
+    position: fixed;
+    top: 80px;
+    left: 0;
     margin-left: -4px;
-    border-radius:1px;
-    overflow: visible;
+    width: 275px;
+    height: calc(100vh - 80px);
+    display:flex;
     border: 4px solid #737373;
-    gap: 12px;
     flex-direction: column;
     align-items: center;
-    transition: width 0.35s ease;
-    position: relative
+    gap: 12px;
+    background: #0b1b2b;
+    transition: transform 0.35s ease;
 }
 
 .container-left.fechado{
     transform: translateX(-100%);
-    width: 0;
-    overflow: visible;
-    border: 2px;
 }
 
-.container-left .barra-acoes,
-.container-left .container-datas,
-.container-left .menu-sistema,
-.container-left .footer-left,
-.container-left .topo-filtros span{
-    transition: opacity 0.0s ease;
-}
-
-.container-left.fechado .barra-acoes,
-.container-left.fechado .container-datas,
-.container-left.fechado .menu-sistema,
-.container-left.fechado .footer-left,
-.container-left.fechado .topo-filtros span{
-    opacity: 0;
-    pointer-events: none;
+.container-left > *:not(.barra-reabrir){
+    transition: transform 0.35s ease, opacity 0.50s ease;
 }
 
 .container-left.fechado > *:not(.barra-reabrir){
+    transform: translateX(-50px);
     opacity: 0;
-    pointer-events: none;
 }
 
 .container-top{
@@ -411,23 +395,17 @@ body{
 
 .barra-reabrir{
     position: fixed;
-    left: 0;
     top: 80px;
-    height: calc(100vh - 80px);
-    right: -22px;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 0;
     width: 22px;
-    height: 100%;
+    height: calc(100vh - 80px);
     background: #253150;
     color: #fff;
     display: none;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border-color: #6b7280;
-    border: 1px;
-    border-radius: 0 6px 6px 0;
+    z-index: 3000;
 }
 
 .container-left.fechado .barra-reabrir{
@@ -436,8 +414,8 @@ body{
 
 .container-main{
     position: fixed;
-    top: 80px;                 
-    left: 270px;               
+    top: 80px;
+    left: 270px;
     right: -2px;
     bottom: 0;
     border: 2px solid #737373;
@@ -447,12 +425,12 @@ body{
 }
 
 .container-left.fechado ~ .container-main{
-    left: 0;
+    left: 22px;
 }
 
 .main-top{
     height: 50%;
-    border-bottom: 2px solid #737373;
+
 }
 
 .main-bottom{
@@ -518,4 +496,224 @@ body{
 
 .swal2-backdrop-show {
     background: rgba(0, 0, 0, 0.75) !important;
+}
+
+.overlay-modal{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    z-index: 9999;
+}
+
+.erp-modal{
+    position: fixed;
+    width: 640px; /* menor */
+    background: #0b1b2b;
+    border: 2px solid #737373;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    color: #e5e7eb;
+    z-index: 10000;
+}
+
+.erp-modal.maximizado{
+    position: absolute;
+}
+
+.erp-titlebar{
+    background: linear-gradient(
+        to bottom,
+        #253150 0px,
+        #253150 26px,
+        #2d3e69 26px,
+        #16213b 100%
+    );
+    padding: 6px 10px;
+    cursor: move;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight: 500;
+    border-bottom:1px solid #737373;
+}
+
+.erp-controls button{
+    border:none;
+    background:transparent;
+    color:#a6a6a6;
+    font-size:16px;
+    cursor:pointer;
+    padding:2px 6px;
+}
+
+.erp-controls button:hover{
+    color:white;
+}
+
+
+.erp-content{
+    padding:12px;
+}
+
+.erp-tabs{
+    display:flex;
+    border-bottom:1px solid #737373;
+}
+
+.erp-tab{
+    padding:6px 14px;
+    background:#253150;
+    cursor:pointer;
+    border:1px solid #737373;
+    border-bottom:none;
+    margin-right:3px;
+    font-size:13px;
+}
+
+.erp-tab.active{
+    background:#0b1b2b;
+}
+
+.erp-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+    margin-top:12px;
+}
+
+.erp-grid label{
+    font-size:12px;
+    color:#cfd8e3;
+}
+
+.erp-grid input,
+.erp-grid select{
+    width:100%;
+    padding:4px;
+    background:#253150;
+    border:1px solid #737373;
+    color:white;
+}
+
+.workspace-overlay.fechar {
+    display: block;
+    animation: overlay-fechar 0.35s forwards;
+}
+
+@keyframes overlay-fechar {
+    0% { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(-100%); }
+}
+
+.workspace-sistema{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    background:#0b1b2b;
+    color:#a6a6a6;
+}
+
+.barra-topo,
+.barra-inferior{
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 8px;
+    border-bottom:1px solid #737373;
+
+    background: linear-gradient(
+        to bottom,
+        #253150 0px,
+        #253150 20px,
+        #2d3e69 20px,
+        #16213b 100%
+    );
+}
+
+.barra-topo button,
+.barra-inferior button{
+    background:#253150;
+    border:1px solid #737373;
+    color:#a6a6a6;
+    padding:4px 10px;
+    font-size:13px;
+    cursor:pointer;
+    border-radius:4px;
+}
+
+.barra-topo button:hover,
+.barra-inferior button:hover{
+    background:#2f3e63;
+}
+
+.grid-principal{
+    flex:1;
+    background:#16213b;
+    overflow:auto;
+    border-bottom:1px solid #737373;
+}
+
+.grid-principal table,
+.grid-inferior table{
+    border-collapse:collapse;
+    min-width:1600px;
+    width:100%;
+    font-size:12px;
+    color:#e5e7eb;
+}
+
+.grid-principal th,
+.grid-inferior th{
+    background:#253150;
+    border:1px solid #737373;
+    padding:6px;
+    text-align:left;
+    font-weight:500;
+}
+
+.abas{
+    height:32px;
+    display:flex;
+    border-bottom:1px solid #737373;
+
+    background: linear-gradient(
+        to bottom,
+        #253150 0px,
+        #253150 20px,
+        #16213b 100%
+    );
+}
+
+.aba{
+    padding:6px 14px;
+    border-right:1px solid #737373;
+    font-size:13px;
+    cursor:pointer;
+    color:#a6a6a6;
+}
+
+.aba:hover{
+    background:#2f3e63;
+}
+
+.aba.active{
+    background:#0b1b2b;
+    font-weight:600;
+    color:#ffffff;
+}
+
+.grid-inferior{
+    height:180px;
+    background:#16213b;
+    overflow:auto;
+}
+
+.barra-inferior input{
+    height:24px;
+    padding:2px 6px;
+    border:1px solid #737373;
+    background:#253150;
+    color:white;
 }

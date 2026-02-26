@@ -9,305 +9,517 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
-    <div class="container-left">
-        <div class="barra-reabrir" id="abrirMenu">❯</div>
-        <div class="topo-filtros">
-            <span>Filtros</span>
-            <button class="btn-voltar">❮❮</button>
-        </div>
-        <div class="barra-acoes">
-            <input type="text" placeholder="Cliente">
-            <div class="grupo-botoes">
-                <button>✖</button>
-                <button class="meio">⋯</button>
-                <button class="btn-busca">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                </button>
-            </div>
-        </div>
-        <div class="barra-acoes">
-            <input type="text" placeholder="Técnico">
-            <div class="grupo-botoes">
-                <button>✖</button>
-                <button class="meio">⋯</button>
-                <button class="btn-busca">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                </button>
-            </div>
-        </div>
-        <div class="barra-acoes">
-            <input type="text" placeholder="Serviços">
-            <div class="grupo-botoes">
-                <button>✖</button>
-                <button class="meio">⋯</button>
-                <button class="btn-busca">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                </button>
-            </div>
-        </div>
-        <div class="barra-acoes">
-            <input type="text" placeholder="Descrição">
-            <div class="grupo-botoes">
-                <button>✖</button>
-                <button class="btn-busca">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                </button>
-            </div>
-        </div>
-        <div class="barra-acoes dropdown-container">
-            <input type="text" id="status" placeholder="Status" value="Aberto">
-            
-            <div class="grupo-botoes">
-                <button class="btn-dropdown">▼</button>
-            </div>
-
-            <div class="dropdown-menu">
-                <div class="item" selected>Aberto</div>
-                <div class="item">Em andamento</div>
-                <div class="item">Finalizado</div>
-                <div class="item">Cancelado</div>
-            </div>
-        </div>
-        <div class="container-datas">
-            <div class="barra-acoes">
-                <input type="text" id="dataInicio" placeholder="Dt. Início">
-                <button class="btn-data" onclick="abrirCalendario('dataInicio')">
+<div class="container-top"> 
+    <img src="logosis.png" alt="Logo" class="top-logo"> 
+    <div class="user-info"> Usuário: 
+        <span class="user-name">admin</span> 
+    </div> 
+    <a href="#" class="btn-exist" id="btnSair">✕Sair</a> 
+</div>
+<div class="barra-reabrir" id="abrirMenu">❯</div>
+<div class="container-left">
+    <div class="topo-filtros">
+        <span>Filtros</span>
+        <button class="btn-voltar">❮❮</button>
+    </div>
+    <div class="barra-acoes">
+        <input type="text" placeholder="Cliente">
+        <div class="grupo-botoes">
+            <button>✖</button>
+            <button class="meio">⋯</button>
+            <button class="btn-busca">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="1.7"
+                        stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round">
-                        <rect x="3" y="5" width="18" height="16" rx="3"></rect>
-                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                        <line x1="8" y1="3" x2="8" y2="7"></line>
-                        <line x1="16" y1="3" x2="16" y2="7"></line>
-                        <rect x="7" y="11.5" width="10" height="7" rx="1.6"></rect>
-                        <path d="M14 11.5 L17 11.5 L17 14.5" fill="none"></path>
-                        <g fill="currentColor" stroke="none">
-                            <rect x="8.8" y="13" width="2" height="1.5" rx="0.3"/>
-                            <rect x="11" y="13" width="2" height="1.5" rx="0.3"/>
-                            <rect x="13.2" y="13" width="2" height="1.5" rx="0.3"/>
-                            <rect x="8.8" y="14.7" width="2" height="1.5" rx="0.3"/>
-                            <rect x="11" y="14.7" width="2" height="1.5" rx="0.3"/>
-                            <rect x="13.2" y="14.7" width="2" height="1.5" rx="0.3"/>
-                        </g>
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                </button>
-            </div>
-            <div class="barra-acoes">
-                <input type="text" id="dataFim" placeholder="Dt. Fim">
-                <button class="btn-data" onclick="abrirCalendario('dataFim')">
+            </button>
+        </div>
+    </div>
+    <div class="barra-acoes">
+        <input type="text" placeholder="Técnico">
+        <div class="grupo-botoes">
+            <button>✖</button>
+            <button class="meio">⋯</button>
+            <button class="btn-busca">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="1.7"
+                        stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round">
-                        <rect x="3" y="5" width="18" height="16" rx="3"></rect>
-                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                        <line x1="8" y1="3" x2="8" y2="7"></line>
-                        <line x1="16" y1="3" x2="16" y2="7"></line>
-                        <rect x="7" y="11.5" width="10" height="7" rx="1.6"></rect>
-                        <path d="M14 11.5 L17 11.5 L17 14.5" fill="none"></path>
-                        <g fill="currentColor" stroke="none">
-                            <rect x="8.8" y="13" width="2" height="1.5" rx="0.3"/>
-                            <rect x="11" y="13" width="2" height="1.5" rx="0.3"/>
-                            <rect x="13.2" y="13" width="2" height="1.5" rx="0.3"/>
-                            <rect x="8.8" y="14.7" width="2" height="1.5" rx="0.3"/>
-                            <rect x="11" y="14.7" width="2" height="1.5" rx="0.3"/>
-                            <rect x="13.2" y="14.7" width="2" height="1.5" rx="0.3"/>
-                        </g>
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                </button>
-            </div>
-        </div>
-        <div class="menu-sistema">
-            <div class="baixo-filtros" id="toggleMenu">
-                <span>Opções do Sistema</span>
-                <button class="btn-lista" id="btnLista">▼</button>
-            </div>
-            <div class="dropdown-sistema" id="dropdownSistema">
-                <a href="#" class="btn-dropdown">Administração</a>
-                <a href="#" class="btn-dropdown">ERP</a>
-                <a href="gera_relatorio.php" target="_blank" class="btn-dropdown">Relatórios</a>
-                <a href="#" class="btn-dropdown">Configurações Técnicas</a>
-            </div>
-        </div>
-        <div class="footer-left">
-            © 2026 <span>Wolftech Systems Ltda.</span><br>
-            Todos os direitos reservados
+            </button>
         </div>
     </div>
-        <div class="container-top"> 
-            <img src="logosis.png" alt="Logo" class="top-logo"> 
-            <div class="user-info"> Usuário: 
-                <span class="user-name">admin</span> 
-            </div> 
-            <a href="#" class="btn-exist" id="btnSair">✕Sair</a> 
+    <div class="barra-acoes">
+        <input type="text" placeholder="Serviços">
+        <div class="grupo-botoes">
+            <button>✖</button>
+            <button class="meio">⋯</button>
+            <button class="btn-busca">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+            </button>
         </div>
     </div>
-    <div>
-        <div class="container-main">
-            <div class="main-top"></div>
-            <div class="main-bottom"></div>
-        </div>        
+    <div class="barra-acoes">
+        <input type="text" placeholder="Descrição">
+        <div class="grupo-botoes">
+            <button>✖</button>
+            <button class="btn-busca">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+            </button>
+        </div>
     </div>
-    <script>
-        const toggleMenu = document.getElementById("toggleMenu");
-        const dropdown = document.getElementById("dropdownSistema");
-        const btnLista = document.getElementById("btnLista");
-        toggleMenu.addEventListener("click", () => {
-            dropdown.classList.toggle("ativo");
-            if (dropdown.classList.contains("ativo")) {
-                btnLista.textContent = "▲";
-            } else {
-                btnLista.textContent = "▼";
+    <div class="barra-acoes dropdown-container">
+        <input type="text" id="status" placeholder="Status" value="Aberto">
+        
+        <div class="grupo-botoes">
+            <button class="btn-dropdown">▼</button>
+        </div>
+
+        <div class="dropdown-menu">
+            <div class="item" selected>Aberto</div>
+            <div class="item">Em andamento</div>
+            <div class="item">Finalizado</div>
+            <div class="item">Cancelado</div>
+        </div>
+    </div>
+    <div class="container-datas">
+        <div class="barra-acoes">
+            <input type="text" id="dataInicio" placeholder="Dt. Início">
+            <button class="btn-data" onclick="abrirCalendario('dataInicio')">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="8" y1="3" x2="8" y2="7"></line>
+                    <line x1="16" y1="3" x2="16" y2="7"></line>
+                    <rect x="7" y="11.5" width="10" height="7" rx="1.6"></rect>
+                    <path d="M14 11.5 L17 11.5 L17 14.5" fill="none"></path>
+                    <g fill="currentColor" stroke="none">
+                        <rect x="8.8" y="13" width="2" height="1.5" rx="0.3"/>
+                        <rect x="11" y="13" width="2" height="1.5" rx="0.3"/>
+                        <rect x="13.2" y="13" width="2" height="1.5" rx="0.3"/>
+                        <rect x="8.8" y="14.7" width="2" height="1.5" rx="0.3"/>
+                        <rect x="11" y="14.7" width="2" height="1.5" rx="0.3"/>
+                        <rect x="13.2" y="14.7" width="2" height="1.5" rx="0.3"/>
+                    </g>
+                </svg>
+            </button>
+        </div>
+        <div class="barra-acoes">
+            <input type="text" id="dataFim" placeholder="Dt. Fim">
+            <button class="btn-data" onclick="abrirCalendario('dataFim')">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="8" y1="3" x2="8" y2="7"></line>
+                    <line x1="16" y1="3" x2="16" y2="7"></line>
+                    <rect x="7" y="11.5" width="10" height="7" rx="1.6"></rect>
+                    <path d="M14 11.5 L17 11.5 L17 14.5" fill="none"></path>
+                    <g fill="currentColor" stroke="none">
+                        <rect x="8.8" y="13" width="2" height="1.5" rx="0.3"/>
+                        <rect x="11" y="13" width="2" height="1.5" rx="0.3"/>
+                        <rect x="13.2" y="13" width="2" height="1.5" rx="0.3"/>
+                        <rect x="8.8" y="14.7" width="2" height="1.5" rx="0.3"/>
+                        <rect x="11" y="14.7" width="2" height="1.5" rx="0.3"/>
+                        <rect x="13.2" y="14.7" width="2" height="1.5" rx="0.3"/>
+                    </g>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div class="menu-sistema">
+        <div class="baixo-filtros" id="toggleMenu">
+            <span>Opções do Sistema</span>
+            <button class="btn-lista" id="btnLista">▼</button>
+        </div>
+        <div class="dropdown-sistema" id="dropdownSistema">
+            <a href="#" class="btn-dropdown">Administração</a>
+            <a href="#" class="btn-dropdown">ERP</a>
+            <a href="gera_relatorio.php" target="_blank" class="btn-dropdown">Relatórios</a>
+            <a href="#" class="btn-dropdown">Configurações Técnicas</a>
+        </div>
+    </div>
+    <div class="footer-left">
+        © 2026 <span>Wolftech Systems Ltda.</span><br>
+        Todos os direitos reservados
+    </div>
+</div>
+<div class="container-main">
+
+    <div class="workspace-sistema">
+
+        <div class="barra-topo">
+            <div class="acoes-esquerda">
+                <button  onclick="abrirModal()"><span>➕</span> Novo</button>
+                <button><span>✏️</span> Editar</button>
+                <button><span>🔒</span> Fechamento</button>
+                <button><span>📎</span> Anexos</button>
+                <button><span>📄</span> Formulários</button>
+                <button><span>⋮</span> Mais Opções</button>
+            </div>
+            <div class="acoes-direita">
+                <button class="btn-sair-grid">Sair</button>
+            </div>
+        </div>
+
+        <div class="grid-principal">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Cód. Unitário</th>
+                        <th width="200px">Descrição</th>
+                        <th width="150px">Cliente</th>
+                        <th>Contato</th>
+                        <th>Dt. de Criação</th>
+                        <th>Dt. Prometida</th>
+                        <th width="150px">Técnico</th>
+                        <th>Tot. Horás</th>
+                        <th>Resp. Execução</th>
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Vai ficar vasio por enquanto -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="abas">
+            <div class="aba">Itens da OS</div>
+            <div class="aba">Desc. Detalhada</div>
+        </div>
+
+        <div class="barra-inferior">
+            <div class="acoes-esquerda">
+                <button>➕ Novo</button>
+                <button>✏️ Editar</button>
+                <button>🗑️ Excluir</button>
+                <button>📎 Anexos</button>
+                <button>🔁 Transferir</button>
+                <button>📄 Copiar</button>
+            </div>
+            <div class="acoes-direita">
+                <input type="text" placeholder="Pesquisar...">
+            </div>
+        </div>
+        <div class="grid-inferior">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cod. Item</th>
+                        <th>Tipo</th>
+                        <th width="200px">Descrição</th>
+                        <th width="150px">Maquina</th>
+                        <th>Dt. de Criação</th>
+                        <th>Dt. de Solução</th>
+                        <th width="150px">Técnico</th>
+                        <th>Nº Série</th>
+                        <th>Produto Consumido</th>
+                        <th>Resp. Execução</th>
+                        <th>Cadastrado por</th>
+                        <th>Hrs. Estimadas</th>
+                        <th>Hrs. Realizadas</th>
+                        <th>Valor de Serviço</th>
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="overlay-modal" id="overlayModal">
+    <div class="workspace-overlay"></div>
+    <div class="erp-modal" id="erpModal">
+        <div class="erp-titlebar" id="erpDrag">
+        Cadastro de Ordem de Serviço
+        <div class="erp-controls">
+            <button onclick="maximizarModal()">☐</button>
+            <button onclick="fecharModal()">✖</button>
+        </div>
+        </div>
+        <div class="erp-content">
+        <div class="erp-tabs">
+            <div class="erp-tab active">Ordem de Serviço</div>
+            <div class="erp-tab">Observação</div>
+            <div class="erp-tab">Comissões</div>
+        </div>
+        <div class="erp-grid">
+            <div>
+            <label>Código</label>
+            <input>
+            </div>
+            <div>
+            <label>Status</label>
+            <select><option>Abertas</option></select>
+            </div>
+            <div>
+            <label>Cliente</label>
+            <input>
+            </div>
+            <div>
+            <label>Contato</label>
+            <input>
+            </div>
+            <div>
+            <label>Responsável</label>
+            <input>
+            </div>
+            <div>
+            <label>Valor Total</label>
+            <input>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<script>
+    const toggleMenu = document.getElementById("toggleMenu");
+    const dropdown = document.getElementById("dropdownSistema");
+    const btnLista = document.getElementById("btnLista");
+    toggleMenu.addEventListener("click", () => {
+        dropdown.classList.toggle("ativo");
+        if (dropdown.classList.contains("ativo")) {
+            btnLista.textContent = "▲";
+        } else {
+            btnLista.textContent = "▼";
+        }
+    });
+</script>
+<script>
+    const btnVoltar = document.querySelector(".btn-voltar");
+    const containerLeft = document.querySelector(".container-left");
+    const abrirMenu = document.getElementById("abrirMenu");
+    btnVoltar.addEventListener("click", () => {
+        containerLeft.classList.add("fechado");
+        abrirMenu.style.display = "flex";
+    });
+    abrirMenu.addEventListener("click", () => {
+        containerLeft.classList.remove("fechado");
+        abrirMenu.style.display = "none";
+    });
+</script>
+<script>
+    const statusDropdown = document.querySelector('.dropdown-container');
+    const statusButton = statusDropdown.querySelector('.btn-dropdown');
+    const statusMenu = statusDropdown.querySelector('.dropdown-menu');
+    const statusInput = statusDropdown.querySelector('input');
+    statusButton.addEventListener('click', () => {
+        statusDropdown.classList.toggle('ativo');
+    });
+    statusMenu.querySelectorAll('.item').forEach(item => {
+        item.addEventListener('click', () => {
+            statusInput.value = item.textContent;
+            statusDropdown.classList.remove('ativo');
+        });
+    });
+    document.addEventListener('click', (e) => {
+        if (!statusDropdown.contains(e.target)) {
+            statusDropdown.classList.remove('ativo');
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const hoje = new Date();
+        const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+        const calendarioInicio = flatpickr("#dataInicio", {
+            dateFormat: "d/m/Y",
+            defaultDate: primeiroDia
+        });
+        const calendarioFim = flatpickr("#dataFim", {
+            dateFormat: "d/m/Y",
+            defaultDate: ultimoDia
+        });
+        window.abrirCalendario = function(id) {
+            if (id === "dataInicio") {
+                calendarioInicio.open();
             }
-        });
-    </script>
-    <script>
-        const btnVoltar = document.querySelector(".btn-voltar");
-        const containerLeft = document.querySelector(".container-left");
-        const abrirMenu = document.getElementById("abrirMenu");
-        btnVoltar.addEventListener("click", () => {
-            containerLeft.classList.add("fechado");
-        });
-        abrirMenu.addEventListener("click", () => {
-            containerLeft.classList.remove("fechado");
-        });
-    </script>
-    <script>
-        const statusDropdown = document.querySelector('.dropdown-container');
-        const statusButton = statusDropdown.querySelector('.btn-dropdown');
-        const statusMenu = statusDropdown.querySelector('.dropdown-menu');
-        const statusInput = statusDropdown.querySelector('input');
-        statusButton.addEventListener('click', () => {
-            statusDropdown.classList.toggle('ativo');
-        });
-        statusMenu.querySelectorAll('.item').forEach(item => {
-            item.addEventListener('click', () => {
-                statusInput.value = item.textContent;
-                statusDropdown.classList.remove('ativo');
-            });
-        });
-        document.addEventListener('click', (e) => {
-            if (!statusDropdown.contains(e.target)) {
-                statusDropdown.classList.remove('ativo');
+            if (id === "dataFim") {
+                calendarioFim.open();
             }
+        };
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const btnSair = document.getElementById("btnSair");
+
+    btnSair.addEventListener("click", async function(e){
+        e.preventDefault();
+
+        const resposta = await fetch("sistema.php", {
+            method: "POST"
         });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const hoje = new Date();
-            const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-            const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-            const calendarioInicio = flatpickr("#dataInicio", {
-                dateFormat: "d/m/Y",
-                defaultDate: primeiroDia
-            });
-            const calendarioFim = flatpickr("#dataFim", {
-                dateFormat: "d/m/Y",
-                defaultDate: ultimoDia
-            });
-            window.abrirCalendario = function(id) {
-                if (id === "dataInicio") {
-                    calendarioInicio.open();
-                }
-                if (id === "dataFim") {
-                    calendarioFim.open();
-                }
-            };
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        const btnSair = document.getElementById("btnSair");
 
-        btnSair.addEventListener("click", async function(e){
-            e.preventDefault();
+        const resultado = await resposta.json();
 
-            const resposta = await fetch("sistema.php", {
-                method: "POST"
-            });
-
-            const resultado = await resposta.json();
-
-            if(!resultado.sucesso){
-                Swal.fire({
-                    icon: "error",
-                    title: resultado.titulo,
-                    html: resultado.mensagem,
-                    confirmButtonColor: "#2d7dff",
-                    scrollbarPadding: false
-                });
-                return;
-            }
-
+        if(!resultado.sucesso){
             Swal.fire({
-                icon: "question",
+                icon: "error",
                 title: resultado.titulo,
                 html: resultado.mensagem,
-                showCancelButton: true,
-                confirmButtonText: "Sim",
-                cancelButtonText: "Não",
-                confirmButtonColor: "#dc3545",
-                cancelButtonColor: "#6c757d",
-                reverseButtons: true,
-                scrollbarPadding: false,
-                heightAuto: false
-            }).then((result) => {
-
-                if(result.isConfirmed){
-                    window.location.href = "login.html";
-                }
-
+                confirmButtonColor: "#2d7dff",
+                scrollbarPadding: false
             });
+            return;
+        }
+
+        Swal.fire({
+            icon: "question",
+            title: resultado.titulo,
+            html: resultado.mensagem,
+            showCancelButton: true,
+            confirmButtonText: "Sim",
+            cancelButtonText: "Não",
+            confirmButtonColor: "#dc3545",
+            cancelButtonColor: "#6c757d",
+            reverseButtons: true,
+            scrollbarPadding: false,
+            heightAuto: false
+        }).then((result) => {
+
+            if(result.isConfirmed){
+                window.location.href = "login.html";
+            }
 
         });
-    </script>
+
+    });
+</script>
+<script>
+    const modal = document.getElementById("erpModal");
+    const overlay = document.getElementById("overlayModal");
+    const dragBar = document.getElementById("erpDrag");
+    const containerMain = document.querySelector(".container-main");
+
+    let maximizado = false;
+
+    function abrirModal(){
+        modal.style.display = "block";
+        overlay.style.display = "block";
+
+        modal.classList.remove("maximizado");
+
+        modal.style.position = "fixed";
+        modal.style.width = "640px";
+        modal.style.height = "auto";
+        modal.style.left = "50%";
+        modal.style.top = "80px";
+        modal.style.transform = "translateX(-50%)";
+
+        maximizado = false;
+    }
+    function fecharModal(){
+        modal.style.display = "none";
+        overlay.style.display = "none";
+        maximizado = false;
+    }
+    function maximizarModal(){
+
+        if(!maximizado){
+
+            // guarda estado anterior
+            modal.dataset.prev = modal.style.cssText;
+
+            // move para dentro do container
+            containerMain.appendChild(modal);
+
+            modal.classList.add("maximizado");
+
+            modal.style.position = "absolute";
+            modal.style.top = "0";
+            modal.style.left = "0";
+            modal.style.width = "100%";
+            modal.style.height = "100%";
+            modal.style.transform = "none";
+
+            overlay.style.display = "none";
+
+            maximizado = true;
+
+        } else {
+
+            document.body.appendChild(modal);
+
+            modal.classList.remove("maximizado");
+            modal.style.cssText = modal.dataset.prev;
+
+            overlay.style.display = "block";
+
+            maximizado = false;
+        }
+    }
+    dragBar.onmousedown = function(e){
+        if(maximizado) return;
+
+        let shiftX = e.clientX - modal.getBoundingClientRect().left;
+        let shiftY = e.clientY - modal.getBoundingClientRect().top;
+
+        function moveAt(pageX, pageY){
+            modal.style.left = pageX - shiftX + 'px';
+            modal.style.top = pageY - shiftY + 'px';
+            modal.style.transform = "none";
+        }
+
+        function onMouseMove(e){
+            moveAt(e.pageX, e.pageY);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+
+        document.onmouseup = function(){
+            document.removeEventListener('mousemove', onMouseMove);
+            document.onmouseup = null;
+        };
+    };
+</script>
 </body>
 </html>

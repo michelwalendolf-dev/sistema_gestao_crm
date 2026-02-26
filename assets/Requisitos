@@ -1,13 +1,4 @@
 Inicialzador do servidor local na porta 8000
 php -S 0.0.0.0:8000
 Codigo para descobrir o IPV4 do computador: ipconfig
-http://{IPV4 do computador}:8000/login.html
-
-Para baixar o Dompdf: composer require dompdf/dompdf
-
-Obs: O composer deve estar instalado no computador para baixar o Dompdf.
-
-O Dompdf é uma biblioteca PHP que converte HTML e CSS em PDF. 
-Ele é amplamente utilizado para gerar relatórios, faturas, e outros documentos em formato PDF a partir de conteúdo web. 
-Com o Dompdf, você pode criar PDFs personalizados usando HTML e CSS, o que facilita a formatação e o design dos documentos gerados. 
-Ele suporta uma ampla gama de recursos, incluindo fontes personalizadas, imagens, tabelas e muito mais
+http://192.168.0.36:8000/login.html
