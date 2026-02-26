@@ -92,11 +92,9 @@ body{
     background: linear-gradient(
         to bottom,
         #253150 0px,
-        #253150 26px,   
-        #2d3e69 26px,   
-        #2d3e69 28px,   
-        #16213b 28px,   
-        #16213b 52px
+        #253150 26px,
+        #2d3e69 20px,
+        #16213b 120%
     );
 }
 
@@ -286,11 +284,9 @@ body{
     background: linear-gradient(
         to bottom,
         #253150 0px,
-        #253150 26px,   
-        #2d3e69 26px,   
-        #2d3e69 28px,   
-        #16213b 28px,   
-        #16213b 52px
+        #253150 26px,
+        #2d3e69 20px,
+        #16213b 120%
     );
 }
 
@@ -524,9 +520,9 @@ body{
     background: linear-gradient(
         to bottom,
         #253150 0px,
-        #253150 26px,
-        #2d3e69 26px,
-        #16213b 100%
+        #253150 20px,
+        #2d3e69 20px,
+        #16213b 110%
     );
     padding: 6px 10px;
     cursor: move;
@@ -626,9 +622,9 @@ body{
     background: linear-gradient(
         to bottom,
         #253150 0px,
-        #253150 20px,
+        #253150 18px,
         #2d3e69 20px,
-        #16213b 100%
+        #16213b 130%
     );
 }
 
@@ -682,7 +678,7 @@ body{
         to bottom,
         #253150 0px,
         #253150 20px,
-        #16213b 100%
+        #16213b 120%
     );
 }
 
@@ -708,6 +704,14 @@ body{
     height:180px;
     background:#16213b;
     overflow:auto;
+}
+
+.barra-topo input{
+    height:24px;
+    padding:2px 6px;
+    border:1px solid #737373;
+    background:#253150;
+    color:white;
 }
 
 .barra-inferior input{
