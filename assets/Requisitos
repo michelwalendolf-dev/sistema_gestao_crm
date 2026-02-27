@@ -2,3 +2,4 @@ Inicialzador do servidor local na porta 8000
 php -S 0.0.0.0:8000
 Codigo para descobrir o IPV4 do computador: ipconfig
 http://192.168.0.36:8000/login.html
+http://10.1.84.31:8000/login.html

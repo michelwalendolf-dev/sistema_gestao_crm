@@ -179,7 +179,7 @@
         <div class="dropdown-sistema" id="dropdownSistema">
             <a href="#" class="btn-dropdown">Administração</a>
             <a href="#" class="btn-dropdown">ERP</a>
-            <a href="gera_relatorio.php" target="_blank" class="btn-dropdown">Relatórios</a>
+            <a href="#" class="btn-dropdown">Relatórios</a>
             <a href="#" class="btn-dropdown">Configurações Técnicas</a>
         </div>
     </div>
@@ -194,14 +194,20 @@
 
         <div class="barra-topo">
             <div class="acoes-esquerda">
-                <button  onclick="abrirModal()"><span>➕</span> Novo</button>
+                <button  onclick="abrirTelaCad()"><span>➕</span> Novo</button>
                 <button><span>✏️</span> Editar</button>
-                <button><span>🔒</span> Fechamento</button>
-                <button><span>📎</span> Anexos</button>
-                <button><span>📄</span> Formulários</button>
-                <button><span>⋮</span> Mais Opções</button>
+                <button><span>🗑️</span> Excluir</button>
+                <button class="botao-dropdown">
+                    <span>⋮</span> Mais Opções
+                </button>
+
+                <div class="dropdown-botao">
+                    <a href="#">📋 Auditoria</a>
+                    <a href="index.php" target="_blank">📄 Relatórios</a>
+                    <a href="#">🔒 Fechamento</a>
+                </div>
             </div>
-            <div class="acoes-direita">
+            <div class="pesquisa-direita">
                 <input type="text" placeholder="Pesquisar...">
             </div>
         </div>
@@ -239,11 +245,17 @@
                 <button>➕ Novo</button>
                 <button>✏️ Editar</button>
                 <button>🗑️ Excluir</button>
-                <button>📎 Anexos</button>
-                <button>🔁 Transferir</button>
-                <button>📄 Copiar</button>
+                <button class="botao-dropdown">
+                    <span>⋮</span> Mais Opções
+                </button>
+
+                <div class="dropdown-botao">
+                    <a href="#">📎 Anexos</a>
+                    <a href="#">🔁 Transferir</a>
+                    <a href="#">📄 Copiar</a>
+                </div>
             </div>
-            <div class="acoes-direita">
+            <div class="pesquisa-direita">
                 <input type="text" placeholder="Pesquisar...">
             </div>
         </div>
@@ -277,112 +289,243 @@
     <div class="workspace-overlay"></div>
     <div class="erp-modal" id="erpModal">
         <div class="erp-titlebar" id="erpDrag">
-        Cadastro de Ordem de Serviço
-        <div class="erp-controls">
-            <button onclick="maximizarModal()">☐</button>
-            <button onclick="fecharModal()">✖</button>
-        </div>
+            Cadastro de Ordem de Serviço
+            <div class="erp-controls">
+                <button onclick="maximizarTelaCad()">☐</button>
+                <button onclick="fecharTelaCad()">✖</button>
+            </div>
         </div>
         <div class="erp-content">
-        <div class="erp-tabs">
-            <div class="erp-tab active">Ordem de Serviço</div>
-            <div class="erp-tab">Observação</div>
+            <div class="erp-tabs">
+                <div class="erp-tab active">Ordem de Serviço</div>
+                <div class="erp-tab">Observação</div>
+            </div>
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>Código</label>
+                    <div class="bar-acoes ">
+                        <input type="text">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Cod. Unitário</label>
+                    <div class="bar-acoes ">
+                        <input type="text">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Cliente</label>
+                    <div class="bar-acoes ">
+                        <input type="text">
+                        <div class="grupos">
+                            <button class="btn-limpar">✖</button>
+                            <button class="meio">⋯</button>
+                            <button class="btn-busca">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Técnico</label>
+                    <div class="bar-acoes ">
+                        <input type="text">
+                        <div class="grupos">
+                            <button class="btn-limpar">✖</button>
+                            <button class="meio">⋯</button>
+                            <button class="btn-busca">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Serviço</label>
+                    <div class="bar-acoes ">
+                        <input type="text">
+                        <div class="grupos">
+                            <button class="btn-limpar">✖</button>
+                            <button class="meio">⋯</button>
+                            <button class="btn-busca">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Descrição</label>
+                    <div class="bar-acoes ">
+                        <input type="text">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Dt. Criação</label>
+                    <div class="bar-acoes ">
+                        <input type="text" class="campo-data">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Dt. Prometida</label>
+                    <div class="bar-acoes ">
+                        <input type="text" class="campo-data">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Total de Horas</label>
+                    <div class="bar-acoes ">
+                        <input type="number">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Resp. Execução</label>
+                    <div class="bar-acoes ">
+                        <input type="text">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Valor Total</label>
+                    <div class="bar-acoes ">
+                        <input type="number" step="0.01">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Cód. Barras</label>
+                    <div class="bar-acoes ">
+                        <input type="text">
+                        <div class="grupos">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="erp-grid">
-            <div>
-                <label>Código</label>
-            <input>
-            </div>
-            <div>
-                <label>Cod. Unitário</label>
-            <input>
-            </div>
-            <div>
-                <label>Descrição</label>
-            <input>
-            </div>
-            <div>
-                <label>Cliente</label>
-            <input>
-            </div>
-            <div>
-                <label>Contato</label>
-            <input>
-            </div>
-            <div>
-                <label>Dt. de Criação</label>
-            <input>
-            </div>
-            <div>
-                <label>Dt. Prometida</label>
-            <input>
-            </div>
-            <div>
-                <label>Técnico</label>
-            <input>
-            </div>
-            <div>
-                <label>Tot. Horas</label>
-            <input>
-            </div>
-            <div>
-                <label>Resp. Execução</label>
-            <input>
-            </div>
-            <div>
-                <label>Valor Total</label>
-            <input>
-            </div>
-            <div>
-                <label>Cod. Barras</label>
-            <input>
-            </div>
     </div>
 </div>
 <script>
-    const toggleMenu = document.getElementById("toggleMenu");
-    const dropdown = document.getElementById("dropdownSistema");
-    const btnLista = document.getElementById("btnLista");
-    toggleMenu.addEventListener("click", () => {
-        dropdown.classList.toggle("ativo");
-        if (dropdown.classList.contains("ativo")) {
-            btnLista.textContent = "▲";
-        } else {
-            btnLista.textContent = "▼";
+    document.addEventListener("DOMContentLoaded", function(){
+        const toggleMenuSistema = document.getElementById("toggleMenu");
+        const dropdownSistema = document.getElementById("dropdownSistema");
+        const btnLista = document.getElementById("btnLista");
+
+        if(toggleMenuSistema && dropdownSistema && btnLista){
+            toggleMenuSistema.addEventListener("click", () => {
+                dropdownSistema.classList.toggle("ativo");
+                btnLista.textContent = dropdownSistema.classList.contains("ativo") ? "▲" : "▼";
+            });
         }
-    });
-</script>
-<script>
-    const btnVoltar = document.querySelector(".btn-voltar");
-    const containerLeft = document.querySelector(".container-left");
-    const abrirMenu = document.getElementById("abrirMenu");
-    btnVoltar.addEventListener("click", () => {
-        containerLeft.classList.add("fechado");
-        abrirMenu.style.display = "flex";
-    });
-    abrirMenu.addEventListener("click", () => {
-        containerLeft.classList.remove("fechado");
-        abrirMenu.style.display = "none";
-    });
-</script>
-<script>
-    const statusDropdown = document.querySelector('.dropdown-container');
-    const statusButton = statusDropdown.querySelector('.btn-dropdown');
-    const statusMenu = statusDropdown.querySelector('.dropdown-menu');
-    const statusInput = statusDropdown.querySelector('input');
-    statusButton.addEventListener('click', () => {
-        statusDropdown.classList.toggle('ativo');
-    });
-    statusMenu.querySelectorAll('.item').forEach(item => {
-        item.addEventListener('click', () => {
-            statusInput.value = item.textContent;
-            statusDropdown.classList.remove('ativo');
+        const statusDropdown = document.querySelector('.dropdown-container');
+
+        if(statusDropdown){
+
+            const statusButton = statusDropdown.querySelector('.btn-dropdown');
+            const statusMenu = statusDropdown.querySelector('.dropdown-menu');
+            const statusInput = statusDropdown.querySelector('input');
+
+            if(statusButton && statusMenu && statusInput){
+
+                statusButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    statusDropdown.classList.toggle('ativo');
+                });
+
+                statusMenu.querySelectorAll('.item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        statusInput.value = item.textContent;
+                        statusDropdown.classList.remove('ativo');
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!statusDropdown.contains(e.target)) {
+                        statusDropdown.classList.remove('ativo');
+                    }
+                });
+            }
+        }
+
+        document.querySelectorAll(".botao-dropdown").forEach(btn => {
+
+            const menu = btn.nextElementSibling;
+
+            btn.addEventListener("click", function(e){
+                e.stopPropagation();
+
+                const rect = btn.getBoundingClientRect();
+
+                menu.style.position = "fixed";
+                menu.style.top = rect.bottom + "px";
+                menu.style.left = rect.left + "px";
+
+                menu.classList.toggle("show");
+            });
+
         });
-    });
-    document.addEventListener('click', (e) => {
-        if (!statusDropdown.contains(e.target)) {
-            statusDropdown.classList.remove('ativo');
+
+        document.addEventListener("click", function(){
+            document.querySelectorAll(".dropdown-botao").forEach(menu => {
+                menu.classList.remove("show");
+            });
+        });
+
+        const btnVoltar = document.querySelector(".btn-voltar");
+        const containerLeft = document.querySelector(".container-left");
+        const abrirMenu = document.getElementById("abrirMenu");
+
+        if(btnVoltar && containerLeft && abrirMenu){
+
+            btnVoltar.addEventListener("click", () => {
+                containerLeft.classList.add("fechado");
+                abrirMenu.style.display = "flex";
+            });
+
+            abrirMenu.addEventListener("click", () => {
+                containerLeft.classList.remove("fechado");
+                abrirMenu.style.display = "none";
+            });
         }
+
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -463,7 +606,7 @@
 
     let maximizado = false;
 
-    function abrirModal(){
+    function abrirTelaCad(){
         modal.style.display = "block";
         overlay.style.display = "block";
 
@@ -478,19 +621,17 @@
 
         maximizado = false;
     }
-    function fecharModal(){
+    function fecharTelaCad(){
         modal.style.display = "none";
         overlay.style.display = "none";
         maximizado = false;
     }
-    function maximizarModal(){
+    function maximizarTelaCad(){
 
         if(!maximizado){
 
-            // guarda estado anterior
             modal.dataset.prev = modal.style.cssText;
 
-            // move para dentro do container
             containerMain.appendChild(modal);
 
             modal.classList.add("maximizado");
