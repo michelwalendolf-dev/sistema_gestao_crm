@@ -189,9 +189,7 @@
     </div>
 </div>
 <div class="container-main">
-
-    <div class="workspace-sistema">
-
+    <div class="workspace-sistema" id="telaOS">
         <div class="barra-topo">
             <div class="acoes-esquerda">
                 <button  onclick="abrirTelaCad()"><span>➕</span> Novo</button>
@@ -202,7 +200,7 @@
                 </button>
 
                 <div class="dropdown-botao">
-                    <a href="#">📋 Auditoria</a>
+                    <a href="#" onclick="abrirAuditoria()">📋 Auditoria</a>
                     <a href="index.php" target="_blank">📄 Relatórios</a>
                     <a href="#">🔒 Fechamento</a>
                 </div>
@@ -441,6 +439,154 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+<!-- OVERLAY AUDITORIA -->
+<div id="overlayAuditoria" class="overlay-modal" style="display:none;"></div>
+
+<!-- MODAL AUDITORIA -->
+<div id="modalAuditoria" class="erp-modal" style="display:none; width:1100px; height:650px;">
+
+    <!-- TITLEBAR -->
+    <div class="erp-titlebar" id="dragAuditoria">
+        Auditoria
+        <div class="erp-controls">
+            <button onclick="maximizarAuditoria()">☐</button>
+            <button onclick="fecharAuditoria()">✖</button>
+        </div>
+    </div>
+
+    <div class="erp-content">
+
+        <!-- TOPO -->
+        <div class="barra-topo">
+            <div class="acoes-esquerda">
+                <button>🖨 Imprimir</button>
+                <button>📄 Relatório</button>
+                <button>🔎 Visualizar</button>
+            </div>
+        </div>
+
+        <!-- GRID DE FILTROS -->
+        <div class="erp-grid">
+
+            <div class="campo-completo">
+                <label>Início</label>
+                <div class="bar-acoes">
+                    <input type="text">
+                </div>
+            </div>
+
+            <div class="campo-completo">
+                <label>Término</label>
+                <div class="bar-acoes">
+                    <input type="text">
+                </div>
+            </div>
+
+            <div class="campo-completo dropdown-container">
+                <label>Evento</label>
+                <div class="bar-acoes">
+                    <input type="text" placeholder="Evento">
+                    <div class="grupo-botoes">
+                        <button class="btn-dropdown">▼</button>
+                    </div>
+                </div>
+                <div class="dropdown-menu">
+                    <div class="item">Login</div>
+                    <div class="item">Logout</div>
+                    <div class="item">Inclusão</div>
+                    <div class="item">Alteração</div>
+                    <div class="item">Exclusão</div>
+                </div>
+            </div>
+
+            <div class="campo-completo">
+                <label>Usuário</label>
+                <div class="bar-acoes">
+                    <input type="text">
+                    <div class="grupos">
+                        <button class="btn-limpar">✖</button>
+                        <button class="meio">⋯</button>
+                        <button class="btn-busca">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="campo-completo">
+                <label>Funcionário</label>
+                <div class="bar-acoes">
+                    <input type="text">
+                    <div class="grupos">
+                        <button class="btn-limpar">✖</button>
+                        <button class="meio">⋯</button>
+                        <button class="btn-busca">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="campo-completo">
+                <label>Cód. Audit.</label>
+                <div class="bar-acoes">
+                    <input type="text">
+                </div>
+            </div>
+
+            <div class="campo-completo campo-full">
+                <label>Pesquisa</label>
+                <div class="bar-acoes">
+                    <input type="text">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- GRID + DESCRIÇÃO -->
+        <div class="auditoria-area">
+
+            <!-- GRID -->
+            <div class="auditoria-grid">
+                <table class="tabela-auditoria">
+                    <thead>
+                        <tr>
+                            <th>Estação</th>
+                            <th>Evento</th>
+                            <th>Data</th>
+                            <th>Usuário</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- DESCRIÇÃO -->
+            <div class="auditoria-descricao">
+                <div class="descricao-header">
+                    Descrição
+                </div>
+                <textarea></textarea>
+            </div>
+
+        </div>
+
     </div>
 </div>
 <script>
@@ -682,6 +828,93 @@
             document.onmouseup = null;
         };
     };
+</script>
+<script>
+    const modalAud = document.getElementById("modalAuditoria");
+    const overlayAud = document.getElementById("overlayAuditoria");
+    const dragAud = document.getElementById("dragAuditoria");
+
+    let audMax = false;
+
+    function abrirAuditoria(){
+        modalAud.style.display = "block";
+        overlayAud.style.display = "block";
+
+        modalAud.style.position = "fixed";
+        modalAud.style.left = "50%";
+        modalAud.style.top = "90px";
+        modalAud.style.transform = "translateX(-50%)";
+
+        audMax = false;
+    }
+
+    function fecharAuditoria(){
+        modalAud.style.display = "none";
+        overlayAud.style.display = "none";
+        audMax = false;
+    }
+
+    function maximizarAuditoria(){
+
+        if(!audMax){
+
+            modalAud.dataset.prev = modalAud.style.cssText;
+
+            containerMain.appendChild(modalAud); // usa a variável já existente
+
+            modalAud.style.position = "absolute";
+            modalAud.style.top = "0";
+            modalAud.style.left = "0";
+            modalAud.style.width = "100%";
+            modalAud.style.height = "100%";
+            modalAud.style.transform = "none";
+
+            overlayAud.style.display = "none";
+
+            audMax = true;
+
+        } else {
+
+            document.body.appendChild(modalAud);
+            modalAud.style.cssText = modalAud.dataset.prev;
+
+            overlayAud.style.display = "block";
+
+            audMax = false;
+        }
+    }
+
+    dragAud.onmousedown = function(e){
+        if(audMax) return;
+
+        let shiftX = e.clientX - modalAud.getBoundingClientRect().left;
+        let shiftY = e.clientY - modalAud.getBoundingClientRect().top;
+
+        function moveAt(pageX, pageY){
+            modalAud.style.left = pageX - shiftX + 'px';
+            modalAud.style.top = pageY - shiftY + 'px';
+            modalAud.style.transform = "none";
+        }
+
+        function onMouseMove(e){
+            moveAt(e.pageX, e.pageY);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+
+        document.onmouseup = function(){
+            document.removeEventListener('mousemove', onMouseMove);
+            document.onmouseup = null;
+        };
+    };
+
+    function limparAuditoria(){
+        modalAud.querySelectorAll("input").forEach(i => i.value = "");
+    }
+
+    function filtrarAuditoria(){
+        console.log("Filtrando auditoria...");
+    }
 </script>
 </body>
 </html>
