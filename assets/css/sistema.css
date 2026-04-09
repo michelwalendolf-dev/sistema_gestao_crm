@@ -11,6 +11,14 @@ body{
     overflow: hidden; 
 }
 
+.label-campos{
+    display: flex;
+    width: 85%;
+    text-align: left;
+    color: white;
+    gap: 75px;
+}
+
 .container-left{
     position: fixed;
     top: 80px;
@@ -58,6 +66,8 @@ body{
     border: 2px solid #737373;
     justify-content: flex-start;
     gap: 20px;
+    background: #0b1b2b;
+    z-index: 500;
 }
 
 .container-top.expandido{
@@ -233,6 +243,7 @@ body{
 }
 
 .btn-data {
+    all: unset;
     width: 32px;               
     height: 100%;
     border-left: 1px solid #737373;
@@ -242,6 +253,7 @@ body{
     justify-content: center;
     cursor: pointer;
     color: #cfd8e3;   
+    border-radius: 4px;
 }
 
 .btn-data svg {
@@ -495,6 +507,14 @@ body{
     background: rgba(0, 0, 0, 0.75) !important;
 }
 
+body.swal2-shown,
+body.swal2-height-auto {
+    overflow: hidden !important;
+    padding-right: 0 !important;
+    background: radial-gradient(circle at top, #0b1b2b) !important;
+    height: 100vh !important;
+}
+
 .overlay-modal{
     position: fixed;
     inset: 0;
@@ -702,7 +722,6 @@ body{
 }
 
 .grid-inferior{
-    height:180px;
     background:#16213b;
     overflow:auto;
 }
@@ -845,7 +864,7 @@ body{
     min-height:250px;
 }
 
-/* GRID TABELA */
+
 .auditoria-grid{
     flex:2;
     border:1px solid #5c6b91;
@@ -856,20 +875,60 @@ body{
 .tabela-auditoria{
     width:100%;
     border-collapse:collapse;
+    border-color: black;
 }
 
 .tabela-auditoria th{
     background:linear-gradient(to bottom,#324b7a,#1e2f52);
     padding:6px;
+    border:1px solid #59678b;
     font-size:12px;
     text-align:left;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .tabela-auditoria td{
     padding:6px;
-    border-top:1px solid #2e3d63;
+    border-top:1px solid #59678b;
     font-size:12px;
+    white-space: nowrap;
+    color: #cfd8e3;
 }
+
+.aud-row{
+    cursor: pointer;
+}
+
+.aud-row:hover td{
+    background: #1e3058;
+}
+
+.aud-row.row-selecionada td{
+    background: #1f4a8a !important;
+    color: #ffffff;
+}
+
+.aud-row.row-selecionada .aud-badge{
+    opacity: 1;
+    filter: brightness(1.2);
+}
+
+.aud-badge{
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.aud-badge-login     { background: #1a4d2e; color: #4ade80; border: 1px solid #22543d; }
+.aud-badge-logout    { background: #2d2d2d; color: #9ca3af; border: 1px solid #4b5563; }
+.aud-badge-inclusão  { background: #1e3a5f; color: #60a5fa; border: 1px solid #2563eb; }
+.aud-badge-alteração { background: #3b2f00; color: #fbbf24; border: 1px solid #92400e; }
+.aud-badge-exclusão  { background: #4c1414; color: #f87171; border: 1px solid #991b1b; }
 
 /* DESCRIÇÃO */
 .auditoria-descricao{
@@ -893,4 +952,164 @@ body{
     color:white;
     padding:8px;
     resize:none;
+}
+
+/* ─── PAINEL INFERIOR REDIMENSIONÁVEL ────────────────────────────── */
+.painel-inferior{
+    display: flex;
+    flex-direction: column;
+    height: 212px;          /* abas(32) + barra(38) + grid(180) + folga */
+    min-height: 60px;
+    flex-shrink: 0;
+}
+
+/* Handle na linha superior do painel */
+.painel-inferior-handle{
+    height: 5px;
+    background: transparent;
+    cursor: row-resize;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    position: relative;
+}
+
+.painel-inferior-handle::after{
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 3px;
+    border-radius: 2px;
+    background: #3a5080;
+    transition: background 0.15s, width 0.15s;
+}
+
+.painel-inferior-handle:hover,
+.painel-inferior-handle.ativo{
+    background: rgba(74,127,212,0.15);
+}
+
+.painel-inferior-handle:hover::after,
+.painel-inferior-handle.ativo::after{
+    background: #4a7fd4;
+    width: 80px;
+}
+
+/* O grid-inferior ocupa o espaço restante dentro do painel */
+.grid-inferior{
+    flex: 1;
+    min-height: 0;
+}
+
+/* ─── RESIZE DE COLUNAS ──────────────────────────────────────────── */
+.grid-principal thead th,
+.grid-inferior thead th{
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.col-resize-handle{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 1;
+    transition: background 0.15s;
+}
+
+.col-resize-handle:hover,
+.col-resize-handle.ativo{
+    background: #4a7fd4;
+}
+.grid-principal td{
+    border: 1px solid #2a3a5c;
+    padding: 5px 7px;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #cfd8e3;
+}
+
+.grid-inferior td{
+    border: 1px solid #2a3a5c;
+    padding: 5px 7px;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #cfd8e3;
+}
+
+.os-row:hover td{
+    background: #1e3058;
+    cursor: pointer;
+}
+
+.item-row:hover td{
+    background: #1e3058;
+    cursor: pointer;
+}
+
+/* ─── LINHA SELECIONADA ───────────────────────────────────────── */
+.os-row.row-selecionada td{
+    background: #1f4a8a !important;
+    color: #ffffff;
+}
+
+.item-row.row-selecionada td{
+    background: #1f4a8a !important;
+    color: #ffffff;
+}
+
+/* ─── LINHA DE GRUPO ─────────────────────────────────────────── */
+.grupo-row td{
+    background: linear-gradient(to bottom, #253150 0%, #1b2b4a 100%);
+    border-top: 2px solid #3a5080;
+    border-bottom: 1px solid #3a5080;
+    padding: 5px 10px;
+    color: #a6c8ff;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.grupo-row:hover td{
+    background: #2a3e65;
+}
+
+.grupo-toggle{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: #7aa3e0;
+    margin-right: 6px;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.grupo-toggle svg{
+    width: 16px;
+    height: 16px;
+    stroke: #7aa3e0;
+    transition: stroke 0.15s;
+}
+
+.grupo-row:hover .grupo-toggle svg{
+    stroke: #a6c8ff;
+}
+
+.grupo-info{
+    margin-left: 12px;
+    color: #7aa3e0;
+    font-weight: normal;
+    font-size: 11px;
+}
+
+/* ─── LINHA OCULTA (GRUPO COLAPSADO) ─────────────────────────── */
+.grupo-oculto{
+    display: none;
 }

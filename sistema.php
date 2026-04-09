@@ -16,4 +16,3 @@ echo json_encode([
     "mensagem" => "Deseja realmente sair do sistema?"
 ]);
 exit;
-

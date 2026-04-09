@@ -23,6 +23,7 @@
         <button class="btn-voltar">❮❮</button>
     </div>
     <div class="barra-acoes">
+        <label></label>
         <input type="text" placeholder="Cliente">
         <div class="grupo-botoes">
             <button>✖</button>
@@ -111,6 +112,10 @@
             <div class="item">Cancelado</div>
         </div>
     </div>
+    <div class="label-campos">
+        <label>Dt. Ini:</label> 
+        <label>Dt. Fim:</label>
+    </div>
     <div class="container-datas">
         <div class="barra-acoes">
             <input type="text" id="dataInicio" placeholder="Dt. Início">
@@ -193,8 +198,8 @@
         <div class="barra-topo">
             <div class="acoes-esquerda">
                 <button  onclick="abrirTelaCad()"><span>➕</span> Novo</button>
-                <button><span>✏️</span> Editar</button>
-                <button><span>🗑️</span> Excluir</button>
+                <button onclick="abrirTelaEdicao()"><span>✏️</span> Editar</button>
+                <button onclick="excluirOS()"><span>🗑️</span> Excluir</button>
                 <button class="botao-dropdown">
                     <span>⋮</span> Mais Opções
                 </button>
@@ -217,7 +222,6 @@
                         <th>Código</th>
                         <th>Cód. Unitário</th>
                         <th width="200px">Descrição</th>
-                        <th width="150px">Cliente</th>
                         <th>Contato</th>
                         <th>Dt. de Criação</th>
                         <th>Dt. Prometida</th>
@@ -227,12 +231,14 @@
                         <th>Valor Total</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Vai ficar vasio por enquanto -->
+                <tbody id="tbodyOS">
                 </tbody>
             </table>
         </div>
 
+        <div id="painel-inferior-handle" class="painel-inferior-handle" title="Arraste para redimensionar"></div>
+
+        <div id="painel-inferior" class="painel-inferior">
         <div class="abas">
             <div class="aba">Itens da OS</div>
             <div class="aba">Desc. Detalhada</div>
@@ -242,7 +248,7 @@
             <div class="acoes-esquerda">
                 <button>➕ Novo</button>
                 <button>✏️ Editar</button>
-                <button>🗑️ Excluir</button>
+                <button onclick="excluirItem()">🗑️ Excluir</button>
                 <button class="botao-dropdown">
                     <span>⋮</span> Mais Opções
                 </button>
@@ -287,7 +293,7 @@
     <div class="workspace-overlay"></div>
     <div class="erp-modal" id="erpModal">
         <div class="erp-titlebar" id="erpDrag">
-            Cadastro de Ordem de Serviço
+            <span id="erpTitulo">Cadastro de Ordem de Serviço</span>
             <div class="erp-controls">
                 <button onclick="maximizarTelaCad()">☐</button>
                 <button onclick="fecharTelaCad()">✖</button>
@@ -302,7 +308,7 @@
                 <div class="campo-completo">
                     <label>Código</label>
                     <div class="bar-acoes ">
-                        <input type="text">
+                        <input type="text" id="cad-codigo">
                         <div class="grupos">
                         </div>
                     </div>
@@ -310,7 +316,7 @@
                 <div class="campo-completo">
                     <label>Cod. Unitário</label>
                     <div class="bar-acoes ">
-                        <input type="text">
+                        <input type="text" id="cad-codUnit">
                         <div class="grupos">
                         </div>
                     </div>
@@ -318,18 +324,12 @@
                 <div class="campo-completo">
                     <label>Cliente</label>
                     <div class="bar-acoes ">
-                        <input type="text">
+                        <input type="text" id="cad-cliente">
                         <div class="grupos">
                             <button class="btn-limpar">✖</button>
                             <button class="meio">⋯</button>
                             <button class="btn-busca">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
@@ -340,18 +340,12 @@
                 <div class="campo-completo">
                     <label>Técnico</label>
                     <div class="bar-acoes ">
-                        <input type="text">
+                        <input type="text" id="cad-tecnico">
                         <div class="grupos">
                             <button class="btn-limpar">✖</button>
                             <button class="meio">⋯</button>
                             <button class="btn-busca">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
@@ -362,18 +356,12 @@
                 <div class="campo-completo">
                     <label>Serviço</label>
                     <div class="bar-acoes ">
-                        <input type="text">
+                        <input type="text" id="cad-servico">
                         <div class="grupos">
                             <button class="btn-limpar">✖</button>
                             <button class="meio">⋯</button>
                             <button class="btn-busca">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
@@ -384,7 +372,7 @@
                 <div class="campo-completo">
                     <label>Descrição</label>
                     <div class="bar-acoes ">
-                        <input type="text">
+                        <input type="text" id="cad-descricao">
                         <div class="grupos">
                         </div>
                     </div>
@@ -392,7 +380,7 @@
                 <div class="campo-completo">
                     <label>Dt. Criação</label>
                     <div class="bar-acoes ">
-                        <input type="text" class="campo-data">
+                        <input type="text" id="cad-dtCriacao" class="campo-data">
                         <div class="grupos">
                         </div>
                     </div>
@@ -400,7 +388,7 @@
                 <div class="campo-completo">
                     <label>Dt. Prometida</label>
                     <div class="bar-acoes ">
-                        <input type="text" class="campo-data">
+                        <input type="text" id="cad-dtPrometida" class="campo-data">
                         <div class="grupos">
                         </div>
                     </div>
@@ -408,7 +396,7 @@
                 <div class="campo-completo">
                     <label>Total de Horas</label>
                     <div class="bar-acoes ">
-                        <input type="number">
+                        <input type="number" id="cad-horas">
                         <div class="grupos">
                         </div>
                     </div>
@@ -416,7 +404,7 @@
                 <div class="campo-completo">
                     <label>Resp. Execução</label>
                     <div class="bar-acoes ">
-                        <input type="text">
+                        <input type="text" id="cad-respExec">
                         <div class="grupos">
                         </div>
                     </div>
@@ -424,7 +412,7 @@
                 <div class="campo-completo">
                     <label>Valor Total</label>
                     <div class="bar-acoes ">
-                        <input type="number" step="0.01">
+                        <input type="text" id="cad-valor">
                         <div class="grupos">
                         </div>
                     </div>
@@ -432,7 +420,7 @@
                 <div class="campo-completo">
                     <label>Cód. Barras</label>
                     <div class="bar-acoes ">
-                        <input type="text">
+                        <input type="text" id="cad-contato">
                         <div class="grupos">
                         </div>
                     </div>
@@ -698,6 +686,545 @@
         };
     });
 </script>
+<script>
+const dadosOS = [
+    { codigo:"OS-0001", codUnit:"UN-001", descricao:"Manutenção de Servidor",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"01/04/2026", dtPrometida:"05/04/2026", tecnico:"João Silva",   horas:"4",  respExec:"João Silva",   valor:"R$ 850,00" },
+    { codigo:"OS-0002", codUnit:"UN-002", descricao:"Instalação de Software",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"02/04/2026", dtPrometida:"03/04/2026", tecnico:"Carlos Melo",  horas:"2",  respExec:"Carlos Melo",  valor:"R$ 320,00" },
+    { codigo:"OS-0003", codUnit:"UN-003", descricao:"Troca de Disco SSD",      cliente:"Acme Tecnologia",    contato:"(11) 91234-5678", dtCriacao:"03/04/2026", dtPrometida:"08/04/2026", tecnico:"João Silva",   horas:"1",  respExec:"João Silva",   valor:"R$ 480,00" },
+    { codigo:"OS-0004", codUnit:"UN-004", descricao:"Configuração de Rede",    cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"01/04/2026", dtPrometida:"07/04/2026", tecnico:"Ana Rodrigues",horas:"6",  respExec:"Ana Rodrigues",valor:"R$ 1.200,00" },
+    { codigo:"OS-0005", codUnit:"UN-005", descricao:"Suporte Remoto",          cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"04/04/2026", dtPrometida:"04/04/2026", tecnico:"Carlos Melo",  horas:"1",  respExec:"Carlos Melo",  valor:"R$ 150,00" },
+    { codigo:"OS-0006", codUnit:"UN-006", descricao:"Formatação de Estações",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"02/04/2026", dtPrometida:"06/04/2026", tecnico:"Ana Rodrigues",horas:"8",  respExec:"Ana Rodrigues",valor:"R$ 960,00" },
+    { codigo:"OS-0007", codUnit:"UN-007", descricao:"Upgrade de Memória RAM",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"05/04/2026", dtPrometida:"10/04/2026", tecnico:"João Silva",   horas:"3",  respExec:"João Silva",   valor:"R$ 540,00" },
+    { codigo:"OS-0008", codUnit:"UN-008", descricao:"Implantação de Firewall", cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"01/04/2026", dtPrometida:"09/04/2026", tecnico:"Carlos Melo",  horas:"12", respExec:"Carlos Melo",  valor:"R$ 2.800,00" },
+    { codigo:"OS-0009", codUnit:"UN-009", descricao:"Backup e Restauração",    cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"03/04/2026", dtPrometida:"05/04/2026", tecnico:"Ana Rodrigues",horas:"5",  respExec:"Ana Rodrigues",valor:"R$ 700,00" },
+    { codigo:"OS-0010", codUnit:"UN-010", descricao:"Auditoria de Segurança",  cliente:"DataFlex Sistemas",  contato:"(41) 92211-3344", dtCriacao:"06/04/2026", dtPrometida:"12/04/2026", tecnico:"João Silva",   horas:"10", respExec:"João Silva",   valor:"R$ 3.500,00" },
+];
+const grupoAberto  = new Map();
+const grupoToggle  = new Map();
+const grupoLinhas  = new Map();
+
+function renderizarGrid(dados){
+    const tbody = document.getElementById("tbodyOS");
+    if(!tbody) return;
+
+    const grupos = new Map();
+    dados.forEach(row => {
+        if(!grupos.has(row.cliente)) grupos.set(row.cliente, []);
+        grupos.get(row.cliente).push(row);
+    });
+
+    tbody.innerHTML = "";
+    grupoToggle.clear();
+    grupoLinhas.clear();
+
+    grupos.forEach((linhas, cliente) => {
+        if(!grupoAberto.has(cliente)) grupoAberto.set(cliente, true);
+        const aberto = grupoAberto.get(cliente);
+
+        const totalValor = linhas.reduce((acc, r) => {
+            const num = parseFloat(r.valor.replace("R$","").replace(/\./g,"").replace(",",".").trim()) || 0;
+            return acc + num;
+        }, 0);
+        const totalFmt = totalValor.toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+
+        const trGrupo = document.createElement("tr");
+        trGrupo.className = "grupo-row";
+
+        const toggle = document.createElement("span");
+        toggle.className = "grupo-toggle";
+        toggle.innerHTML = aberto
+            ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+
+        const tdGrupo = document.createElement("td");
+        tdGrupo.colSpan = 10;
+        tdGrupo.appendChild(toggle);
+        tdGrupo.insertAdjacentHTML("beforeend",
+            `<strong>${cliente}</strong><span class="grupo-info">${linhas.length} OS · Total: ${totalFmt}</span>`);
+        trGrupo.appendChild(tdGrupo);
+        trGrupo.addEventListener("click", () => toggleGrupo(cliente));
+        tbody.appendChild(trGrupo);
+
+        grupoToggle.set(cliente, toggle);
+
+        const trsDoGrupo = [];
+        linhas.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.className = "os-row" + (aberto ? "" : " grupo-oculto");
+            tr.innerHTML = `
+                <td>${row.codigo}</td>
+                <td>${row.codUnit}</td>
+                <td>${row.descricao}</td>
+                <td>${row.contato}</td>
+                <td>${row.dtCriacao}</td>
+                <td>${row.dtPrometida}</td>
+                <td>${row.tecnico}</td>
+                <td>${row.horas}h</td>
+                <td>${row.respExec}</td>
+                <td>${row.valor}</td>`;
+            tr.addEventListener("click", () => selecionarLinha(tr));
+            tbody.appendChild(tr);
+            trsDoGrupo.push(tr);
+        });
+
+        grupoLinhas.set(cliente, trsDoGrupo);
+    });
+}
+
+function toggleGrupo(cliente){
+    const novoEstado = !grupoAberto.get(cliente);
+    grupoAberto.set(cliente, novoEstado);
+
+    const seta = grupoToggle.get(cliente);
+    if(seta) seta.innerHTML = novoEstado
+        ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+
+    const trs = grupoLinhas.get(cliente) || [];
+    trs.forEach(tr => tr.classList.toggle("grupo-oculto", !novoEstado));
+}
+
+function selecionarLinha(tr){
+    document.querySelectorAll(".os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
+    tr.classList.add("row-selecionada");
+}
+
+const _dadosOS = [
+    { codigo:"OS-0001", codUnit:"UN-001", descricao:"Manutenção de Servidor",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"01/04/2026", dtPrometida:"05/04/2026", tecnico:"João Silva",   horas:"4",  respExec:"João Silva",   valor:"R$ 850,00" },
+    { codigo:"OS-0002", codUnit:"UN-002", descricao:"Instalação de Software",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"02/04/2026", dtPrometida:"03/04/2026", tecnico:"Carlos Melo",  horas:"2",  respExec:"Carlos Melo",  valor:"R$ 320,00" },
+    { codigo:"OS-0003", codUnit:"UN-003", descricao:"Troca de Disco SSD",      cliente:"Acme Tecnologia",    contato:"(11) 91234-5678", dtCriacao:"03/04/2026", dtPrometida:"08/04/2026", tecnico:"João Silva",   horas:"1",  respExec:"João Silva",   valor:"R$ 480,00" },
+    { codigo:"OS-0004", codUnit:"UN-004", descricao:"Configuração de Rede",    cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"01/04/2026", dtPrometida:"07/04/2026", tecnico:"Ana Rodrigues",horas:"6",  respExec:"Ana Rodrigues",valor:"R$ 1.200,00" },
+    { codigo:"OS-0005", codUnit:"UN-005", descricao:"Suporte Remoto",          cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"04/04/2026", dtPrometida:"04/04/2026", tecnico:"Carlos Melo",  horas:"1",  respExec:"Carlos Melo",  valor:"R$ 150,00" },
+    { codigo:"OS-0006", codUnit:"UN-006", descricao:"Formatação de Estações",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"02/04/2026", dtPrometida:"06/04/2026", tecnico:"Ana Rodrigues",horas:"8",  respExec:"Ana Rodrigues",valor:"R$ 960,00" },
+    { codigo:"OS-0007", codUnit:"UN-007", descricao:"Upgrade de Memória RAM",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"05/04/2026", dtPrometida:"10/04/2026", tecnico:"João Silva",   horas:"3",  respExec:"João Silva",   valor:"R$ 540,00" },
+    { codigo:"OS-0008", codUnit:"UN-008", descricao:"Implantação de Firewall", cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"01/04/2026", dtPrometida:"09/04/2026", tecnico:"Carlos Melo",  horas:"12", respExec:"Carlos Melo",  valor:"R$ 2.800,00" },
+    { codigo:"OS-0009", codUnit:"UN-009", descricao:"Backup e Restauração",    cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"03/04/2026", dtPrometida:"05/04/2026", tecnico:"Ana Rodrigues",horas:"5",  respExec:"Ana Rodrigues",valor:"R$ 700,00" },
+    { codigo:"OS-0010", codUnit:"UN-010", descricao:"Auditoria de Segurança",  cliente:"DataFlex Sistemas",  contato:"(41) 92211-3344", dtCriacao:"06/04/2026", dtPrometida:"12/04/2026", tecnico:"João Silva",   horas:"10", respExec:"João Silva",   valor:"R$ 3.500,00" },
+];
+
+const _dadosItens = {
+    "OS-0001": [
+        { codItem:"IT-001", tipo:"Serviço",  descricao:"Diagnóstico de Hardware",      maquina:"Servidor Dell R740",  dtCriacao:"01/04/2026", dtSolucao:"01/04/2026", tecnico:"João Silva",   codBarras:"7891000000001", produto:"—",                respExec:"João Silva",   cadastrado:"admin", hrsEst:"2",  hrsReal:"1.5", vlrServico:"R$ 300,00",   vlrTotal:"R$ 300,00"   },
+        { codItem:"IT-002", tipo:"Peça",     descricao:"SSD Samsung 870 EVO 1TB",      maquina:"Servidor Dell R740",  dtCriacao:"01/04/2026", dtSolucao:"02/04/2026", tecnico:"João Silva",   codBarras:"7891000000002", produto:"SSD Samsung 1TB",  respExec:"João Silva",   cadastrado:"admin", hrsEst:"0.5",hrsReal:"0.5", vlrServico:"R$ 50,00",    vlrTotal:"R$ 650,00"   },
+        { codItem:"IT-003", tipo:"Serviço",  descricao:"Substituição e Configuração",  maquina:"Servidor Dell R740",  dtCriacao:"02/04/2026", dtSolucao:"03/04/2026", tecnico:"João Silva",   codBarras:"7891000000003", produto:"—",                respExec:"João Silva",   cadastrado:"admin", hrsEst:"2",  hrsReal:"2",   vlrServico:"R$ 300,00",   vlrTotal:"R$ 300,00"   },
+    ],
+    "OS-0002": [
+        { codItem:"IT-001", tipo:"Serviço",  descricao:"Instalação Pacote Office 365", maquina:"Desktop HP ProDesk",  dtCriacao:"02/04/2026", dtSolucao:"02/04/2026", tecnico:"Carlos Melo",  codBarras:"7891000000010", produto:"Licença Office",   respExec:"Carlos Melo",  cadastrado:"admin", hrsEst:"1",  hrsReal:"1",   vlrServico:"R$ 150,00",   vlrTotal:"R$ 470,00"   },
+        { codItem:"IT-002", tipo:"Software", descricao:"Licença Office 365 Business",  maquina:"Desktop HP ProDesk",  dtCriacao:"02/04/2026", dtSolucao:"02/04/2026", tecnico:"Carlos Melo",  codBarras:"7891000000011", produto:"Office 365",       respExec:"Carlos Melo",  cadastrado:"admin", hrsEst:"0",  hrsReal:"0",   vlrServico:"R$ 0,00",     vlrTotal:"R$ 320,00"   },
+    ],
+    "OS-0003": [
+        { codItem:"IT-001", tipo:"Peça",     descricao:"SSD Kingston A400 480GB",      maquina:"Notebook Lenovo IdeaPad", dtCriacao:"03/04/2026", dtSolucao:"04/04/2026", tecnico:"João Silva",   codBarras:"7891000000020", produto:"SSD Kingston",    respExec:"João Silva",   cadastrado:"admin", hrsEst:"0.5",hrsReal:"0.5", vlrServico:"R$ 50,00",    vlrTotal:"R$ 330,00"   },
+        { codItem:"IT-002", tipo:"Serviço",  descricao:"Migração de Dados do HD",      maquina:"Notebook Lenovo IdeaPad", dtCriacao:"03/04/2026", dtSolucao:"05/04/2026", tecnico:"João Silva",   codBarras:"7891000000021", produto:"—",               respExec:"João Silva",   cadastrado:"admin", hrsEst:"2",  hrsReal:"2",   vlrServico:"R$ 300,00",   vlrTotal:"R$ 300,00"   },
+    ],
+    "OS-0004": [
+        { codItem:"IT-001", tipo:"Serviço",  descricao:"Projeto de Rede Lógica",       maquina:"Infraestrutura",      dtCriacao:"01/04/2026", dtSolucao:"03/04/2026", tecnico:"Ana Rodrigues",codBarras:"7891000000030", produto:"—",                respExec:"Ana Rodrigues",cadastrado:"admin", hrsEst:"4",  hrsReal:"4",   vlrServico:"R$ 600,00",   vlrTotal:"R$ 600,00"   },
+        { codItem:"IT-002", tipo:"Serviço",  descricao:"Cabeamento Cat6 — 80m",        maquina:"Infraestrutura",      dtCriacao:"02/04/2026", dtSolucao:"05/04/2026", tecnico:"Ana Rodrigues",codBarras:"7891000000031", produto:"Cabo Cat6 100m",   respExec:"Ana Rodrigues",cadastrado:"admin", hrsEst:"6",  hrsReal:"5.5", vlrServico:"R$ 825,00",   vlrTotal:"R$ 1.225,00" },
+        { codItem:"IT-003", tipo:"Peça",     descricao:"Switch Cisco SG110 8P",        maquina:"Infraestrutura",      dtCriacao:"02/04/2026", dtSolucao:"05/04/2026", tecnico:"Ana Rodrigues",codBarras:"7891000000032", produto:"Switch Cisco SG110",respExec:"Ana Rodrigues",cadastrado:"admin", hrsEst:"0",  hrsReal:"0",   vlrServico:"R$ 0,00",     vlrTotal:"R$ 480,00"   },
+    ],
+    "OS-0005": [
+        { codItem:"IT-001", tipo:"Serviço",  descricao:"Suporte Remoto via TeamViewer","maquina":"Workstation",       dtCriacao:"04/04/2026", dtSolucao:"04/04/2026", tecnico:"Carlos Melo",  codBarras:"7891000000040", produto:"—",                respExec:"Carlos Melo",  cadastrado:"admin", hrsEst:"1",  hrsReal:"1",   vlrServico:"R$ 150,00",   vlrTotal:"R$ 150,00"   },
+    ],
+    "OS-0006": [
+        { codItem:"IT-001", tipo:"Serviço",  descricao:"Formatação e Reinstalação",    maquina:"Desktop Dell OptiPlex", dtCriacao:"02/04/2026", dtSolucao:"04/04/2026", tecnico:"Ana Rodrigues",codBarras:"7891000000050", produto:"—",               respExec:"Ana Rodrigues",cadastrado:"admin", hrsEst:"2",  hrsReal:"2",   vlrServico:"R$ 300,00",   vlrTotal:"R$ 300,00"   },
+        { codItem:"IT-002", tipo:"Serviço",  descricao:"Formatação e Reinstalação",    maquina:"Desktop Dell OptiPlex 2", dtCriacao:"02/04/2026", dtSolucao:"04/04/2026", tecnico:"Ana Rodrigues",codBarras:"7891000000051", produto:"—",             respExec:"Ana Rodrigues",cadastrado:"admin", hrsEst:"2",  hrsReal:"2",   vlrServico:"R$ 300,00",   vlrTotal:"R$ 300,00"   },
+        { codItem:"IT-003", tipo:"Serviço",  descricao:"Configuração de Domínio AD",   maquina:"Servidor",            dtCriacao:"03/04/2026", dtSolucao:"06/04/2026", tecnico:"Ana Rodrigues",codBarras:"7891000000052", produto:"—",                respExec:"Ana Rodrigues",cadastrado:"admin", hrsEst:"4",  hrsReal:"4",   vlrServico:"R$ 600,00",   vlrTotal:"R$ 600,00"   },
+    ],
+    "OS-0007": [
+        { codItem:"IT-001", tipo:"Peça",     descricao:"Memória RAM 16GB DDR4 Kingston","maquina":"Desktop Lenovo",   dtCriacao:"05/04/2026", dtSolucao:"06/04/2026", tecnico:"João Silva",   codBarras:"7891000000060", produto:"RAM Kingston 16GB",respExec:"João Silva",   cadastrado:"admin", hrsEst:"0.5",hrsReal:"0.5", vlrServico:"R$ 75,00",    vlrTotal:"R$ 375,00"   },
+        { codItem:"IT-002", tipo:"Peça",     descricao:"Memória RAM 16GB DDR4 Kingston","maquina":"Desktop Lenovo 2", dtCriacao:"05/04/2026", dtSolucao:"06/04/2026", tecnico:"João Silva",   codBarras:"7891000000061", produto:"RAM Kingston 16GB",respExec:"João Silva",   cadastrado:"admin", hrsEst:"0.5",hrsReal:"0.5", vlrServico:"R$ 75,00",    vlrTotal:"R$ 375,00"   },
+        { codItem:"IT-003", tipo:"Serviço",  descricao:"Instalação e Teste de Memória","maquina":"Desktop Lenovo",   dtCriacao:"05/04/2026", dtSolucao:"06/04/2026", tecnico:"João Silva",   codBarras:"7891000000062", produto:"—",                respExec:"João Silva",   cadastrado:"admin", hrsEst:"1",  hrsReal:"0.5", vlrServico:"R$ 75,00",    vlrTotal:"R$ 75,00"    },
+    ],
+    "OS-0008": [
+        { codItem:"IT-001", tipo:"Serviço",  descricao:"Levantamento de Requisitos",   maquina:"Servidor",            dtCriacao:"01/04/2026", dtSolucao:"02/04/2026", tecnico:"Carlos Melo",  codBarras:"7891000000070", produto:"—",                respExec:"Carlos Melo",  cadastrado:"admin", hrsEst:"4",  hrsReal:"3",   vlrServico:"R$ 600,00",   vlrTotal:"R$ 600,00"   },
+        { codItem:"IT-002", tipo:"Peça",     descricao:"Firewall FortiGate 60F",       maquina:"Servidor",            dtCriacao:"01/04/2026", dtSolucao:"05/04/2026", tecnico:"Carlos Melo",  codBarras:"7891000000071", produto:"FortiGate 60F",    respExec:"Carlos Melo",  cadastrado:"admin", hrsEst:"0",  hrsReal:"0",   vlrServico:"R$ 0,00",     vlrTotal:"R$ 1.800,00" },
+        { codItem:"IT-003", tipo:"Serviço",  descricao:"Configuração e Políticas",     maquina:"Servidor",            dtCriacao:"03/04/2026", dtSolucao:"07/04/2026", tecnico:"Carlos Melo",  codBarras:"7891000000072", produto:"—",                respExec:"Carlos Melo",  cadastrado:"admin", hrsEst:"8",  hrsReal:"9",   vlrServico:"R$ 1.350,00", vlrTotal:"R$ 1.350,00" },
+    ],
+    "OS-0009": [
+        { codItem:"IT-001", tipo:"Serviço",  descricao:"Configuração Backup Veeam",    maquina:"Servidor NAS Synology",dtCriacao:"03/04/2026", dtSolucao:"04/04/2026", tecnico:"Ana Rodrigues",codBarras:"7891000000080", produto:"—",               respExec:"Ana Rodrigues",cadastrado:"admin", hrsEst:"3",  hrsReal:"3",   vlrServico:"R$ 450,00",   vlrTotal:"R$ 450,00"   },
+        { codItem:"IT-002", tipo:"Serviço",  descricao:"Restauração de Teste",         maquina:"Servidor NAS Synology",dtCriacao:"04/04/2026", dtSolucao:"05/04/2026", tecnico:"Ana Rodrigues",codBarras:"7891000000081", produto:"—",               respExec:"Ana Rodrigues",cadastrado:"admin", hrsEst:"2",  hrsReal:"2",   vlrServico:"R$ 300,00",   vlrTotal:"R$ 300,00"   },
+    ],
+    "OS-0010": [
+        { codItem:"IT-001", tipo:"Serviço",  descricao:"Análise de Vulnerabilidades",  maquina:"Toda a Infraestrutura",dtCriacao:"06/04/2026", dtSolucao:"09/04/2026", tecnico:"João Silva",   codBarras:"7891000000090", produto:"—",               respExec:"João Silva",   cadastrado:"admin", hrsEst:"6",  hrsReal:"6",   vlrServico:"R$ 1.200,00", vlrTotal:"R$ 1.200,00" },
+        { codItem:"IT-002", tipo:"Serviço",  descricao:"Relatório de Segurança",       maquina:"Toda a Infraestrutura",dtCriacao:"09/04/2026", dtSolucao:"12/04/2026", tecnico:"João Silva",   codBarras:"7891000000091", produto:"—",               respExec:"João Silva",   cadastrado:"admin", hrsEst:"4",  hrsReal:"4",   vlrServico:"R$ 800,00",   vlrTotal:"R$ 800,00"   },
+        { codItem:"IT-003", tipo:"Serviço",  descricao:"Implementação de Correções",   maquina:"Toda a Infraestrutura",dtCriacao:"10/04/2026", dtSolucao:"12/04/2026", tecnico:"João Silva",   codBarras:"7891000000092", produto:"—",               respExec:"João Silva",   cadastrado:"admin", hrsEst:"6",  hrsReal:"5",   vlrServico:"R$ 1.000,00", vlrTotal:"R$ 1.000,00" },
+    ],
+};
+
+const DB = {
+    async buscarOS(filtros = {}) {
+        return _dadosOS;
+    },
+    async buscarItensPorOS(codigoOS) {
+        return _dadosItens[codigoOS] || [];
+    },
+    async salvarOS(os) {
+        console.log("salvarOS →", os);
+        return { sucesso: true };
+    },
+    async atualizarOS(codigoOS, dados) {
+        console.log("atualizarOS →", codigoOS, dados);
+        return { sucesso: true };
+    },
+    async excluirOS(codigoOS) {
+        console.log("excluirOS →", codigoOS);
+        return { sucesso: true };
+    },
+};
+
+let osSelecionada = null;
+
+async function carregarOS(filtros = {}) {
+    const dados = await DB.buscarOS(filtros);
+    renderizarGrid(dados);
+}
+
+function renderizarGrid(dados){
+    const tbody = document.getElementById("tbodyOS");
+    if(!tbody) return;
+
+    const grupos = new Map();
+    dados.forEach(row => {
+        if(!grupos.has(row.cliente)) grupos.set(row.cliente, []);
+        grupos.get(row.cliente).push(row);
+    });
+
+    tbody.innerHTML = "";
+    grupoToggle.clear();
+    grupoLinhas.clear();
+
+    grupos.forEach((linhas, cliente) => {
+        if(!grupoAberto.has(cliente)) grupoAberto.set(cliente, true);
+        const aberto = grupoAberto.get(cliente);
+
+        const totalValor = linhas.reduce((acc, r) => {
+            const num = parseFloat(r.valor.replace("R$","").replace(/\./g,"").replace(",",".").trim()) || 0;
+            return acc + num;
+        }, 0);
+        const totalFmt = totalValor.toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+
+        const trGrupo = document.createElement("tr");
+        trGrupo.className = "grupo-row";
+        const toggle = document.createElement("span");
+        toggle.className = "grupo-toggle";
+        toggle.innerHTML = aberto
+            ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+        const tdGrupo = document.createElement("td");
+        tdGrupo.colSpan = 10;
+        tdGrupo.appendChild(toggle);
+        tdGrupo.insertAdjacentHTML("beforeend",
+            `<strong>${cliente}</strong><span class="grupo-info">${linhas.length} OS · Total: ${totalFmt}</span>`);
+        trGrupo.appendChild(tdGrupo);
+        trGrupo.addEventListener("click", () => toggleGrupo(cliente));
+        tbody.appendChild(trGrupo);
+        grupoToggle.set(cliente, toggle);
+
+        const trsDoGrupo = [];
+        linhas.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.className = "os-row" + (aberto ? "" : " grupo-oculto");
+            tr.dataset.codigoOS = row.codigo;
+            tr.innerHTML = `
+                <td>${row.codigo}</td>
+                <td>${row.codUnit}</td>
+                <td>${row.descricao}</td>
+                <td>${row.contato}</td>
+                <td>${row.dtCriacao}</td>
+                <td>${row.dtPrometida}</td>
+                <td>${row.tecnico}</td>
+                <td>${row.horas}h</td>
+                <td>${row.respExec}</td>
+                <td>${row.valor}</td>`;
+            tr.addEventListener("click", () => selecionarOS(tr, row));
+            tbody.appendChild(tr);
+            trsDoGrupo.push(tr);
+        });
+        grupoLinhas.set(cliente, trsDoGrupo);
+    });
+}
+
+function toggleGrupo(cliente){
+    const novoEstado = !grupoAberto.get(cliente);
+    grupoAberto.set(cliente, novoEstado);
+    const seta = grupoToggle.get(cliente);
+    if(seta) seta.innerHTML = novoEstado
+        ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+    const trs = grupoLinhas.get(cliente) || [];
+    trs.forEach(tr => tr.classList.toggle("grupo-oculto", !novoEstado));
+}
+
+async function selecionarOS(tr, osObj){
+    document.querySelectorAll(".os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
+    tr.classList.add("row-selecionada");
+    osSelecionada = osObj;
+
+    const itens = await DB.buscarItensPorOS(osObj.codigo);
+    renderizarItens(itens, osObj.codigo);
+}
+
+function selecionarLinha(tr){
+    document.querySelectorAll(".os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
+    tr.classList.add("row-selecionada");
+}
+
+let resizeInferiorIniciado = false;
+function renderizarItens(itens, codigoOS){
+    const tbody = document.querySelector(".grid-inferior tbody");
+    if(!tbody) return;
+    tbody.innerHTML = "";
+
+    if(!itens || itens.length === 0){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="15" style="text-align:center;color:#6b7280;padding:16px;">
+            Nenhum item encontrado para ${codigoOS}</td>`;
+        tbody.appendChild(tr);
+        return;
+    }
+
+    itens.forEach(it => {
+        const tr = document.createElement("tr");
+        tr.className = "os-row";
+        tr.innerHTML = `
+            <td>${it.codItem}</td>
+            <td>${it.tipo}</td>
+            <td>${it.descricao}</td>
+            <td>${it.maquina}</td>
+            <td>${it.dtCriacao}</td>
+            <td>${it.dtSolucao}</td>
+            <td>${it.tecnico}</td>
+            <td>${it.codBarras}</td>
+            <td>${it.produto}</td>
+            <td>${it.respExec}</td>
+            <td>${it.cadastrado}</td>
+            <td>${it.hrsEst}h</td>
+            <td>${it.hrsReal}h</td>
+            <td>${it.vlrServico}</td>
+            <td>${it.vlrTotal}</td>`;
+        tr.addEventListener("click", () => {
+            document.querySelectorAll(".grid-inferior .os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
+            tr.classList.add("row-selecionada");
+            itemSelecionado = it;
+            trItemSelecionado = tr;
+        });
+        tbody.appendChild(tr);
+    });
+
+    if(!resizeInferiorIniciado){
+        resizeInferiorIniciado = true;
+        setTimeout(() => iniciarResizeColunas(".grid-inferior table"), 50);
+    }
+}
+
+
+async function excluirOS(){
+    if(!osSelecionada){
+        Swal.fire({
+            icon: "warning",
+            title: "Atenção",
+            text: "Selecione uma OS para excluir.",
+            confirmButtonColor: "#2d7dff",
+            scrollbarPadding: false
+        });
+        return;
+    }
+
+    const result = await Swal.fire({
+        icon: "warning",
+        title: "Excluir OS",
+        html: `Deseja excluir a OS <strong>${osSelecionada.codigo}</strong>?<br><small>${osSelecionada.descricao}</small>`,
+        showCancelButton: true,
+        confirmButtonText: "Sim, excluir",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        reverseButtons: true,
+        scrollbarPadding: false
+    });
+
+    if(!result.isConfirmed) return;
+
+    await DB.excluirOS(osSelecionada.codigo);
+
+    const idx = _dadosOS.findIndex(o => o.codigo === osSelecionada.codigo);
+    if(idx !== -1) _dadosOS.splice(idx, 1);
+
+    if(_dadosItens[osSelecionada.codigo]) delete _dadosItens[osSelecionada.codigo];
+
+    osSelecionada = null;
+    document.querySelector(".grid-inferior tbody").innerHTML = "";
+
+    await carregarOS();
+
+    Swal.fire({
+        icon: "success",
+        title: "OS excluída",
+        timer: 1800,
+        showConfirmButton: false,
+        scrollbarPadding: false
+    });
+}
+
+let itemSelecionado = null;
+let trItemSelecionado = null;
+
+async function excluirItem(){
+    if(!osSelecionada){
+        Swal.fire({
+            icon: "warning",
+            title: "Atenção",
+            text: "Selecione uma OS primeiro.",
+            confirmButtonColor: "#2d7dff",
+            scrollbarPadding: false
+        });
+        return;
+    }
+
+    if(!itemSelecionado){
+        Swal.fire({
+            icon: "warning",
+            title: "Atenção",
+            text: "Selecione um item para excluir.",
+            confirmButtonColor: "#2d7dff",
+            scrollbarPadding: false
+        });
+        return;
+    }
+
+    const result = await Swal.fire({
+        icon: "warning",
+        title: "Excluir Item",
+        html: `Deseja excluir o item <strong>${itemSelecionado.codItem}</strong>?<br><small>${itemSelecionado.descricao}</small>`,
+        showCancelButton: true,
+        confirmButtonText: "Sim, excluir",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        reverseButtons: true,
+        scrollbarPadding: false
+    });
+
+    if(!result.isConfirmed) return;
+
+    const itens = _dadosItens[osSelecionada.codigo];
+    if(itens){
+        const idx = itens.findIndex(i => i.codItem === itemSelecionado.codItem);
+        if(idx !== -1) itens.splice(idx, 1);
+    }
+
+    if(trItemSelecionado) trItemSelecionado.remove();
+    itemSelecionado = null;
+    trItemSelecionado = null;
+
+    Swal.fire({
+        icon: "success",
+        title: "Item excluído",
+        timer: 1800,
+        showConfirmButton: false,
+        scrollbarPadding: false
+    });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await carregarOS();
+    iniciarResizePainelInferior();
+    setTimeout(() => {
+        iniciarResizeColunas(".grid-principal table");
+    }, 50);
+});
+
+function iniciarResizePainelInferior(){
+    const handle  = document.getElementById("painel-inferior-handle");
+    const painel  = document.getElementById("painel-inferior");
+    if(!handle || !painel) return;
+
+    const ALTURA_MIN = 60;
+    const ALTURA_MAX = () => document.querySelector(".workspace-sistema").getBoundingClientRect().height - 80;
+
+    let startY = 0;
+    let startH = 0;
+
+    handle.addEventListener("mousedown", e => {
+        e.preventDefault();
+        startY = e.clientY;
+        startH = painel.getBoundingClientRect().height;
+
+        handle.classList.add("ativo");
+        document.body.style.cursor    = "row-resize";
+        document.body.style.userSelect = "none";
+
+        function onMove(e){
+            const delta  = startY - e.clientY;
+            const novaH  = Math.min(ALTURA_MAX(), Math.max(ALTURA_MIN, startH + delta));
+            painel.style.height = novaH + "px";
+        }
+
+        function onUp(){
+            handle.classList.remove("ativo");
+            document.body.style.cursor     = "";
+            document.body.style.userSelect = "";
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup",   onUp);
+        }
+
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup",   onUp);
+    });
+}
+function iniciarResizeColunas(seletor){
+    const table = document.querySelector(seletor);
+    if(!table) return;
+
+    const ths = Array.from(table.querySelectorAll("thead th"));
+
+    const larguras = ths.map(th => {
+        const w = th.getBoundingClientRect().width;
+        return w > 0 ? w : 80;
+    });
+
+    ths.forEach((th, i) => {
+        th.style.width = larguras[i] + "px";
+    });
+
+    table.style.tableLayout = "fixed";
+
+    ths.forEach(th => {
+        if(th.querySelector(".col-resize-handle")) return;
+
+        const handle = document.createElement("div");
+        handle.className = "col-resize-handle";
+        th.appendChild(handle);
+
+        let startX = 0, startW = 0;
+
+        handle.addEventListener("mousedown", e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            startX = e.pageX;
+            startW = th.getBoundingClientRect().width;
+            handle.classList.add("ativo");
+            document.body.style.cursor     = "col-resize";
+            document.body.style.userSelect = "none";
+
+            function onMove(e){
+                const nova = Math.max(40, startW + (e.pageX - startX));
+                th.style.width = nova + "px";
+            }
+            function onUp(){
+                handle.classList.remove("ativo");
+                document.body.style.cursor     = "";
+                document.body.style.userSelect = "";
+                document.removeEventListener("mousemove", onMove);
+                document.removeEventListener("mouseup",   onUp);
+            }
+
+            document.addEventListener("mousemove", onMove);
+            document.addEventListener("mouseup",   onUp);
+        });
+    });
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     const btnSair = document.getElementById("btnSair");
@@ -752,20 +1279,50 @@
 
     let maximizado = false;
 
-    function abrirTelaCad(){
-        modal.style.display = "block";
+    function _abrirModal(){
+        modal.style.display   = "block";
         overlay.style.display = "block";
-
         modal.classList.remove("maximizado");
-
-        modal.style.position = "fixed";
-        modal.style.width = "640px";
-        modal.style.height = "auto";
-        modal.style.left = "50%";
-        modal.style.top = "80px";
+        modal.style.position  = "fixed";
+        modal.style.width     = "640px";
+        modal.style.height    = "auto";
+        modal.style.left      = "50%";
+        modal.style.top       = "80px";
         modal.style.transform = "translateX(-50%)";
-
         maximizado = false;
+    }
+
+    function abrirTelaCad(){
+        document.getElementById("erpTitulo").textContent = "Cadastro de Ordem de Serviço";
+        document.querySelectorAll("#erpModal input").forEach(i => i.value = "");
+        _abrirModal();
+    }
+
+    function abrirTelaEdicao(){
+        if(!osSelecionada || typeof osSelecionada !== "object"){
+            Swal.fire({
+                icon: "warning",
+                title: "Atenção",
+                text: "Selecione uma OS para editar.",
+                confirmButtonColor: "#2d7dff",
+                scrollbarPadding: false
+            });
+            return;
+        }
+        document.getElementById("erpTitulo").textContent    = "Edição de Ordem de Serviço";
+        document.getElementById("cad-codigo").value         = osSelecionada.codigo      || "";
+        document.getElementById("cad-codUnit").value        = osSelecionada.codUnit     || "";
+        document.getElementById("cad-cliente").value        = osSelecionada.cliente     || "";
+        document.getElementById("cad-tecnico").value        = osSelecionada.tecnico     || "";
+        document.getElementById("cad-servico").value        = osSelecionada.servico     || "";
+        document.getElementById("cad-descricao").value      = osSelecionada.descricao   || "";
+        document.getElementById("cad-dtCriacao").value      = osSelecionada.dtCriacao   || "";
+        document.getElementById("cad-dtPrometida").value    = osSelecionada.dtPrometida || "";
+        document.getElementById("cad-horas").value          = osSelecionada.horas       || "";
+        document.getElementById("cad-respExec").value       = osSelecionada.respExec    || "";
+        document.getElementById("cad-valor").value          = osSelecionada.valor       || "";
+        document.getElementById("cad-contato").value        = osSelecionada.contato     || "";
+        _abrirModal();
     }
     function fecharTelaCad(){
         modal.style.display = "none";
@@ -908,13 +1465,93 @@
         };
     };
 
-    function limparAuditoria(){
-        modalAud.querySelectorAll("input").forEach(i => i.value = "");
+    const _dadosAuditoria = [
+        { estacao:"loginSis",  evento:"Login",    data:"01/04/2026 08:02", usuario:"admin",        descricao:"Login realizado com sucesso na estação PC-ADM-01." },
+        { estacao:"addOS",  evento:"Inclusão",  data:"01/04/2026 08:15", usuario:"admin",        descricao:"OS-0001 criada: Manutenção de Servidor — Acme Tecnologia." },
+        { estacao:"loginSis",  evento:"Login",    data:"01/04/2026 09:00", usuario:"joao.silva",   descricao:"Login realizado com sucesso na estação PC-TEC-02." },
+        { estacao:"editOS",  evento:"Alteração", data:"01/04/2026 09:45", usuario:"joao.silva",   descricao:"OS-0001 atualizada: total de horas alterado de 3h para 4h." },
+        { estacao:"addOS",  evento:"Inclusão",  data:"02/04/2026 08:30", usuario:"admin",        descricao:"OS-0002 criada: Instalação de Software — Acme Tecnologia." },
+        { estacao:"loginSis",  evento:"Login",    data:"02/04/2026 09:10", usuario:"carlos.melo",  descricao:"Login realizado com sucesso na estação PC-TEC-03." },
+        { estacao:"editOS",  evento:"Alteração", data:"02/04/2026 10:20", usuario:"carlos.melo",  descricao:"OS-0002 atualizada: técnico responsável alterado para Carlos Melo." },
+        { estacao:"addOS",  evento:"Inclusão",  data:"03/04/2026 08:05", usuario:"admin",        descricao:"OS-0003 criada: Troca de Disco SSD — Acme Tecnologia." },
+        { estacao:"editOS",  evento:"Alteração", data:"03/04/2026 11:00", usuario:"joao.silva",   descricao:"OS-0003 atualizada: data prometida alterada para 08/04/2026." },
+        { estacao:"addOS",  evento:"Inclusão",  data:"01/04/2026 14:00", usuario:"admin",        descricao:"OS-0004 criada: Configuração de Rede — Bella Distribuidora." },
+        { estacao:"loginSis",  evento:"Login",    data:"04/04/2026 08:00", usuario:"ana.rodrigues", descricao:"Login realizado com sucesso na estação PC-TEC-04." },
+        { estacao:"editOS",  evento:"Alteração", data:"04/04/2026 09:30", usuario:"ana.rodrigues", descricao:"OS-0004 atualizada: valor total ajustado para R$ 1.200,00." },
+        { estacao:"addOS",  evento:"Inclusão",  data:"04/04/2026 10:00", usuario:"admin",        descricao:"OS-0005 criada: Suporte Remoto — Bella Distribuidora." },
+        { estacao:"editOS",  evento:"Alteração", data:"04/04/2026 15:00", usuario:"carlos.melo",  descricao:"OS-0005 finalizada: status alterado para Concluído." },
+        { estacao:"deletOS",  evento:"Exclusão",  data:"05/04/2026 09:00", usuario:"admin",        descricao:"Registro duplicado OS-0004-B excluído pelo administrador." },
+        { estacao:"logoutSis",  evento:"Logout",   data:"05/04/2026 18:00", usuario:"admin",        descricao:"Logout realizado na estação PC-ADM-01." },
+        { estacao:"logoutSis",  evento:"Logout",   data:"05/04/2026 17:45", usuario:"joao.silva",   descricao:"Logout realizado na estação PC-TEC-02." },
+        { estacao:"logoutSis",  evento:"Logout",   data:"05/04/2026 17:50", usuario:"ana.rodrigues", descricao:"Logout realizado na estação PC-TEC-04." },
+        { estacao:"loginSis",  evento:"Login",    data:"06/04/2026 08:01", usuario:"admin",        descricao:"Login realizado com sucesso na estação PC-ADM-01." },
+        { estacao:"addOS",  evento:"Inclusão",  data:"06/04/2026 08:20", usuario:"admin",        descricao:"OS-0010 criada: Auditoria de Segurança — DataFlex Sistemas." },
+    ];
+
+    let audDadosFiltrados = [..._dadosAuditoria];
+    let audResizeIniciado = false;
+    let audItemSelecionado = null;
+
+    function renderizarAuditoria(dados){
+        const tbody = modalAud.querySelector(".tabela-auditoria tbody");
+        if(!tbody) return;
+        tbody.innerHTML = "";
+
+        dados.forEach(reg => {
+            const tr = document.createElement("tr");
+            tr.className = "aud-row";
+            tr.innerHTML = `
+                <td>${reg.estacao}</td>
+                <td><span class="aud-badge aud-badge-${reg.evento.toLowerCase()}">${reg.evento}</span></td>
+                <td>${reg.data}</td>
+                <td>${reg.usuario}</td>`;
+            tr.addEventListener("click", () => {
+                tbody.querySelectorAll(".aud-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
+                tr.classList.add("row-selecionada");
+                audItemSelecionado = reg;
+                modalAud.querySelector(".auditoria-descricao textarea").value = reg.descricao;
+            });
+            tbody.appendChild(tr);
+        });
+
+        if(!audResizeIniciado){
+            audResizeIniciado = true;
+            setTimeout(() => iniciarResizeColunas(".tabela-auditoria"), 50);
+        }
     }
 
     function filtrarAuditoria(){
-        console.log("Filtrando auditoria...");
+        const inputs = Array.from(modalAud.querySelectorAll(".erp-grid input"));
+        const evento   = inputs[2] ? inputs[2].value.trim().toLowerCase() : "";
+        const usuario  = inputs[3] ? inputs[3].value.trim().toLowerCase() : "";
+        const pesquisa = inputs[6] ? inputs[6].value.trim().toLowerCase() : "";
+
+        audDadosFiltrados = _dadosAuditoria.filter(r => {
+            if(evento   && !r.evento.toLowerCase().includes(evento))   return false;
+            if(usuario  && !r.usuario.toLowerCase().includes(usuario))  return false;
+            if(pesquisa && !r.descricao.toLowerCase().includes(pesquisa) && !r.estacao.toLowerCase().includes(pesquisa)) return false;
+            return true;
+        });
+        renderizarAuditoria(audDadosFiltrados);
     }
+
+    function limparAuditoria(){
+        modalAud.querySelectorAll("input").forEach(i => i.value = "");
+        audDadosFiltrados = [..._dadosAuditoria];
+        renderizarAuditoria(audDadosFiltrados);
+        modalAud.querySelector(".auditoria-descricao textarea").value = "";
+        audItemSelecionado = null;
+    }
+
+    const _abrirAudOrig = abrirAuditoria;
+    abrirAuditoria = function(){
+        _abrirAudOrig();
+        renderizarAuditoria(audDadosFiltrados);
+    };
+
+    modalAud.querySelectorAll(".erp-grid input").forEach(inp => {
+        inp.addEventListener("input", filtrarAuditoria);
+    });
 </script>
 </body>
 </html>
