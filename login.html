@@ -8,6 +8,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="assets/css/login.css">
     <link rel="icon" type="image/png" href="assets/icon.png">
+    <style>
+        /* Garante cor branca no link independente do CSS externo */
+        .link-recuperar {
+            color: #ffffff !important;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -35,7 +41,11 @@
             </div>
             <button type="submit" class="btn">Entrar</button>
         </form>
-        <div class="forgot">Esqueci minha senha</div>
+        <div class="forgot">
+            <a href="recuperar.html" class="link-recuperar">
+                Esqueci minha senha
+            </a>
+        </div>
         <div class="cookies">
             Usamos cookies apenas para segurança, sem compartilhamento de informações privadas.
             <br>Ao continuar, você concorda com seu uso.

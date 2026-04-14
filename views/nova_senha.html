@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../assets/css/recuperacao.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Definir nova senha</h2>
+        <hr class="divider">
+        <div class="info" style="margin-bottom:25px;">
+            <p style="margin-bottom:8px;">
+                Informe a nova senha e confirme para concluir a recuperação de acesso.
+            </p>
+            <p style="margin-bottom:8px; opacity:0.9;">
+                Por segurança, escolha uma senha forte e única para proteger sua conta. 
+                <p>A nova senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas,  
+                    minúsculas, números e caracteres especiais por exemplo (!@#$%&*).</p>
+            </p>
+        </div>
+        <form id="senhaForm">
+            <div class="input-group password-group">
+            <input type="password" id="senha" name="senha" placeholder="Nova senha">
+            <button type="button" class="toggle-password"
+                onmousedown="mostrarSenha('senha')"
+                onmouseup="esconderSenha('senha')"
+                onmouseleave="esconderSenha('senha')">👁</button>
+            </div>
+            <div class="input-group password-group">
+                <input type="password" id="confirmar" name="confirmar" placeholder="Confirmar senha">
+                <button type="button" class="toggle-password"
+                onmousedown="mostrarSenha('confirmar')"
+                onmouseup="esconderSenha('confirmar')"
+                onmouseleave="esconderSenha('confirmar')">👁</button>
+            </div>
+            <button class="btn">Alterar senha</button>
+        </form>
+        <div class="info">
+            Após alterar a senha você será redirecionado ao login.
+        </div>
+    </div>
+<script src="../assets/js/script.js" defer></script>
+</body>
+</html>

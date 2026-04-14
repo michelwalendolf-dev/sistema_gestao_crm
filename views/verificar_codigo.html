@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificar código</title>
+    <link rel="stylesheet" href="../assets/css/recuperacao.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<div class="container">
+    <h2>Verificação de Segurança</h2>
+    <hr class="divider">
+    <div class="info" style="margin-bottom:25px;">
+        <p style="margin-bottom:8px;">
+            Para continuar, informe o código enviado para:
+        </p>
+        <p style="font-weight:600; font-size:15px; opacity:0.9;">
+            <span id="emailUsuario"></span>
+        </p>
+        <br>
+        <div>
+            <p style="opacity:0.9;">
+                Por segurança, nunca compartilhe este código com ninguém.
+                A equipe da WolfTech nunca solicitará este código.
+            </p>
+        </div>
+    </div>
+    <form id="formVerificar">
+        <div class="input-group">
+            <input 
+                type="text" 
+                name="codigo" 
+                placeholder="Digite o código aqui!"
+                maxlength="6"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                required
+                autocomplete="off"
+            >
+        </div>
+        <button class="btn">Validar Código</button>
+    </form>
+    <div class="reenviar">
+        <span id="contador">Reenviar código em 35s</span><br>
+        <a id="reenviarBtn" href="#">Solicitar novo código</a>
+    </div>
+    <div style="margin-top:22px; font-size:13px; opacity:0.6; text-align:center;">
+        Não recebeu o código? Verifique sua caixa de spam.
+    </div>
+</div>
+<script src="../assets/js/script.js" defer></script>
+</body>
+</html>

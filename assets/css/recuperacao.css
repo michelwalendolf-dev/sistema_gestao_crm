@@ -1,0 +1,152 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+height:100vh;
+margin:0;
+background: radial-gradient(circle at top,#0b1b2b,#081421);
+overflow:hidden;
+}
+
+.container{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%, -50%);
+width:420px;
+background: linear-gradient(180deg,#0b1f33,#081421);
+padding:40px;
+border-radius:12px;
+box-shadow:0 0 40px rgba(0,0,0,0.6);
+color:#fff;
+}
+
+h2{
+text-align:center;
+margin-bottom:25px;
+font-weight:500;
+}
+
+.divider{
+width:100%;
+height:1px;
+background:#3e5872;
+margin-bottom:20px;
+border:none;
+}
+
+.input-group{
+margin-bottom:20px;
+}
+
+.input-group input{
+width:100%;
+padding:14px;
+border-radius:6px;
+border:1px solid #1e3a56;
+background:#0e2438;
+font-size:15px;
+color:#fff;
+outline:none;
+transition:0.3s;
+}
+
+.input-group input:focus{
+border-color:#2d7dff;
+box-shadow:0 0 8px #2d7dff80;
+}
+
+.btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:6px;
+background:#1f6bff;
+color:#fff;
+font-size:16px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.btn:hover{
+background:#2d7dff;
+box-shadow:0 0 12px #2d7dff80;
+}
+
+.password-group{
+position:relative;
+}
+
+.password-group input{
+padding-right:45px;
+}
+
+.toggle-password{
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+background:none;
+border:none;
+color:#304e6b;
+font-size:22px;
+cursor:pointer;
+}
+
+.toggle-password:hover{
+color:#3c5a77;
+}
+
+.info{
+margin-top:20px;
+text-align:center;
+font-size:14px;
+opacity:0.7;
+}
+
+html, body{
+height:100% !important;
+overflow:hidden !important;
+}
+
+body.swal2-shown{
+overflow:hidden !important;
+padding-right:0 !important;
+}
+
+html.swal2-height-auto{
+height:100% !important;
+}
+
+.swal2-container{
+background: rgba(0,0,0,0.75) !important;
+}
+
+.swal2-popup{
+border-radius:12px !important;
+}
+
+.reenviar{
+    margin-top:20px;
+    font-size:14px;
+    color:#8ea3b8;
+    text-align:center;
+}
+
+#reenviarBtn{
+    color:#4da3ff;
+    cursor:pointer;
+    text-decoration:none;
+    font-weight:500;
+    display:none;
+    transition:0.2s;
+}
+
+#reenviarBtn:hover{
+    text-decoration:underline;
+    color:#7fb9ff;
+}
