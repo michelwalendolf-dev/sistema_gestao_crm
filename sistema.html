@@ -183,7 +183,7 @@
         </div>
         <div class="dropdown-sistema" id="dropdownSistema">
             <a href="#" class="btn-dropdown">Administração</a>
-            <a href="#" class="btn-dropdown">ERP</a>
+            <a href="#" class="btn-dropdown">Financeiro</a>
             <a href="#" class="btn-dropdown">Relatórios</a>
             <a href="#" class="btn-dropdown">Configurações Técnicas</a>
         </div>
@@ -1190,6 +1190,9 @@ function iniciarResizeColunas(seletor){
 
     ths.forEach(th => {
         if(th.querySelector(".col-resize-handle")) return;
+
+        /* Garante espaço para o handle não sobrepor o texto */
+        th.style.paddingRight = "14px";
 
         const handle = document.createElement("div");
         handle.className = "col-resize-handle";

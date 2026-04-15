@@ -173,7 +173,7 @@ body{
 .barra-acoes{
     width: 85%;
     height: 32px;
-    margin: 1px 0;      
+    margin: 1px 0;
     display: flex;
     align-items: center;
     border: 1px solid #737373;
@@ -183,7 +183,7 @@ body{
 }
 
 .barra-acoes input{
-    width: 85%;            
+    width: 85%;
     height: 28px;
     padding-left: 8px;
     font-size: 14px;
@@ -192,6 +192,19 @@ body{
     background: #253150;
     border: none;
     outline: none;
+}
+
+.container-datas input{
+    width: 85%;
+    height: 28px;
+    padding-left: 8px;
+    font-size: 14px;
+    align-items: center;
+    color:#fff;
+    background: #253150;
+    border: none;
+    outline: none;
+    font-size: 12px;
 }
 
 .grupo-botoes{
@@ -223,7 +236,6 @@ body{
 .grupo-botoes button:hover{
     background: #c5d9ea;
 }
-
 
 .btn-busca{
     width: 32px;
@@ -688,6 +700,9 @@ body.swal2-height-auto {
     padding:6px;
     text-align:left;
     font-weight:500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .abas{
@@ -887,6 +902,7 @@ body.swal2-height-auto {
     position: relative;
     white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tabela-auditoria td{
@@ -894,6 +910,8 @@ body.swal2-height-auto {
     border-top:1px solid #59678b;
     font-size:12px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: #cfd8e3;
 }
 
@@ -924,7 +942,7 @@ body.swal2-height-auto {
     letter-spacing: 0.3px;
 }
 
-.aud-badge-login     { background: #1a4d2e; color: #4ade80; border: 1px solid #22543d; }
+.aud-badge-login     { background: #1a4d2e; color: #4ade80; border: 1px solid #1c8536; }
 .aud-badge-logout    { background: #2d2d2d; color: #9ca3af; border: 1px solid #4b5563; }
 .aud-badge-inclusão  { background: #1e3a5f; color: #60a5fa; border: 1px solid #2563eb; }
 .aud-badge-alteração { background: #3b2f00; color: #fbbf24; border: 1px solid #92400e; }
@@ -984,6 +1002,7 @@ body.swal2-height-auto {
     border-radius: 2px;
     background: #3a5080;
     transition: background 0.15s, width 0.15s;
+    overflow:hidden;
 }
 
 .painel-inferior-handle:hover,
@@ -1015,21 +1034,43 @@ body.swal2-height-auto {
     position: absolute;
     right: 0;
     top: 0;
-    width: 5px;
+    width: 12px;
     height: 100%;
     cursor: col-resize;
     z-index: 1;
-    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7a9fd4;
+    font-size: 11px;
+    line-height: 1;
+    user-select: none;
+    transition: background 0.15s, color 0.15s;
+    overflow: visible;
+}
+
+.col-resize-handle::after {
+    content: "⋮";
+    pointer-events: none;
+    opacity: 0.5;
 }
 
 .col-resize-handle:hover,
 .col-resize-handle.ativo{
     background: #4a7fd4;
+    color: #fff;
+}
+
+.col-resize-handle:hover::after,
+.col-resize-handle.ativo::after {
+    opacity: 1;
 }
 .grid-principal td{
     border: 1px solid #2a3a5c;
     padding: 5px 7px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 12px;
     color: #cfd8e3;
 }
@@ -1038,6 +1079,8 @@ body.swal2-height-auto {
     border: 1px solid #2a3a5c;
     padding: 5px 7px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 12px;
     color: #cfd8e3;
 }
