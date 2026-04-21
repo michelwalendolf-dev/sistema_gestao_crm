@@ -1,5 +1,4 @@
 function logout() {
-    console.log("logout clicado");
     Swal.fire({
         title: "Sair do Sistema",
         text: "Confirma logout do sistema?",
@@ -9,15 +8,12 @@ function logout() {
         cancelButtonColor: "#3498db",
         confirmButtonText: "Sim",
         cancelButtonText: "Não",
-        backdrop: 'transparent'
-    }).then((result) => {
+        backdrop: "transparent"
+    }).then(result => {
         if (result.isConfirmed) {
-
-            fetch("../actions/logout.php")
-            .then(() => {
+            fetch("../actions/logout.php").then(() => {
                 window.location.href = "../views/login.html";
             });
-
         }
     });
 }
@@ -25,47 +21,43 @@ function logout() {
 function openMenu() {
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
-    if(sidebar) sidebar.style.left = "60px";
-    if(overlay) overlay.style.display = "block";
+    if (sidebar) sidebar.style.left = "60px";
+    if (overlay) overlay.style.display = "block";
 }
 
 function closeMenu() {
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
-    if(sidebar) sidebar.style.left = "-250px";
-    if(overlay) overlay.style.display = "none";
+    if (sidebar) sidebar.style.left = "-250px";
+    if (overlay) overlay.style.display = "none";
 }
 
 document.querySelectorAll("#sidebar a").forEach(link => {
-    link.addEventListener("click", () => {
-        closeMenu();
-    });
+    link.addEventListener("click", closeMenu);
 });
 
 function mostrarSenha(id = "senha") {
     const campo = document.getElementById(id);
-    if(campo) campo.type = "text";
+    if (campo) campo.type = "text";
 }
 
 function esconderSenha(id = "senha") {
     const campo = document.getElementById(id);
-    if(campo) campo.type = "password";
+    if (campo) campo.type = "password";
 }
 
-
-document.addEventListener("DOMContentLoaded", function() {
-
+document.addEventListener("DOMContentLoaded", function () {
     const settingsIcon = document.querySelector(".settings-icon");
     const settingsMenu = document.getElementById("settingsMenu");
 
     if (settingsIcon && settingsMenu) {
-        settingsIcon.addEventListener("click", function(e) {
+        settingsIcon.addEventListener("click", function (e) {
             e.stopPropagation();
             settingsMenu.classList.toggle("active");
             settingsIcon.classList.toggle("rotate");
         });
 
-        document.addEventListener("click", function(e) {
+        document.addEventListener("click", function (e) {
             if (!settingsMenu.contains(e.target)) {
                 settingsMenu.classList.remove("active");
                 settingsIcon.classList.remove("rotate");
@@ -80,9 +72,9 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    const formLogin = document.getElementById("formLogin"); 
+    const formLogin = document.getElementById("formLogin");
     if (formLogin) {
-        formLogin.addEventListener("submit", async function(e) {
+        formLogin.addEventListener("submit", async function (e) {
             e.preventDefault();
             const resposta = await fetch("../actions/login.php", {
                 method: "POST",
@@ -108,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const formRecuperar = document.getElementById("formRecuperar");
     if (formRecuperar) {
-        formRecuperar.addEventListener("submit", async function(e) {
+        formRecuperar.addEventListener("submit", async function (e) {
             e.preventDefault();
             const req = await fetch("../actions/enviar_codigo.php", {
                 method: "POST",
@@ -126,11 +118,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     window.location.href = "../views/verificar_codigo.html";
                 });
             } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Erro",
-                    text: res.mensagem
-                });
+                Swal.fire({ icon: "error", title: "Erro", text: res.mensagem });
             }
         });
     }
@@ -143,13 +131,14 @@ document.addEventListener("DOMContentLoaded", function() {
         fetch("../actions/verificar_codigo.php")
             .then(res => res.json())
             .then(data => {
-                if(emailUsuarioEl && data.email) {
+                if (emailUsuarioEl && data.email) {
                     emailUsuarioEl.innerText = data.email;
                     emailUsuarioGlobal = data.email;
                 }
-            }).catch(err => console.error("Erro ao buscar email:", err));
+            })
+            .catch(err => console.error("Erro ao buscar email:", err));
 
-        formVerificar.addEventListener("submit", async function(e) {
+        formVerificar.addEventListener("submit", async function (e) {
             e.preventDefault();
             const req = await fetch("../actions/verificar_codigo.php", {
                 method: "POST",
@@ -176,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (contador && btnReenviar) {
             const intervalo = setInterval(() => {
                 tempo--;
-                contador.innerText = "Reenviar código em " + tempo + "s";
+                contador.innerText = `Reenviar código em ${tempo}s`;
                 if (tempo <= 0) {
                     clearInterval(intervalo);
                     contador.style.display = "none";
@@ -184,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }, 1000);
 
-            btnReenviar.addEventListener("click", async function(e) {
+            btnReenviar.addEventListener("click", async function (e) {
                 e.preventDefault();
                 const formData = new FormData();
                 formData.append("email", emailUsuarioGlobal);
@@ -201,9 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         title: "Novo código enviado",
                         text: "Verifique seu e-mail.",
                         confirmButtonColor: "#2d7dff"
-                    }).then(() => {
-                        location.reload();
-                    });
+                    }).then(() => location.reload());
                 } else {
                     Swal.fire({
                         icon: "error",
@@ -218,16 +205,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const formSenha = document.getElementById("senhaForm");
     if (formSenha) {
-        formSenha.addEventListener("submit", async function(e) {
+        formSenha.addEventListener("submit", async function (e) {
             e.preventDefault();
             const senha = document.getElementById("senha").value;
             const confirmar = document.getElementById("confirmar").value;
 
             if (senha !== confirmar) {
-                Swal.fire({
-                    icon: "error",
-                    title: "As senhas não coincidem"
-                });
+                Swal.fire({ icon: "error", title: "As senhas não coincidem" });
                 return;
             }
 
@@ -248,184 +232,138 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
-
 });
 
-function atualizarHora(){
-    const agora = new Date()
-    let h = agora.getHours().toString().padStart(2,'0')
-    let m = agora.getMinutes().toString().padStart(2,'0')
-    let s = agora.getSeconds().toString().padStart(2,'0')
-    document.getElementById("hora").innerText = h+":"+m+":"+s
+function atualizarHora() {
+    const agora = new Date();
+    const h = agora.getHours().toString().padStart(2, "0");
+    const m = agora.getMinutes().toString().padStart(2, "0");
+    const s = agora.getSeconds().toString().padStart(2, "0");
+    document.getElementById("hora").innerText = `${h}:${m}:${s}`;
 }
 
-setInterval(atualizarHora,1000)
+setInterval(atualizarHora, 1000);
 
-function abrirCaixa(){
-    document.getElementById("telaCaixa").style.display="flex"
+function abrirCaixa() {
+    document.getElementById("telaCaixa").style.display = "flex";
 }
 
-function fecharCaixa(){
-    document.getElementById("telaCaixa").style.display="none"
+function fecharCaixa() {
+    document.getElementById("telaCaixa").style.display = "none";
 }
 
-function selecionarProduto(produto){
-    document.querySelectorAll(".produto").forEach(p=>{
-    p.classList.remove("selecionado")
-    })
-    produto.classList.add("selecionado")
-    const codigo = produto.querySelector(".linha1 span:first-child").innerText
-    const descricao = produto.querySelector(".linha1 span:last-child").innerText
-    const preco = produto.querySelector(".linha2 span:last-child").innerText
-    document.getElementById("descricaoProduto").innerText = descricao
-    document.getElementById("valorUnitario").innerText = "R$ "+preco
-    document.getElementById("resumoQtd").innerText = "1 X R$ "+preco
-    document.getElementById("resumoTotal").innerText = "R$ "+preco
+function selecionarProduto(produto) {
+    document.querySelectorAll(".produto").forEach(p => p.classList.remove("selecionado"));
+    produto.classList.add("selecionado");
 
+    const codigo = produto.querySelector(".linha1 span:first-child").innerText;
+    const descricao = produto.querySelector(".linha1 span:last-child").innerText;
+    const preco = produto.querySelector(".linha2 span:last-child").innerText;
+
+    document.getElementById("descricaoProduto").innerText = descricao;
+    document.getElementById("valorUnitario").innerText = `R$ ${preco}`;
+    document.getElementById("resumoQtd").innerText = `1 X R$ ${preco}`;
+    document.getElementById("resumoTotal").innerText = `R$ ${preco}`;
 }
 
-document.querySelectorAll(".produto").forEach(produto=>{
-    produto.addEventListener("click",function(){
-        selecionarProduto(this)
-    })
-    })
-    function adicionarProduto(codigo,descricao,preco){
-    const lista = document.querySelector(".pdv-lista")
-    let item = document.createElement("div")
-    item.className="produto"
-    item.innerHTML=`
+document.querySelectorAll(".produto").forEach(produto => {
+    produto.addEventListener("click", function () {
+        selecionarProduto(this);
+    });
+});
+
+function adicionarProduto(codigo, descricao, preco) {
+    const lista = document.querySelector(".pdv-lista");
+    const item = document.createElement("div");
+    item.className = "produto";
+    item.innerHTML = `
     <div class="linha1">
-    <span>${codigo}</span>
-    <span>${descricao}</span>
+        <span>${codigo}</span>
+        <span>${descricao}</span>
     </div>
     <div class="linha2">
-    <span>1 X UNID</span>
-    <span>${preco}</span>
-    </div>
-    `
-    item.addEventListener("click",function(){
-        selecionarProduto(item)
-    })
-    lista.appendChild(item)
+        <span>1 X UNID</span>
+        <span>${preco}</span>
+    </div>`;
+    item.addEventListener("click", function () {
+        selecionarProduto(item);
+    });
+    lista.appendChild(item);
 }
 
-function abrirModalProduto(){
-    const modal = document.getElementById("pdvModal")
-    modal.style.display="block"
-    setTimeout(()=>{
-    document.getElementById("codigoProdutoInput").focus()
-    },100)
+function abrirModalProduto() {
+    document.getElementById("pdvModal").style.display = "block";
+    setTimeout(() => document.getElementById("codigoProdutoInput").focus(), 100);
 }
 
-function fecharModalProduto(){
-    document.getElementById("pdvModal").style.display="none"
-    document.getElementById("codigoProdutoInput").value=""
+function fecharModalProduto() {
+    document.getElementById("pdvModal").style.display = "none";
+    document.getElementById("codigoProdutoInput").value = "";
 }
 
-document.addEventListener("keydown",function(e){
+document.addEventListener("keydown", function (e) {
+    if (e.key === "F8") {
+        e.preventDefault();
+        abrirModalProduto();
+    }
 
-if(e.key==="F8"){
+    if (e.key === "Enter") {
+        const modal = document.getElementById("pdvModal");
+        if (modal && modal.style.display === "block") {
+            prosseguirProduto();
+        }
+    }
+});
 
-e.preventDefault()
-abrirModalProduto()
+function prosseguirProduto() {
+    const codigo = document.getElementById("codigoProdutoInput").value;
+    const continuar = document.getElementById("continuarAdd").checked;
 
+    if (!codigo) return;
+
+    adicionarProduto(codigo, `Produto código ${codigo}`, "9,99");
+
+    if (!continuar) {
+        fecharModalProduto();
+    } else {
+        const input = document.getElementById("codigoProdutoInput");
+        input.value = "";
+        input.focus();
+    }
 }
 
-})
-
-function prosseguirProduto(){
-
-const codigo = document.getElementById("codigoProdutoInput").value
-const continuar = document.getElementById("continuarAdd").checked
-
-if(!codigo) return
-
-const descricao = "Produto código "+codigo
-const preco = "9,99"
-
-adicionarProduto(codigo,descricao,preco)
-
-if(!continuar){
-
-fecharModalProduto()
-
-}else{
-
-document.getElementById("codigoProdutoInput").value=""
-document.getElementById("codigoProdutoInput").focus()
-
+function removerProduto() {
+    const selecionado = document.querySelector(".produto.selecionado");
+    if (selecionado) selecionado.remove();
 }
 
+function multiploProduto() {
+    const selecionado = document.querySelector(".produto.selecionado");
+    if (!selecionado) return;
+
+    const linhaQtd = selecionado.querySelector(".linha2 span:first-child");
+    const qtd = parseInt(linhaQtd.innerText) + 1;
+    linhaQtd.innerText = `${qtd} X UNID`;
 }
 
-function removerProduto(){
+const modal = document.getElementById("pdvModalBox");
+const header = document.getElementById("pdvHeader");
 
-const selecionado = document.querySelector(".produto.selecionado")
+let offsetX = 0, offsetY = 0, isDragging = false;
 
-if(selecionado){
-selecionado.remove()
-}
+header.addEventListener("mousedown", function (e) {
+    isDragging = true;
+    offsetX = e.clientX - modal.offsetLeft;
+    offsetY = e.clientY - modal.offsetTop;
+});
 
-}
+document.addEventListener("mousemove", function (e) {
+    if (!isDragging) return;
+    modal.style.position = "fixed";
+    modal.style.left = `${e.clientX - offsetX}px`;
+    modal.style.top = `${e.clientY - offsetY}px`;
+});
 
-function multiploProduto(){
-
-const selecionado = document.querySelector(".produto.selecionado")
-
-if(!selecionado) return
-
-let linhaQtd = selecionado.querySelector(".linha2 span:first-child")
-
-let qtd = parseInt(linhaQtd.innerText)
-
-qtd++
-
-linhaQtd.innerText = qtd+" X UNID"
-
-}
-
-document.addEventListener("keydown",function(e){
-
-if(e.key==="Enter"){
-
-const modal = document.getElementById("pdvModal")
-
-if(modal.style.display==="block"){
-prosseguirProduto()
-}
-
-}
-
-})
-
-const modal = document.getElementById("pdvModalBox")
-const header = document.getElementById("pdvHeader")
-
-let offsetX = 0
-let offsetY = 0
-let isDragging = false
-
-header.addEventListener("mousedown",function(e){
-
-isDragging = true
-
-offsetX = e.clientX - modal.offsetLeft
-offsetY = e.clientY - modal.offsetTop
-
-})
-
-document.addEventListener("mousemove",function(e){
-
-if(!isDragging) return
-
-modal.style.position="fixed"
-modal.style.left = (e.clientX - offsetX)+"px"
-modal.style.top = (e.clientY - offsetY)+"px"
-
-})
-
-document.addEventListener("mouseup",function(){
-
-isDragging = false
-
-})
+document.addEventListener("mouseup", function () {
+    isDragging = false;
+});

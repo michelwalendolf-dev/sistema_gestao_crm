@@ -49,7 +49,7 @@ body.swal2-shown {
 .left{
     width:50%;
     height:100%;
-    background: url('../layout_login.png') no-repeat center center;
+    background: url('layout_login.png') no-repeat center center;
     background-size: cover;
     filter: drop-shadow(0px 1px 5px rgb(0, 0, 0));
 }
@@ -61,14 +61,20 @@ body.swal2-shown {
 .right{
     width:50%;
     background: linear-gradient(180deg, #0b1f33, #081421);
-    padding:30px;
+    padding: 40px 45px;
     color:#fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .right h2{
     text-align:center;
-    margin-bottom:30px;
+    margin-bottom:24px;
     font-weight:500;
+    font-size: 20px;
+    letter-spacing: 0.3px;
+    color: #e0eaf8;
 }
 
 .divider{
@@ -114,7 +120,7 @@ body.swal2-shown {
 
 .btn{
     width:100%;
-    padding:14px;
+    padding:15px;
     border:none;
     border-radius:6px;
     background:#1f6bff;
@@ -132,7 +138,7 @@ body.swal2-shown {
 
 .forgot{
     text-align:center;
-    margin-top:15px;
+    margin-top:18px;
     font-size:13px;
     opacity:0.7;
     cursor:pointer;
@@ -140,7 +146,8 @@ body.swal2-shown {
 }
 
 .cookies{
-    margin-top:58px;
+    margin-top: auto;
+    padding-top: 20px;
     background:#0e2438;
     padding:12px;
     border-radius: none;

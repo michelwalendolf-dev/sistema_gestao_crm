@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de OS</title>
     <link rel="stylesheet" href="assets/css/sistema.css">
-    <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="icon" type="image/png" href="assets\icon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
 <div class="container-top"> 
-    <img src="/assets/logosis2.png" alt="Logo" class="top-logo"> 
+    <img src="/assets/logo.png" alt="Logo" class="top-logo"> 
     <div class="user-info"> Usuário: 
         <span class="user-name">admin</span> 
     </div> 
@@ -24,18 +24,12 @@
     </div>
     <div class="barra-acoes">
         <label></label>
-        <input type="text" placeholder="Cliente">
+        <input type="text" id="filtro-cliente" placeholder="Cliente" oninput="aplicarFiltros()">
         <div class="grupo-botoes">
-            <button>✖</button>
+            <button onclick="limparFiltro('filtro-cliente')">✖</button>
             <button class="meio">⋯</button>
-            <button class="btn-busca">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
+            <button class="btn-busca" onclick="aplicarFiltros()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
@@ -43,18 +37,12 @@
         </div>
     </div>
     <div class="barra-acoes">
-        <input type="text" placeholder="Técnico">
+        <input type="text" id="filtro-tecnico" placeholder="Técnico" oninput="aplicarFiltros()">
         <div class="grupo-botoes">
-            <button>✖</button>
+            <button onclick="limparFiltro('filtro-tecnico')">✖</button>
             <button class="meio">⋯</button>
-            <button class="btn-busca">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
+            <button class="btn-busca" onclick="aplicarFiltros()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
@@ -62,18 +50,12 @@
         </div>
     </div>
     <div class="barra-acoes">
-        <input type="text" placeholder="Serviços">
+        <input type="text" id="filtro-servico" placeholder="Serviços" oninput="aplicarFiltros()">
         <div class="grupo-botoes">
-            <button>✖</button>
+            <button onclick="limparFiltro('filtro-servico')">✖</button>
             <button class="meio">⋯</button>
-            <button class="btn-busca">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
+            <button class="btn-busca" onclick="aplicarFiltros()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
@@ -81,17 +63,11 @@
         </div>
     </div>
     <div class="barra-acoes">
-        <input type="text" placeholder="Descrição">
+        <input type="text" id="filtro-descricao" placeholder="Descrição" oninput="aplicarFiltros()">
         <div class="grupo-botoes">
-            <button>✖</button>
-            <button class="btn-busca">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
+            <button onclick="limparFiltro('filtro-descricao')">✖</button>
+            <button class="btn-busca" onclick="aplicarFiltros()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
@@ -211,7 +187,7 @@
                 </div>
             </div>
             <div class="pesquisa-direita">
-                <input type="text" placeholder="Pesquisar...">
+                <input type="text" id="pesquisa-topo" placeholder="Pesquisar..." oninput="aplicarFiltros()">
             </div>
         </div>
 
@@ -224,7 +200,7 @@
                         <th width="200px">Descrição</th>
                         <th>Contato</th>
                         <th>Dt. de Criação</th>
-                        <th>Dt. Prometida</th>
+                        <th>Dt. Prevista</th>
                         <th width="150px">Técnico</th>
                         <th>Tot. Horás</th>
                         <th>Resp. Execução</th>
@@ -240,14 +216,14 @@
 
         <div id="painel-inferior" class="painel-inferior">
         <div class="abas">
-            <div class="aba">Itens da OS</div>
-            <div class="aba">Desc. Detalhada</div>
+            <div class="aba aba-ativa" id="aba-itens" onclick="trocarAbaInferior('itens')">Itens da OS</div>
+            <div class="aba" id="aba-desc"  onclick="trocarAbaInferior('desc')">Desc. Detalhada</div>
         </div>
 
         <div class="barra-inferior">
             <div class="acoes-esquerda">
-                <button>➕ Novo</button>
-                <button>✏️ Editar</button>
+                <button onclick="abrirNovoItem()">➕ Novo</button>
+                <button onclick="abrirEditarItem()">✏️ Editar</button>
                 <button onclick="excluirItem()">🗑️ Excluir</button>
                 <button class="botao-dropdown">
                     <span>⋮</span> Mais Opções
@@ -263,6 +239,7 @@
                 <input type="text" placeholder="Pesquisar...">
             </div>
         </div>
+        <div id="panel-itens-grid">
         <div class="grid-inferior">
             <table>
                 <thead>
@@ -287,6 +264,17 @@
                 <tbody></tbody>
             </table>
         </div>
+        </div>
+
+        <div id="panel-desc-detalhada" style="display:none;">
+            <div class="panel-obs-inner">
+                <textarea id="item-desc-detalhada" class="obs-textarea" placeholder="Descrição detalhada do item selecionado..."></textarea>
+                <div class="panel-obs-acoes">
+                    <button class="btn-obs-salvar" onclick="salvarDescDetalhada()">💾 Salvar</button>
+                    <button class="btn-obs-limpar" onclick="document.getElementById('item-desc-detalhada').value=''">🗑️ Limpar</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="overlay-modal" id="overlayModal">
@@ -304,6 +292,7 @@
                 <div class="erp-tab active">Ordem de Serviço</div>
                 <div class="erp-tab">Observação</div>
             </div>
+            <div class="erp-panel" id="panel-os">
             <div class="erp-grid">
                 <div class="campo-completo">
                     <label>Código</label>
@@ -386,9 +375,9 @@
                     </div>
                 </div>
                 <div class="campo-completo">
-                    <label>Dt. Prometida</label>
+                    <label>Dt. Prevista</label>
                     <div class="bar-acoes ">
-                        <input type="text" id="cad-dtPrometida" class="campo-data">
+                        <input type="text" id="cad-dtPrevista" class="campo-data">
                         <div class="grupos">
                         </div>
                     </div>
@@ -418,7 +407,7 @@
                     </div>
                 </div>
                 <div class="campo-completo">
-                    <label>Cód. Barras</label>
+                    <label>Contato</label>
                     <div class="bar-acoes ">
                         <input type="text" id="cad-contato">
                         <div class="grupos">
@@ -426,16 +415,147 @@
                     </div>
                 </div>
             </div>
+            </div>
+
+            <div class="erp-panel" id="panel-obs" style="display:none;">
+                <div class="panel-obs-inner">
+                    <textarea id="cad-observacao" class="obs-textarea" placeholder="Digite a observação desta OS..."></textarea>
+                    <div class="panel-obs-acoes">
+                        <button class="btn-obs-salvar" onclick="salvarObservacao()">💾 Salvar</button>
+                        <button class="btn-obs-limpar" onclick="limparObservacao()">🗑️ Limpar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="erp-footer">
+                <button class="btn-footer-salvar" onclick="salvarOS()">💾 Salvar</button>
+                <button class="btn-footer-sair"   onclick="fecharTelaCad()">✖ Sair</button>
+            </div>
+
         </div>
     </div>
 </div>
-<!-- OVERLAY AUDITORIA -->
+
 <div id="overlayAuditoria" class="overlay-modal" style="display:none;"></div>
 
-<!-- MODAL AUDITORIA -->
+<div id="overlayItem" class="overlay-modal" style="display:none;"></div>
+
+<div id="modalItem" class="erp-modal" style="display:none; width:660px;">
+    <div class="erp-titlebar" id="dragItem">
+        <span id="itemTitulo">Cadastro de Item</span>
+        <div class="erp-controls">
+            <button onclick="maximizarModalItem()">☐</button>
+            <button onclick="fecharModalItem()">✖</button>
+        </div>
+    </div>
+    <div class="erp-content">
+        <div class="erp-tabs">
+            <div class="erp-tab item-tab active">Item</div>
+            <div class="erp-tab item-tab">Observação</div>
+        </div>
+
+        <div class="erp-panel" id="panel-item-dados">
+        <div class="erp-grid">
+            <div class="campo-completo">
+                <label>Cód. Item</label>
+                <div class="bar-acoes"><input type="text" id="item-codItem"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Tipo</label>
+                <div class="bar-acoes dropdown-container" id="item-tipo-container">
+                    <input type="text" id="item-tipo" placeholder="Tipo">
+                    <div class="grupo-botoes"><button class="btn-dropdown">▼</button></div>
+                    <div class="dropdown-menu">
+                        <div class="item">Serviço</div>
+                        <div class="item">Peça</div>
+                        <div class="item">Software</div>
+                        <div class="item">Deslocamento</div>
+                    </div>
+                </div>
+            </div>
+            <div class="campo-completo">
+                <label>Descrição</label>
+                <div class="bar-acoes"><input type="text" id="item-descricao"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Máquina</label>
+                <div class="bar-acoes"><input type="text" id="item-maquina"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Dt. Criação</label>
+                <div class="bar-acoes"><input type="text" id="item-dtCriacao"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Dt. Solução</label>
+                <div class="bar-acoes"><input type="text" id="item-dtSolucao"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Técnico</label>
+                <div class="bar-acoes">
+                    <input type="text" id="item-tecnico">
+                    <div class="grupos">
+                        <button class="btn-limpar">✖</button>
+                        <button class="meio">⋯</button>
+                        <button class="btn-busca">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="campo-completo">
+                <label>Cód. Barras</label>
+                <div class="bar-acoes"><input type="text" id="item-codBarras"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Produto Consumido</label>
+                <div class="bar-acoes"><input type="text" id="item-produto"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Resp. Execução</label>
+                <div class="bar-acoes"><input type="text" id="item-respExec"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Hrs. Estimadas</label>
+                <div class="bar-acoes"><input type="number" id="item-hrsEst" step="0.5"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Hrs. Realizadas</label>
+                <div class="bar-acoes"><input type="number" id="item-hrsReal" step="0.5"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Valor de Serviço</label>
+                <div class="bar-acoes"><input type="text" id="item-vlrServico"><div class="grupos"></div></div>
+            </div>
+            <div class="campo-completo">
+                <label>Valor Total</label>
+                <div class="bar-acoes"><input type="text" id="item-vlrTotal"><div class="grupos"></div></div>
+            </div>
+        </div>
+        </div>
+
+        <div class="erp-panel" id="panel-item-obs" style="display:none;">
+            <div class="panel-obs-inner">
+                <textarea id="item-observacao" class="obs-textarea" placeholder="Observação do item..."></textarea>
+                <div class="panel-obs-acoes">
+                    <button class="btn-obs-salvar" onclick="salvarObsItem()">💾 Salvar</button>
+                    <button class="btn-obs-limpar" onclick="document.getElementById('item-observacao').value=''">🗑️ Limpar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="erp-footer">
+            <button class="btn-footer-salvar" onclick="salvarItem()">💾 Salvar</button>
+            <button class="btn-footer-sair"   onclick="fecharModalItem()">✖ Sair</button>
+        </div>
+    </div>
+</div>
+
 <div id="modalAuditoria" class="erp-modal" style="display:none; width:1100px; height:650px;">
 
-    <!-- TITLEBAR -->
+    
     <div class="erp-titlebar" id="dragAuditoria">
         Auditoria
         <div class="erp-controls">
@@ -446,7 +566,7 @@
 
     <div class="erp-content">
 
-        <!-- TOPO -->
+        
         <div class="barra-topo">
             <div class="acoes-esquerda">
                 <button>🖨 Imprimir</button>
@@ -455,7 +575,7 @@
             </div>
         </div>
 
-        <!-- GRID DE FILTROS -->
+        
         <div class="erp-grid">
 
             <div class="campo-completo">
@@ -547,10 +667,10 @@
 
         </div>
 
-        <!-- GRID + DESCRIÇÃO -->
+        
         <div class="auditoria-area">
 
-            <!-- GRID -->
+            
             <div class="auditoria-grid">
                 <table class="tabela-auditoria">
                     <thead>
@@ -565,7 +685,7 @@
                 </table>
             </div>
 
-            <!-- DESCRIÇÃO -->
+            
             <div class="auditoria-descricao">
                 <div class="descricao-header">
                     Descrição
@@ -608,6 +728,7 @@
                     item.addEventListener('click', () => {
                         statusInput.value = item.textContent;
                         statusDropdown.classList.remove('ativo');
+                        aplicarFiltros();
                     });
                 });
 
@@ -670,34 +791,32 @@
         const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
         const calendarioInicio = flatpickr("#dataInicio", {
             dateFormat: "d/m/Y",
-            defaultDate: primeiroDia
+            defaultDate: primeiroDia,
+            onChange: () => aplicarFiltros()
         });
         const calendarioFim = flatpickr("#dataFim", {
             dateFormat: "d/m/Y",
-            defaultDate: ultimoDia
+            defaultDate: ultimoDia,
+            onChange: () => aplicarFiltros()
         });
         window.abrirCalendario = function(id) {
-            if (id === "dataInicio") {
-                calendarioInicio.open();
-            }
-            if (id === "dataFim") {
-                calendarioFim.open();
-            }
+            if (id === "dataInicio") calendarioInicio.open();
+            else if (id === "dataFim") calendarioFim.open();
         };
     });
 </script>
 <script>
 const dadosOS = [
-    { codigo:"OS-0001", codUnit:"UN-001", descricao:"Manutenção de Servidor",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"01/04/2026", dtPrometida:"05/04/2026", tecnico:"João Silva",   horas:"4",  respExec:"João Silva",   valor:"R$ 850,00" },
-    { codigo:"OS-0002", codUnit:"UN-002", descricao:"Instalação de Software",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"02/04/2026", dtPrometida:"03/04/2026", tecnico:"Carlos Melo",  horas:"2",  respExec:"Carlos Melo",  valor:"R$ 320,00" },
-    { codigo:"OS-0003", codUnit:"UN-003", descricao:"Troca de Disco SSD",      cliente:"Acme Tecnologia",    contato:"(11) 91234-5678", dtCriacao:"03/04/2026", dtPrometida:"08/04/2026", tecnico:"João Silva",   horas:"1",  respExec:"João Silva",   valor:"R$ 480,00" },
-    { codigo:"OS-0004", codUnit:"UN-004", descricao:"Configuração de Rede",    cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"01/04/2026", dtPrometida:"07/04/2026", tecnico:"Ana Rodrigues",horas:"6",  respExec:"Ana Rodrigues",valor:"R$ 1.200,00" },
-    { codigo:"OS-0005", codUnit:"UN-005", descricao:"Suporte Remoto",          cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"04/04/2026", dtPrometida:"04/04/2026", tecnico:"Carlos Melo",  horas:"1",  respExec:"Carlos Melo",  valor:"R$ 150,00" },
-    { codigo:"OS-0006", codUnit:"UN-006", descricao:"Formatação de Estações",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"02/04/2026", dtPrometida:"06/04/2026", tecnico:"Ana Rodrigues",horas:"8",  respExec:"Ana Rodrigues",valor:"R$ 960,00" },
-    { codigo:"OS-0007", codUnit:"UN-007", descricao:"Upgrade de Memória RAM",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"05/04/2026", dtPrometida:"10/04/2026", tecnico:"João Silva",   horas:"3",  respExec:"João Silva",   valor:"R$ 540,00" },
-    { codigo:"OS-0008", codUnit:"UN-008", descricao:"Implantação de Firewall", cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"01/04/2026", dtPrometida:"09/04/2026", tecnico:"Carlos Melo",  horas:"12", respExec:"Carlos Melo",  valor:"R$ 2.800,00" },
-    { codigo:"OS-0009", codUnit:"UN-009", descricao:"Backup e Restauração",    cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"03/04/2026", dtPrometida:"05/04/2026", tecnico:"Ana Rodrigues",horas:"5",  respExec:"Ana Rodrigues",valor:"R$ 700,00" },
-    { codigo:"OS-0010", codUnit:"UN-010", descricao:"Auditoria de Segurança",  cliente:"DataFlex Sistemas",  contato:"(41) 92211-3344", dtCriacao:"06/04/2026", dtPrometida:"12/04/2026", tecnico:"João Silva",   horas:"10", respExec:"João Silva",   valor:"R$ 3.500,00" },
+    { codigo:"OS-0001", codUnit:"UN-001", descricao:"Manutenção de Servidor",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"01/04/2026", dtPrevista:"05/04/2026", tecnico:"João Silva",   horas:"4",  respExec:"João Silva",   valor:"R$ 850,00" },
+    { codigo:"OS-0002", codUnit:"UN-002", descricao:"Instalação de Software",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"02/04/2026", dtPrevista:"03/04/2026", tecnico:"Carlos Melo",  horas:"2",  respExec:"Carlos Melo",  valor:"R$ 320,00" },
+    { codigo:"OS-0003", codUnit:"UN-003", descricao:"Troca de Disco SSD",      cliente:"Acme Tecnologia",    contato:"(11) 91234-5678", dtCriacao:"03/04/2026", dtPrevista:"08/04/2026", tecnico:"João Silva",   horas:"1",  respExec:"João Silva",   valor:"R$ 480,00" },
+    { codigo:"OS-0004", codUnit:"UN-004", descricao:"Configuração de Rede",    cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"01/04/2026", dtPrevista:"07/04/2026", tecnico:"Ana Rodrigues",horas:"6",  respExec:"Ana Rodrigues",valor:"R$ 1.200,00" },
+    { codigo:"OS-0005", codUnit:"UN-005", descricao:"Suporte Remoto",          cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"04/04/2026", dtPrevista:"04/04/2026", tecnico:"Carlos Melo",  horas:"1",  respExec:"Carlos Melo",  valor:"R$ 150,00" },
+    { codigo:"OS-0006", codUnit:"UN-006", descricao:"Formatação de Estações",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"02/04/2026", dtPrevista:"06/04/2026", tecnico:"Ana Rodrigues",horas:"8",  respExec:"Ana Rodrigues",valor:"R$ 960,00" },
+    { codigo:"OS-0007", codUnit:"UN-007", descricao:"Upgrade de Memória RAM",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"05/04/2026", dtPrevista:"10/04/2026", tecnico:"João Silva",   horas:"3",  respExec:"João Silva",   valor:"R$ 540,00" },
+    { codigo:"OS-0008", codUnit:"UN-008", descricao:"Implantação de Firewall", cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"01/04/2026", dtPrevista:"09/04/2026", tecnico:"Carlos Melo",  horas:"12", respExec:"Carlos Melo",  valor:"R$ 2.800,00" },
+    { codigo:"OS-0009", codUnit:"UN-009", descricao:"Backup e Restauração",    cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"03/04/2026", dtPrevista:"05/04/2026", tecnico:"Ana Rodrigues",horas:"5",  respExec:"Ana Rodrigues",valor:"R$ 700,00" },
+    { codigo:"OS-0010", codUnit:"UN-010", descricao:"Auditoria de Segurança",  cliente:"DataFlex Sistemas",  contato:"(41) 92211-3344", dtCriacao:"06/04/2026", dtPrevista:"12/04/2026", tecnico:"João Silva",   horas:"10", respExec:"João Silva",   valor:"R$ 3.500,00" },
 ];
 const grupoAberto  = new Map();
 const grupoToggle  = new Map();
@@ -757,7 +876,7 @@ function renderizarGrid(dados){
                 <td>${row.descricao}</td>
                 <td>${row.contato}</td>
                 <td>${row.dtCriacao}</td>
-                <td>${row.dtPrometida}</td>
+                <td>${row.dtPrevista}</td>
                 <td>${row.tecnico}</td>
                 <td>${row.horas}h</td>
                 <td>${row.respExec}</td>
@@ -790,16 +909,16 @@ function selecionarLinha(tr){
 }
 
 const _dadosOS = [
-    { codigo:"OS-0001", codUnit:"UN-001", descricao:"Manutenção de Servidor",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"01/04/2026", dtPrometida:"05/04/2026", tecnico:"João Silva",   horas:"4",  respExec:"João Silva",   valor:"R$ 850,00" },
-    { codigo:"OS-0002", codUnit:"UN-002", descricao:"Instalação de Software",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"02/04/2026", dtPrometida:"03/04/2026", tecnico:"Carlos Melo",  horas:"2",  respExec:"Carlos Melo",  valor:"R$ 320,00" },
-    { codigo:"OS-0003", codUnit:"UN-003", descricao:"Troca de Disco SSD",      cliente:"Acme Tecnologia",    contato:"(11) 91234-5678", dtCriacao:"03/04/2026", dtPrometida:"08/04/2026", tecnico:"João Silva",   horas:"1",  respExec:"João Silva",   valor:"R$ 480,00" },
-    { codigo:"OS-0004", codUnit:"UN-004", descricao:"Configuração de Rede",    cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"01/04/2026", dtPrometida:"07/04/2026", tecnico:"Ana Rodrigues",horas:"6",  respExec:"Ana Rodrigues",valor:"R$ 1.200,00" },
-    { codigo:"OS-0005", codUnit:"UN-005", descricao:"Suporte Remoto",          cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"04/04/2026", dtPrometida:"04/04/2026", tecnico:"Carlos Melo",  horas:"1",  respExec:"Carlos Melo",  valor:"R$ 150,00" },
-    { codigo:"OS-0006", codUnit:"UN-006", descricao:"Formatação de Estações",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"02/04/2026", dtPrometida:"06/04/2026", tecnico:"Ana Rodrigues",horas:"8",  respExec:"Ana Rodrigues",valor:"R$ 960,00" },
-    { codigo:"OS-0007", codUnit:"UN-007", descricao:"Upgrade de Memória RAM",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"05/04/2026", dtPrometida:"10/04/2026", tecnico:"João Silva",   horas:"3",  respExec:"João Silva",   valor:"R$ 540,00" },
-    { codigo:"OS-0008", codUnit:"UN-008", descricao:"Implantação de Firewall", cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"01/04/2026", dtPrometida:"09/04/2026", tecnico:"Carlos Melo",  horas:"12", respExec:"Carlos Melo",  valor:"R$ 2.800,00" },
-    { codigo:"OS-0009", codUnit:"UN-009", descricao:"Backup e Restauração",    cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"03/04/2026", dtPrometida:"05/04/2026", tecnico:"Ana Rodrigues",horas:"5",  respExec:"Ana Rodrigues",valor:"R$ 700,00" },
-    { codigo:"OS-0010", codUnit:"UN-010", descricao:"Auditoria de Segurança",  cliente:"DataFlex Sistemas",  contato:"(41) 92211-3344", dtCriacao:"06/04/2026", dtPrometida:"12/04/2026", tecnico:"João Silva",   horas:"10", respExec:"João Silva",   valor:"R$ 3.500,00" },
+    { codigo:"OS-0001", codUnit:"UN-001", descricao:"Manutenção de Servidor",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"01/04/2026", dtPrevista:"05/04/2026", tecnico:"João Silva",   horas:"4",  respExec:"João Silva",   valor:"R$ 850,00" },
+    { codigo:"OS-0002", codUnit:"UN-002", descricao:"Instalação de Software",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"02/04/2026", dtPrevista:"03/04/2026", tecnico:"Carlos Melo",  horas:"2",  respExec:"Carlos Melo",  valor:"R$ 320,00" },
+    { codigo:"OS-0003", codUnit:"UN-003", descricao:"Troca de Disco SSD",      cliente:"Acme Tecnologia",    contato:"(11) 91234-5678", dtCriacao:"03/04/2026", dtPrevista:"08/04/2026", tecnico:"João Silva",   horas:"1",  respExec:"João Silva",   valor:"R$ 480,00" },
+    { codigo:"OS-0004", codUnit:"UN-004", descricao:"Configuração de Rede",    cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"01/04/2026", dtPrevista:"07/04/2026", tecnico:"Ana Rodrigues",horas:"6",  respExec:"Ana Rodrigues",valor:"R$ 1.200,00" },
+    { codigo:"OS-0005", codUnit:"UN-005", descricao:"Suporte Remoto",          cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"04/04/2026", dtPrevista:"04/04/2026", tecnico:"Carlos Melo",  horas:"1",  respExec:"Carlos Melo",  valor:"R$ 150,00" },
+    { codigo:"OS-0006", codUnit:"UN-006", descricao:"Formatação de Estações",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"02/04/2026", dtPrevista:"06/04/2026", tecnico:"Ana Rodrigues",horas:"8",  respExec:"Ana Rodrigues",valor:"R$ 960,00" },
+    { codigo:"OS-0007", codUnit:"UN-007", descricao:"Upgrade de Memória RAM",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"05/04/2026", dtPrevista:"10/04/2026", tecnico:"João Silva",   horas:"3",  respExec:"João Silva",   valor:"R$ 540,00" },
+    { codigo:"OS-0008", codUnit:"UN-008", descricao:"Implantação de Firewall", cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"01/04/2026", dtPrevista:"09/04/2026", tecnico:"Carlos Melo",  horas:"12", respExec:"Carlos Melo",  valor:"R$ 2.800,00" },
+    { codigo:"OS-0009", codUnit:"UN-009", descricao:"Backup e Restauração",    cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"03/04/2026", dtPrevista:"05/04/2026", tecnico:"Ana Rodrigues",horas:"5",  respExec:"Ana Rodrigues",valor:"R$ 700,00" },
+    { codigo:"OS-0010", codUnit:"UN-010", descricao:"Auditoria de Segurança",  cliente:"DataFlex Sistemas",  contato:"(41) 92211-3344", dtCriacao:"06/04/2026", dtPrevista:"12/04/2026", tecnico:"João Silva",   horas:"10", respExec:"João Silva",   valor:"R$ 3.500,00" },
 ];
 
 const _dadosItens = {
@@ -873,9 +992,54 @@ const DB = {
 
 let osSelecionada = null;
 
-async function carregarOS(filtros = {}) {
-    const dados = await DB.buscarOS(filtros);
-    renderizarGrid(dados);
+function parseDateBR(str){
+    if(!str) return null;
+    const [d,m,y] = str.split("/");
+    return new Date(+y, +m-1, +d);
+}
+
+function aplicarFiltros(){
+    const cliente   = (document.getElementById("filtro-cliente")?.value  || "").trim().toLowerCase();
+    const tecnico   = (document.getElementById("filtro-tecnico")?.value  || "").trim().toLowerCase();
+    const servico   = (document.getElementById("filtro-servico")?.value  || "").trim().toLowerCase();
+    const descricao = (document.getElementById("filtro-descricao")?.value|| "").trim().toLowerCase();
+    const status    = (document.getElementById("status")?.value          || "").trim().toLowerCase();
+    const dtIni     = (document.getElementById("dataInicio")?.value      || "").trim();
+    const dtFim     = (document.getElementById("dataFim")?.value         || "").trim();
+    const pesquisa  = (document.getElementById("pesquisa-topo")?.value   || "").trim().toLowerCase();
+
+    const dIni = parseDateBR(dtIni);
+    const dFim = parseDateBR(dtFim);
+
+    const filtrados = _dadosOS.filter(row => {
+        if(cliente   && !row.cliente?.toLowerCase().includes(cliente))             return false;
+        if(tecnico   && !row.tecnico?.toLowerCase().includes(tecnico))             return false;
+        if(servico   && !row.descricao?.toLowerCase().includes(servico))           return false;
+        if(descricao && !row.descricao?.toLowerCase().includes(descricao))         return false;
+        
+        
+        const dRow = parseDateBR(row.dtCriacao);
+        if(dIni && dRow && dRow < dIni) return false;
+        if(dFim && dRow && dRow > dFim) return false;
+        if(pesquisa){
+            const campos = [row.codigo, row.codUnit, row.descricao, row.cliente,
+                            row.tecnico, row.contato, row.valor, row.respExec].map(v => (v||"").toLowerCase());
+            if(!campos.some(c => c.includes(pesquisa))) return false;
+        }
+        return true;
+    });
+
+    renderizarGrid(filtrados);
+}
+
+function limparFiltro(id){
+    const el = document.getElementById(id);
+    if(el){ el.value = ""; }
+    aplicarFiltros();
+}
+
+async function carregarOS() {
+    renderizarGrid(_dadosOS);
 }
 
 function renderizarGrid(dados){
@@ -930,7 +1094,7 @@ function renderizarGrid(dados){
                 <td>${row.descricao}</td>
                 <td>${row.contato}</td>
                 <td>${row.dtCriacao}</td>
-                <td>${row.dtPrometida}</td>
+                <td>${row.dtPrevista}</td>
                 <td>${row.tecnico}</td>
                 <td>${row.horas}h</td>
                 <td>${row.respExec}</td>
@@ -1015,7 +1179,6 @@ function renderizarItens(itens, codigoOS){
         setTimeout(() => iniciarResizeColunas(".grid-inferior table"), 50);
     }
 }
-
 
 async function excluirOS(){
     if(!osSelecionada){
@@ -1191,7 +1354,7 @@ function iniciarResizeColunas(seletor){
     ths.forEach(th => {
         if(th.querySelector(".col-resize-handle")) return;
 
-        /* Garante espaço para o handle não sobrepor o texto */
+        
         th.style.paddingRight = "14px";
 
         const handle = document.createElement("div");
@@ -1212,7 +1375,12 @@ function iniciarResizeColunas(seletor){
 
             function onMove(e){
                 const nova = Math.max(40, startW + (e.pageX - startX));
-                th.style.width = nova + "px";
+                const outrasLarguras = ths.reduce((soma, t) => {
+                    return t === th ? soma : soma + t.getBoundingClientRect().width;
+                }, 0);
+                const grid = table.parentElement;
+                const maxDisponivel = grid.getBoundingClientRect().width - outrasLarguras - 2;
+                th.style.width = Math.min(nova, Math.max(40, maxDisponivel)) + "px";
             }
             function onUp(){
                 handle.classList.remove("ativo");
@@ -1320,7 +1488,7 @@ function iniciarResizeColunas(seletor){
         document.getElementById("cad-servico").value        = osSelecionada.servico     || "";
         document.getElementById("cad-descricao").value      = osSelecionada.descricao   || "";
         document.getElementById("cad-dtCriacao").value      = osSelecionada.dtCriacao   || "";
-        document.getElementById("cad-dtPrometida").value    = osSelecionada.dtPrometida || "";
+        document.getElementById("cad-dtPrevista").value    = osSelecionada.dtPrevista || "";
         document.getElementById("cad-horas").value          = osSelecionada.horas       || "";
         document.getElementById("cad-respExec").value       = osSelecionada.respExec    || "";
         document.getElementById("cad-valor").value          = osSelecionada.valor       || "";
@@ -1420,7 +1588,7 @@ function iniciarResizeColunas(seletor){
 
             modalAud.dataset.prev = modalAud.style.cssText;
 
-            containerMain.appendChild(modalAud); // usa a variável já existente
+            containerMain.appendChild(modalAud); 
 
             modalAud.style.position = "absolute";
             modalAud.style.top = "0";
@@ -1477,7 +1645,7 @@ function iniciarResizeColunas(seletor){
         { estacao:"loginSis",  evento:"Login",    data:"02/04/2026 09:10", usuario:"carlos.melo",  descricao:"Login realizado com sucesso na estação PC-TEC-03." },
         { estacao:"editOS",  evento:"Alteração", data:"02/04/2026 10:20", usuario:"carlos.melo",  descricao:"OS-0002 atualizada: técnico responsável alterado para Carlos Melo." },
         { estacao:"addOS",  evento:"Inclusão",  data:"03/04/2026 08:05", usuario:"admin",        descricao:"OS-0003 criada: Troca de Disco SSD — Acme Tecnologia." },
-        { estacao:"editOS",  evento:"Alteração", data:"03/04/2026 11:00", usuario:"joao.silva",   descricao:"OS-0003 atualizada: data prometida alterada para 08/04/2026." },
+        { estacao:"editOS",  evento:"Alteração", data:"03/04/2026 11:00", usuario:"joao.silva",   descricao:"OS-0003 atualizada: data prevista alterada para 08/04/2026." },
         { estacao:"addOS",  evento:"Inclusão",  data:"01/04/2026 14:00", usuario:"admin",        descricao:"OS-0004 criada: Configuração de Rede — Bella Distribuidora." },
         { estacao:"loginSis",  evento:"Login",    data:"04/04/2026 08:00", usuario:"ana.rodrigues", descricao:"Login realizado com sucesso na estação PC-TEC-04." },
         { estacao:"editOS",  evento:"Alteração", data:"04/04/2026 09:30", usuario:"ana.rodrigues", descricao:"OS-0004 atualizada: valor total ajustado para R$ 1.200,00." },
@@ -1555,6 +1723,296 @@ function iniciarResizeColunas(seletor){
     modalAud.querySelectorAll(".erp-grid input").forEach(inp => {
         inp.addEventListener("input", filtrarAuditoria);
     });
+</script>
+<script>
+    
+    const _observacoes = {};
+
+    document.querySelectorAll(".erp-tab").forEach((tab, idx) => {
+        tab.addEventListener("click", () => {
+            document.querySelectorAll(".erp-tab").forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            document.getElementById("panel-os").style.display  = idx === 0 ? "" : "none";
+            document.getElementById("panel-obs").style.display = idx === 1 ? "" : "none";
+
+            if(idx === 1){
+                const chave = document.getElementById("cad-codigo").value.trim() || "__novo__";
+                document.getElementById("cad-observacao").value = _observacoes[chave] || "";
+            }
+        });
+    });
+
+    function salvarObservacao(){
+        const chave = document.getElementById("cad-codigo").value.trim() || "__novo__";
+        _observacoes[chave] = document.getElementById("cad-observacao").value.trim();
+        Swal.fire({
+            icon: "success",
+            title: "Observação salva",
+            timer: 1500,
+            showConfirmButton: false,
+            scrollbarPadding: false
+        });
+    }
+
+    function limparObservacao(){
+        document.getElementById("cad-observacao").value = "";
+    }
+
+    
+    const _abrirTelaEdicaoOrig = abrirTelaEdicao;
+    abrirTelaEdicao = function(){
+        _abrirTelaEdicaoOrig();
+        document.querySelectorAll(".erp-tab")[0].click();
+        
+        const chave = document.getElementById("cad-codigo").value.trim();
+        if(chave) document.getElementById("cad-observacao").value = _observacoes[chave] || "";
+    };
+
+    const _abrirTelaCadOrig = abrirTelaCad;
+    abrirTelaCad = function(){
+        _abrirTelaCadOrig();
+        document.querySelectorAll(".erp-tab")[0].click();
+    };
+</script>
+<script>
+
+function trocarAbaInferior(aba){
+    const abaItens = document.getElementById("aba-itens");
+    const abaDesc  = document.getElementById("aba-desc");
+    const panelGrid = document.getElementById("panel-itens-grid");
+    const panelDesc = document.getElementById("panel-desc-detalhada");
+
+    if(aba === "itens"){
+        abaItens.classList.add("aba-ativa");
+        abaDesc.classList.remove("aba-ativa");
+        panelGrid.style.display = "";
+        panelDesc.style.display = "none";
+    } else {
+        abaDesc.classList.add("aba-ativa");
+        abaItens.classList.remove("aba-ativa");
+        panelGrid.style.display = "none";
+        panelDesc.style.display = "";
+        
+        if(itemSelecionado){
+            const chave = (osSelecionada ? osSelecionada.codigo : "") + "_" + itemSelecionado.codItem;
+            document.getElementById("item-desc-detalhada").value = _descDetalhada[chave] || itemSelecionado.descricao || "";
+        }
+    }
+}
+
+const _descDetalhada = {};
+const _obsItens = {};
+
+function salvarDescDetalhada(){
+    if(!itemSelecionado || !osSelecionada){ return; }
+    const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
+    _descDetalhada[chave] = document.getElementById("item-desc-detalhada").value.trim();
+    Swal.fire({ icon:"success", title:"Descrição salva", timer:1500, showConfirmButton:false, scrollbarPadding:false });
+}
+
+const modalItem   = document.getElementById("modalItem");
+const overlayItem = document.getElementById("overlayItem");
+const dragItem    = document.getElementById("dragItem");
+let itemMaximizado = false;
+let modoItemEdicao = false;
+
+function _abrirModalItem(){
+    modalItem.style.display   = "block";
+    overlayItem.style.display = "block";
+    modalItem.style.position  = "fixed";
+    modalItem.style.width     = "660px";
+    modalItem.style.height    = "auto";
+    modalItem.style.left      = "50%";
+    modalItem.style.top       = "80px";
+    modalItem.style.transform = "translateX(-50%)";
+    itemMaximizado = false;
+    
+    document.querySelectorAll(".item-tab").forEach((t,i) => t.classList.toggle("active", i===0));
+    document.getElementById("panel-item-dados").style.display = "";
+    document.getElementById("panel-item-obs").style.display   = "none";
+}
+
+function abrirNovoItem(){
+    if(!osSelecionada){
+        Swal.fire({ icon:"warning", title:"Atenção", text:"Selecione uma OS primeiro.", confirmButtonColor:"#2d7dff", scrollbarPadding:false });
+        return;
+    }
+    modoItemEdicao = false;
+    document.getElementById("itemTitulo").textContent = "Cadastro de Item";
+    document.querySelectorAll("#modalItem input, #modalItem textarea").forEach(i => i.value = "");
+    _abrirModalItem();
+}
+
+function abrirEditarItem(){
+    if(!osSelecionada){
+        Swal.fire({ icon:"warning", title:"Atenção", text:"Selecione uma OS primeiro.", confirmButtonColor:"#2d7dff", scrollbarPadding:false });
+        return;
+    }
+    if(!itemSelecionado){
+        Swal.fire({ icon:"warning", title:"Atenção", text:"Selecione um item para editar.", confirmButtonColor:"#2d7dff", scrollbarPadding:false });
+        return;
+    }
+    modoItemEdicao = true;
+    document.getElementById("itemTitulo").textContent        = "Edição de Item";
+    document.getElementById("item-codItem").value            = itemSelecionado.codItem    || "";
+    document.getElementById("item-tipo").value               = itemSelecionado.tipo       || "";
+    document.getElementById("item-descricao").value          = itemSelecionado.descricao  || "";
+    document.getElementById("item-maquina").value            = itemSelecionado.maquina    || "";
+    document.getElementById("item-dtCriacao").value          = itemSelecionado.dtCriacao  || "";
+    document.getElementById("item-dtSolucao").value          = itemSelecionado.dtSolucao  || "";
+    document.getElementById("item-tecnico").value            = itemSelecionado.tecnico    || "";
+    document.getElementById("item-codBarras").value          = itemSelecionado.codBarras  || "";
+    document.getElementById("item-produto").value            = itemSelecionado.produto    || "";
+    document.getElementById("item-respExec").value           = itemSelecionado.respExec   || "";
+    document.getElementById("item-hrsEst").value             = itemSelecionado.hrsEst     || "";
+    document.getElementById("item-hrsReal").value            = itemSelecionado.hrsReal    || "";
+    document.getElementById("item-vlrServico").value         = itemSelecionado.vlrServico || "";
+    document.getElementById("item-vlrTotal").value           = itemSelecionado.vlrTotal   || "";
+    const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
+    document.getElementById("item-observacao").value = _obsItens[chave] || "";
+    _abrirModalItem();
+}
+
+function fecharModalItem(){
+    modalItem.style.display   = "none";
+    overlayItem.style.display = "none";
+    itemMaximizado = false;
+}
+
+function maximizarModalItem(){
+    const cm = document.querySelector(".container-main");
+    if(!itemMaximizado){
+        modalItem.dataset.prev = modalItem.style.cssText;
+        cm.appendChild(modalItem);
+        modalItem.style.position  = "absolute";
+        modalItem.style.top       = "0";
+        modalItem.style.left      = "0";
+        modalItem.style.width     = "100%";
+        modalItem.style.height    = "100%";
+        modalItem.style.transform = "none";
+        overlayItem.style.display = "none";
+        itemMaximizado = true;
+    } else {
+        document.body.appendChild(modalItem);
+        modalItem.style.cssText   = modalItem.dataset.prev;
+        overlayItem.style.display = "block";
+        itemMaximizado = false;
+    }
+}
+
+dragItem.onmousedown = function(e){
+    if(itemMaximizado) return;
+    let sx = e.clientX - modalItem.getBoundingClientRect().left;
+    let sy = e.clientY - modalItem.getBoundingClientRect().top;
+    function mv(e){ modalItem.style.left = (e.pageX - sx)+"px"; modalItem.style.top = (e.pageY - sy)+"px"; modalItem.style.transform="none"; }
+    function up(){ document.removeEventListener("mousemove",mv); document.onmouseup=null; }
+    document.addEventListener("mousemove",mv);
+    document.onmouseup = up;
+};
+
+document.querySelectorAll(".item-tab").forEach((tab, idx) => {
+    tab.addEventListener("click", () => {
+        document.querySelectorAll(".item-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById("panel-item-dados").style.display = idx === 0 ? "" : "none";
+        document.getElementById("panel-item-obs").style.display   = idx === 1 ? "" : "none";
+        if(idx === 1 && modoItemEdicao && itemSelecionado && osSelecionada){
+            const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
+            document.getElementById("item-observacao").value = _obsItens[chave] || "";
+        }
+    });
+});
+
+(function(){
+    const cont = document.getElementById("item-tipo-container");
+    if(!cont) return;
+    const btn  = cont.querySelector(".btn-dropdown");
+    const menu = cont.querySelector(".dropdown-menu");
+    const inp  = cont.querySelector("input");
+    btn.addEventListener("click", e => { e.stopPropagation(); cont.classList.toggle("ativo"); });
+    menu.querySelectorAll(".item").forEach(it => {
+        it.addEventListener("click", () => { inp.value = it.textContent; cont.classList.remove("ativo"); });
+    });
+    document.addEventListener("click", e => { if(!cont.contains(e.target)) cont.classList.remove("ativo"); });
+})();
+
+function salvarObsItem(){
+    if(!itemSelecionado || !osSelecionada) return;
+    const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
+    _obsItens[chave] = document.getElementById("item-observacao").value.trim();
+    Swal.fire({ icon:"success", title:"Observação salva", timer:1500, showConfirmButton:false, scrollbarPadding:false });
+}
+
+function salvarItem(){
+    const codItem = document.getElementById("item-codItem").value.trim();
+    if(!codItem){
+        Swal.fire({ icon:"warning", title:"Atenção", text:"Informe o código do item.", confirmButtonColor:"#2d7dff", scrollbarPadding:false });
+        return;
+    }
+    const novoItem = {
+        codItem:    codItem,
+        tipo:       document.getElementById("item-tipo").value.trim()       || "—",
+        descricao:  document.getElementById("item-descricao").value.trim()  || "—",
+        maquina:    document.getElementById("item-maquina").value.trim()    || "—",
+        dtCriacao:  document.getElementById("item-dtCriacao").value.trim()  || "—",
+        dtSolucao:  document.getElementById("item-dtSolucao").value.trim()  || "—",
+        tecnico:    document.getElementById("item-tecnico").value.trim()    || "—",
+        codBarras:  document.getElementById("item-codBarras").value.trim()  || "—",
+        produto:    document.getElementById("item-produto").value.trim()    || "—",
+        respExec:   document.getElementById("item-respExec").value.trim()   || "—",
+        cadastrado: "admin",
+        hrsEst:     document.getElementById("item-hrsEst").value            || "0",
+        hrsReal:    document.getElementById("item-hrsReal").value           || "0",
+        vlrServico: document.getElementById("item-vlrServico").value.trim() || "R$ 0,00",
+        vlrTotal:   document.getElementById("item-vlrTotal").value.trim()   || "R$ 0,00",
+    };
+
+    const lista = _dadosItens[osSelecionada.codigo] || (_dadosItens[osSelecionada.codigo] = []);
+
+    if(modoItemEdicao){
+        const idx = lista.findIndex(i => i.codItem === codItem);
+        if(idx !== -1) lista[idx] = novoItem;
+        else lista.push(novoItem);
+    } else {
+        lista.push(novoItem);
+    }
+
+    renderizarItens(lista, osSelecionada.codigo);
+    fecharModalItem();
+
+    Swal.fire({ icon:"success", title: modoItemEdicao ? "Item atualizado" : "Item salvo", timer:1500, showConfirmButton:false, scrollbarPadding:false });
+}
+
+function salvarOS(){
+    const codigo = document.getElementById("cad-codigo").value.trim();
+    if(!codigo){
+        Swal.fire({ icon:"warning", title:"Atenção", text:"Informe o código da OS.", confirmButtonColor:"#2d7dff", scrollbarPadding:false });
+        return;
+    }
+    const dados = {
+        codigo,
+        codUnit:     document.getElementById("cad-codUnit").value.trim(),
+        cliente:     document.getElementById("cad-cliente").value.trim(),
+        tecnico:     document.getElementById("cad-tecnico").value.trim(),
+        servico:     document.getElementById("cad-servico").value.trim(),
+        descricao:   document.getElementById("cad-descricao").value.trim(),
+        dtCriacao:   document.getElementById("cad-dtCriacao").value.trim(),
+        dtPrevista: document.getElementById("cad-dtPrevista").value.trim(),
+        horas:       document.getElementById("cad-horas").value,
+        respExec:    document.getElementById("cad-respExec").value.trim(),
+        valor:       document.getElementById("cad-valor").value.trim(),
+        contato:     document.getElementById("cad-contato").value.trim(),
+    };
+
+    const idx = _dadosOS.findIndex(o => o.codigo === codigo);
+    if(idx !== -1) _dadosOS[idx] = { ..._dadosOS[idx], ...dados };
+    else _dadosOS.push(dados);
+
+    carregarOS();
+    fecharTelaCad();
+
+    Swal.fire({ icon:"success", title: idx !== -1 ? "OS atualizada" : "OS salva", timer:1500, showConfirmButton:false, scrollbarPadding:false });
+}
 </script>
 </body>
 </html>

@@ -194,12 +194,6 @@ body{
     outline: none;
 }
 
-.barra-acoes input:focus {
-    box-shadow: 0 0 10px #3c5aa5;
-    outline: none;
-}
-
-
 .container-datas input{
     width: 85%;
     height: 28px;
@@ -291,7 +285,6 @@ body{
     width: 85%; 
     margin: 1px 0;
 }
-
 
 .container-datas .barra-acoes {
     flex: 1;
@@ -543,7 +536,7 @@ body.swal2-height-auto {
 
 .erp-modal{
     position: fixed;
-    width: 640px; /* menor */
+    width: 640px; 
     background: #0b1b2b;
     border: 2px solid #737373;
     box-shadow: 0 8px 25px rgba(0,0,0,0.6);
@@ -584,7 +577,6 @@ body.swal2-height-auto {
 .erp-controls button:hover{
     color:white;
 }
-
 
 .erp-content{
     padding:12px;
@@ -693,7 +685,6 @@ body.swal2-height-auto {
 .grid-principal table,
 .grid-inferior table{
     border-collapse:collapse;
-    min-width:1600px;
     width:100%;
     font-size:12px;
     color:#e5e7eb;
@@ -799,8 +790,7 @@ body.swal2-height-auto {
 }
 
 .pesquisa-direita input:focus{
-    box-shadow: 0 0 10px #3c5aa5;
-    outline: none;
+    border-color: #737373;
 }
 
 .bar-acoes{
@@ -824,11 +814,6 @@ body.swal2-height-auto {
     color:#fff;
     background: #253150;
     border: none;
-    outline: none;
-}
-
-.bar-acoes input:focus{
-    box-shadow: 0 0 10px #3c5aa5;
     outline: none;
 }
 
@@ -870,19 +855,16 @@ body.swal2-height-auto {
     color:white;
 }
 
-/* GRID 2 COLUNAS */
 .erp-grid{
     display:grid;
     grid-template-columns: 1fr 1fr;
     gap:15px;
 }
 
-/* CAMPO FULL */
 .campo-full{
     grid-column: 1 / -1;
 }
 
-/* PARTE DE BAIXO FLEXÍVEL */
 .auditoria-area{
     display:flex;
     gap:10px;
@@ -890,7 +872,6 @@ body.swal2-height-auto {
     flex:1;
     min-height:250px;
 }
-
 
 .auditoria-grid{
     flex:2;
@@ -960,7 +941,6 @@ body.swal2-height-auto {
 .aud-badge-alteração { background: #3b2f00; color: #fbbf24; border: 1px solid #92400e; }
 .aud-badge-exclusão  { background: #4c1414; color: #f87171; border: 1px solid #991b1b; }
 
-/* DESCRIÇÃO */
 .auditoria-descricao{
     flex:1;
     display:flex;
@@ -1188,8 +1168,8 @@ body.swal2-height-auto {
 }
 
 .obs-textarea:focus {
-    box-shadow: 0 0 10px #3c5aa5;
     outline: none;
+    border-color: #2d7dff;
 }
 
 .panel-obs-acoes {
