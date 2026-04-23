@@ -7,6 +7,58 @@
     <link rel="stylesheet" href="assets/css/sistema.css">
     <link rel="icon" type="image/png" href="assets\icon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+/* ── Status badges na grid principal ─────────────── */
+.os-status-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .25px;
+    white-space: nowrap;
+}
+.badge-pre        { background: rgba(45,100,220,.18); color: #7aadff; border: 1px solid rgba(45,100,220,.35); }
+.badge-aberto     { background: rgba(34,180,100,.16); color: #4cda7a; border: 1px solid rgba(34,180,100,.32); }
+.badge-fechado    { background: rgba(120,120,130,.14); color: #9ca3af; border: 1px solid rgba(120,120,130,.28); }
+.badge-cancelado  { background: rgba(220,50,50,.15);   color: #ff6b6b; border: 1px solid rgba(220,50,50,.30); }
+
+/* ── Resize handle ───────────────────────────────── */
+#painel-inferior-handle {
+    position: relative;
+    flex-shrink: 0;
+    height: 6px !important;
+    min-height: 6px !important;
+    cursor: row-resize !important;
+    background: transparent;
+    z-index: 10;
+}
+/* Área de clique ampliada verticalmente */
+#painel-inferior-handle::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: -6px; bottom: -6px;
+    cursor: row-resize;
+}
+/* Indicador visual central */
+#painel-inferior-handle::after {
+    content: '';
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 36px; height: 3px;
+    border-radius: 3px;
+    background: rgba(100,120,160,.30);
+    transition: width .18s ease, background .18s ease;
+    pointer-events: none;
+}
+#painel-inferior-handle:hover::after,
+#painel-inferior-handle.ativo::after {
+    width: 56px;
+    background: #2d7dff;
+}
+</style>
 </head>
 <body>
 <div class="container-top"> 
@@ -75,19 +127,18 @@
         </div>
     </div>
     <div class="barra-acoes dropdown-container">
-        <input type="text" id="status" placeholder="Status" value="Aberto">
-        
+        <input type="text" id="status" placeholder="Status" value="Pré-Ordem" readonly>
         <div class="grupo-botoes">
             <button class="btn-dropdown">▼</button>
         </div>
-
         <div class="dropdown-menu">
-            <div class="item" selected>Aberto</div>
-            <div class="item">Em andamento</div>
-            <div class="item">Finalizado</div>
+            <div class="item" selected>Pré-Ordem</div>
+            <div class="item">Aberto</div>
+            <div class="item">Fechado</div>
             <div class="item">Cancelado</div>
         </div>
     </div>
+
     <div class="label-campos">
         <label>Dt. Ini:</label> 
         <label>Dt. Fim:</label>
@@ -205,6 +256,7 @@
                         <th>Tot. Horás</th>
                         <th>Resp. Execução</th>
                         <th>Valor Total</th>
+                        <th width="100px">Status</th>
                     </tr>
                 </thead>
                 <tbody id="tbodyOS">
@@ -414,6 +466,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="campo-completo">
+                    <label>Status</label>
+                    <div class="bar-acoes dropdown-container" id="status-tipo-container">
+                        <input type="text" id="cad-status" placeholder="Selecione..." readonly>
+                        <div class="grupo-botoes">
+                            <button class="btn-dropdown" type="button">▼</button>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="item">Pré-Ordem</div>
+                            <div class="item">Aberto</div>
+                            <div class="item">Fechado</div>
+                            <div class="item">Cancelado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
             </div>
 
@@ -880,7 +948,7 @@ function renderizarGrid(dados){
                 <td>${row.tecnico}</td>
                 <td>${row.horas}h</td>
                 <td>${row.respExec}</td>
-                <td>${row.valor}</td>`;
+                <td>${row.valor}</td>`
             tr.addEventListener("click", () => selecionarLinha(tr));
             tbody.appendChild(tr);
             trsDoGrupo.push(tr);
@@ -909,16 +977,16 @@ function selecionarLinha(tr){
 }
 
 const _dadosOS = [
-    { codigo:"OS-0001", codUnit:"UN-001", descricao:"Manutenção de Servidor",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"01/04/2026", dtPrevista:"05/04/2026", tecnico:"João Silva",   horas:"4",  respExec:"João Silva",   valor:"R$ 850,00" },
-    { codigo:"OS-0002", codUnit:"UN-002", descricao:"Instalação de Software",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"02/04/2026", dtPrevista:"03/04/2026", tecnico:"Carlos Melo",  horas:"2",  respExec:"Carlos Melo",  valor:"R$ 320,00" },
-    { codigo:"OS-0003", codUnit:"UN-003", descricao:"Troca de Disco SSD",      cliente:"Acme Tecnologia",    contato:"(11) 91234-5678", dtCriacao:"03/04/2026", dtPrevista:"08/04/2026", tecnico:"João Silva",   horas:"1",  respExec:"João Silva",   valor:"R$ 480,00" },
-    { codigo:"OS-0004", codUnit:"UN-004", descricao:"Configuração de Rede",    cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"01/04/2026", dtPrevista:"07/04/2026", tecnico:"Ana Rodrigues",horas:"6",  respExec:"Ana Rodrigues",valor:"R$ 1.200,00" },
-    { codigo:"OS-0005", codUnit:"UN-005", descricao:"Suporte Remoto",          cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"04/04/2026", dtPrevista:"04/04/2026", tecnico:"Carlos Melo",  horas:"1",  respExec:"Carlos Melo",  valor:"R$ 150,00" },
-    { codigo:"OS-0006", codUnit:"UN-006", descricao:"Formatação de Estações",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"02/04/2026", dtPrevista:"06/04/2026", tecnico:"Ana Rodrigues",horas:"8",  respExec:"Ana Rodrigues",valor:"R$ 960,00" },
-    { codigo:"OS-0007", codUnit:"UN-007", descricao:"Upgrade de Memória RAM",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"05/04/2026", dtPrevista:"10/04/2026", tecnico:"João Silva",   horas:"3",  respExec:"João Silva",   valor:"R$ 540,00" },
-    { codigo:"OS-0008", codUnit:"UN-008", descricao:"Implantação de Firewall", cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"01/04/2026", dtPrevista:"09/04/2026", tecnico:"Carlos Melo",  horas:"12", respExec:"Carlos Melo",  valor:"R$ 2.800,00" },
-    { codigo:"OS-0009", codUnit:"UN-009", descricao:"Backup e Restauração",    cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"03/04/2026", dtPrevista:"05/04/2026", tecnico:"Ana Rodrigues",horas:"5",  respExec:"Ana Rodrigues",valor:"R$ 700,00" },
-    { codigo:"OS-0010", codUnit:"UN-010", descricao:"Auditoria de Segurança",  cliente:"DataFlex Sistemas",  contato:"(41) 92211-3344", dtCriacao:"06/04/2026", dtPrevista:"12/04/2026", tecnico:"João Silva",   horas:"10", respExec:"João Silva",   valor:"R$ 3.500,00" },
+    { codigo:"OS-0001", codUnit:"UN-001", descricao:"Manutenção de Servidor",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"01/04/2026", dtPrevista:"05/04/2026", tecnico:"João Silva",   horas:"4",  respExec:"João Silva",   valor:"R$ 850,00",   status:"Aberto" },
+    { codigo:"OS-0002", codUnit:"UN-002", descricao:"Instalação de Software",  cliente:"Acme Tecnologia",    contato:"(11) 98765-4321", dtCriacao:"02/04/2026", dtPrevista:"03/04/2026", tecnico:"Carlos Melo",  horas:"2",  respExec:"Carlos Melo",  valor:"R$ 320,00",   status:"Fechado" },
+    { codigo:"OS-0003", codUnit:"UN-003", descricao:"Troca de Disco SSD",      cliente:"Acme Tecnologia",    contato:"(11) 91234-5678", dtCriacao:"03/04/2026", dtPrevista:"08/04/2026", tecnico:"João Silva",   horas:"1",  respExec:"João Silva",   valor:"R$ 480,00",   status:"Aberto" },
+    { codigo:"OS-0004", codUnit:"UN-004", descricao:"Configuração de Rede",    cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"01/04/2026", dtPrevista:"07/04/2026", tecnico:"Ana Rodrigues",horas:"6",  respExec:"Ana Rodrigues",valor:"R$ 1.200,00", status:"Pré-Ordem" },
+    { codigo:"OS-0005", codUnit:"UN-005", descricao:"Suporte Remoto",          cliente:"Bella Distribuidora",contato:"(21) 97654-3210", dtCriacao:"04/04/2026", dtPrevista:"04/04/2026", tecnico:"Carlos Melo",  horas:"1",  respExec:"Carlos Melo",  valor:"R$ 150,00",   status:"Fechado" },
+    { codigo:"OS-0006", codUnit:"UN-006", descricao:"Formatação de Estações",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"02/04/2026", dtPrevista:"06/04/2026", tecnico:"Ana Rodrigues",horas:"8",  respExec:"Ana Rodrigues",valor:"R$ 960,00",   status:"Aberto" },
+    { codigo:"OS-0007", codUnit:"UN-007", descricao:"Upgrade de Memória RAM",  cliente:"Carlos & Filhos ME", contato:"(31) 93333-2222", dtCriacao:"05/04/2026", dtPrevista:"10/04/2026", tecnico:"João Silva",   horas:"3",  respExec:"João Silva",   valor:"R$ 540,00",   status:"Pré-Ordem" },
+    { codigo:"OS-0008", codUnit:"UN-008", descricao:"Implantação de Firewall", cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"01/04/2026", dtPrevista:"09/04/2026", tecnico:"Carlos Melo",  horas:"12", respExec:"Carlos Melo",  valor:"R$ 2.800,00", status:"Aberto" },
+    { codigo:"OS-0009", codUnit:"UN-009", descricao:"Backup e Restauração",    cliente:"DataFlex Sistemas",  contato:"(41) 99988-7766", dtCriacao:"03/04/2026", dtPrevista:"05/04/2026", tecnico:"Ana Rodrigues",horas:"5",  respExec:"Ana Rodrigues",valor:"R$ 700,00",   status:"Cancelado" },
+    { codigo:"OS-0010", codUnit:"UN-010", descricao:"Auditoria de Segurança",  cliente:"DataFlex Sistemas",  contato:"(41) 92211-3344", dtCriacao:"06/04/2026", dtPrevista:"12/04/2026", tecnico:"João Silva",   horas:"10", respExec:"João Silva",   valor:"R$ 3.500,00", status:"Pré-Ordem" },
 ];
 
 const _dadosItens = {
@@ -1074,7 +1142,7 @@ function renderizarGrid(dados){
             ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`
             : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
         const tdGrupo = document.createElement("td");
-        tdGrupo.colSpan = 10;
+        tdGrupo.colSpan = 11;
         tdGrupo.appendChild(toggle);
         tdGrupo.insertAdjacentHTML("beforeend",
             `<strong>${cliente}</strong><span class="grupo-info">${linhas.length} OS · Total: ${totalFmt}</span>`);
@@ -1083,11 +1151,19 @@ function renderizarGrid(dados){
         tbody.appendChild(trGrupo);
         grupoToggle.set(cliente, toggle);
 
+        const STATUS_BADGE = {
+            "Pré-Ordem": "badge-pre",
+            "Aberto":    "badge-aberto",
+            "Fechado":   "badge-fechado",
+            "Cancelado": "badge-cancelado",
+        };
+
         const trsDoGrupo = [];
         linhas.forEach(row => {
             const tr = document.createElement("tr");
             tr.className = "os-row" + (aberto ? "" : " grupo-oculto");
             tr.dataset.codigoOS = row.codigo;
+            const badgeClass = STATUS_BADGE[row.status] || "badge-pre";
             tr.innerHTML = `
                 <td>${row.codigo}</td>
                 <td>${row.codUnit}</td>
@@ -1098,7 +1174,8 @@ function renderizarGrid(dados){
                 <td>${row.tecnico}</td>
                 <td>${row.horas}h</td>
                 <td>${row.respExec}</td>
-                <td>${row.valor}</td>`;
+                <td>${row.valor}</td>
+                <td><span class="os-status-badge ${badgeClass}">${row.status || "—"}</span></td>`;
             tr.addEventListener("click", () => selecionarOS(tr, row));
             tbody.appendChild(tr);
             trsDoGrupo.push(tr);
@@ -1297,35 +1374,50 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function iniciarResizePainelInferior(){
-    const handle  = document.getElementById("painel-inferior-handle");
-    const painel  = document.getElementById("painel-inferior");
-    if(!handle || !painel) return;
+    const handle   = document.getElementById("painel-inferior-handle");
+    const painel   = document.getElementById("painel-inferior");
+    const workspace = document.querySelector(".workspace-sistema");
+    if(!handle || !painel || !workspace) return;
 
     const ALTURA_MIN = 60;
-    const ALTURA_MAX = () => document.querySelector(".workspace-sistema").getBoundingClientRect().height - 80;
+    const ALTURA_MAX = () => workspace.getBoundingClientRect().height - 60;
 
-    let startY = 0;
-    let startH = 0;
+    // Overlay transparente cobre tela toda durante o drag,
+    // evitando que células da tabela ou outros elementos "roubem" os eventos.
+    let captureOverlay = null;
+    let startY = 0, startH = 0, raf = null;
+
+    function criarOverlay(){
+        const el = document.createElement("div");
+        el.style.cssText = "position:fixed;inset:0;z-index:99999;cursor:row-resize;";
+        document.body.appendChild(el);
+        return el;
+    }
 
     handle.addEventListener("mousedown", e => {
+        if(e.button !== 0) return;
         e.preventDefault();
+
         startY = e.clientY;
         startH = painel.getBoundingClientRect().height;
-
+        captureOverlay = criarOverlay();
         handle.classList.add("ativo");
-        document.body.style.cursor    = "row-resize";
         document.body.style.userSelect = "none";
 
         function onMove(e){
-            const delta  = startY - e.clientY;
-            const novaH  = Math.min(ALTURA_MAX(), Math.max(ALTURA_MIN, startH + delta));
-            painel.style.height = novaH + "px";
+            if(raf) cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => {
+                const delta = startY - e.clientY;
+                const nova  = Math.min(ALTURA_MAX(), Math.max(ALTURA_MIN, startH + delta));
+                painel.style.height = nova + "px";
+            });
         }
 
         function onUp(){
+            if(raf) cancelAnimationFrame(raf);
             handle.classList.remove("ativo");
-            document.body.style.cursor     = "";
             document.body.style.userSelect = "";
+            if(captureOverlay){ captureOverlay.remove(); captureOverlay = null; }
             document.removeEventListener("mousemove", onMove);
             document.removeEventListener("mouseup",   onUp);
         }
@@ -1493,6 +1585,7 @@ function iniciarResizeColunas(seletor){
         document.getElementById("cad-respExec").value       = osSelecionada.respExec    || "";
         document.getElementById("cad-valor").value          = osSelecionada.valor       || "";
         document.getElementById("cad-contato").value        = osSelecionada.contato     || "";
+        document.getElementById("cad-status").value        = osSelecionada.status     || "";
         _abrirModal();
     }
     function fecharTelaCad(){
@@ -1936,6 +2029,20 @@ document.querySelectorAll(".item-tab").forEach((tab, idx) => {
     document.addEventListener("click", e => { if(!cont.contains(e.target)) cont.classList.remove("ativo"); });
 })();
 
+(function(){
+    const cont = document.getElementById("status-tipo-container");
+    if(!cont) return;
+    const btn  = cont.querySelector(".btn-dropdown");
+    const menu = cont.querySelector(".dropdown-menu");
+    const inp  = cont.querySelector("input");
+    btn.addEventListener("click", e => { e.stopPropagation(); cont.classList.toggle("ativo"); });
+    menu.querySelectorAll(".item").forEach(it => {
+        it.addEventListener("click", () => { inp.value = it.textContent; cont.classList.remove("ativo"); });
+    });
+    document.addEventListener("click", e => { if(!cont.contains(e.target)) cont.classList.remove("ativo"); });
+})();
+
+
 function salvarObsItem(){
     if(!itemSelecionado || !osSelecionada) return;
     const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
@@ -2002,6 +2109,7 @@ function salvarOS(){
         respExec:    document.getElementById("cad-respExec").value.trim(),
         valor:       document.getElementById("cad-valor").value.trim(),
         contato:     document.getElementById("cad-contato").value.trim(),
+        status:     document.getElementById("cad-status").value.trim(),
     };
 
     const idx = _dadosOS.findIndex(o => o.codigo === codigo);
