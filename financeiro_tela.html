@@ -1,0 +1,930 @@
+<style id="financeiro-css">
+
+#overlayFinanceiro {
+    position: fixed;
+    inset: 0;
+    top: 80px;
+    background: rgba(0,0,0,0.60);
+    display: none;
+    z-index: 8500;
+}
+
+#modalFinanceiro {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0b1b2b;
+    border: 2px solid #737373;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    color: #e5e7eb;
+    z-index: 8600;
+    display: none;
+    flex-direction: column;
+}
+
+#financeiroTitlebar {
+    background: linear-gradient(
+        to bottom,
+        #253150 0px,
+        #253150 20px,
+        #2d3e69 20px,
+        #16213b 110%
+    );
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 13px;
+    border-bottom: 1px solid #737373;
+    flex-shrink: 0;
+    height: 36px;
+}
+
+#financeiroTitlebar .erp-controls button {
+    border: none;
+    background: transparent;
+    color: #a6a6a6;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+#financeiroTitlebar .erp-controls button:hover { color: white; }
+
+.fin-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── Painel esquerdo: lista de OS ── */
+.fin-painel-os {
+    width: 320px;
+    min-width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #737373;
+    background: #0d1f35;
+}
+
+.fin-painel-os-header {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-bottom: 1px solid #737373;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a6c8ff;
+    gap: 8px;
+    background: linear-gradient(to bottom, #1e2f52, #141e35);
+    flex-shrink: 0;
+}
+
+.fin-os-busca {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #2a3a5c;
+    flex-shrink: 0;
+}
+
+.fin-os-busca input {
+    flex: 1;
+    background: #112035;
+    border: none;
+    color: #e5e7eb;
+    padding: 6px 10px;
+    font-size: 12px;
+    outline: none;
+}
+.fin-os-busca input::placeholder { color: #4a5e7a; }
+.fin-os-busca input:focus { background: #162840; }
+
+/* ── Filtro por Status ── */
+.fin-filtro-status {
+    display: flex;
+    gap: 4px;
+    padding: 6px 8px;
+    border-bottom: 1px solid #2a3a5c;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.fin-filtro-btn {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    background: #0d1f35;
+    color: #7aa3e0;
+    border-color: #2a3a5c;
+}
+.fin-filtro-btn:hover { background: #1a2e4a; }
+.fin-filtro-btn.ativo { color: #fff; }
+.fin-filtro-btn[data-status="Todos"].ativo  { background: #253150; border-color: #7aa3e0; color: #a6c8ff; }
+.fin-filtro-btn[data-status="Pré-Ordem"].ativo  { background: #1a3470; border-color: #7aadff; color: #7aadff; }
+.fin-filtro-btn[data-status="Aberto"].ativo     { background: #0d3320; border-color: #4cda7a; color: #4cda7a; }
+.fin-filtro-btn[data-status="Fechado"].ativo    { background: #1e2530; border-color: #9ca3af; color: #9ca3af; }
+.fin-filtro-btn[data-status="Cancelado"].ativo  { background: #3a1515; border-color: #ff6b6b; color: #ff6b6b; }
+
+.fin-os-lista {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #2d3e69 #0d1f35;
+}
+
+.fin-os-lista::-webkit-scrollbar { width: 5px; }
+.fin-os-lista::-webkit-scrollbar-track { background: #0d1f35; }
+.fin-os-lista::-webkit-scrollbar-thumb { background: #2d3e69; border-radius: 3px; }
+
+.fin-os-item {
+    padding: 9px 12px;
+    border-bottom: 1px solid #1a2744;
+    cursor: pointer;
+    transition: background 0.12s;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 8px;
+    align-items: start;
+}
+
+.fin-os-item:hover { background: #1a2e4a; }
+.fin-os-item.selecionada { background: #1f4a8a !important; }
+
+.fin-os-nome {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fin-os-num {
+    font-size: 11px;
+    color: #7aa3e0;
+    white-space: nowrap;
+}
+
+.fin-os-valor {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4cda7a;
+    text-align: right;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+}
+
+.fin-os-status {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.fin-os-footer {
+    border-top: 1px solid #737373;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0d1f35;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+.fin-os-footer-label { color: #7aa3e0; }
+.fin-os-footer-valor { color: #4cda7a; font-weight: 700; }
+
+/* ── Painel direito ── */
+.fin-painel-dash {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #0b1b2b;
+}
+
+/* KPI Cards */
+.fin-kpi-row {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px 8px;
+    flex-shrink: 0;
+}
+
+.fin-kpi-card {
+    flex: 1;
+    background: #112035;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.fin-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 6px 6px 0 0;
+}
+
+.fin-kpi-card.pre::before      { background: #2d64dc; }
+.fin-kpi-card.aberto::before   { background: #22b464; }
+.fin-kpi-card.fechado::before  { background: #6b7280; }
+.fin-kpi-card.cancelado::before { background: #dc3232; }
+
+.fin-kpi-card:hover { border-color: #3a5080; }
+
+.fin-kpi-label {
+    font-size: 10px;
+    color: #7aa3e0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.fin-kpi-valor {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.fin-kpi-card.pre .fin-kpi-valor      { color: #7aadff; }
+.fin-kpi-card.aberto .fin-kpi-valor   { color: #4cda7a; }
+.fin-kpi-card.fechado .fin-kpi-valor  { color: #9ca3af; }
+.fin-kpi-card.cancelado .fin-kpi-valor { color: #ff6b6b; }
+
+.fin-kpi-sub {
+    font-size: 11px;
+    color: #4a5e7a;
+}
+
+/* ── Área dos gráficos ── */
+.fin-chart-area {
+    flex: 1;
+    padding: 0 14px 12px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    gap: 10px;
+}
+
+/* Linha do topo: gráfico de linhas + pizza */
+.fin-charts-top {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
+}
+
+.fin-chart-line-wrap {
+    flex: 1;
+    min-width: 0;
+    background: #112035;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fin-chart-donut-wrap {
+    width: 220px;
+    flex-shrink: 0;
+    background: #112035;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fin-chart-canvas-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+canvas#finChart,
+canvas#finDonutChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Legenda pizza */
+.fin-donut-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    flex-shrink: 0;
+}
+
+.fin-donut-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #a6c8ff;
+}
+
+.fin-donut-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ── Barras Valor por Status ── */
+.fin-bars-section {
+    flex-shrink: 0;
+    background: #112035;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+
+.fin-bars-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: #7aa3e0;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.fin-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.fin-bar-row:last-child { margin-bottom: 0; }
+
+.fin-bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #c8d8f0;
+    width: 72px;
+    flex-shrink: 0;
+}
+
+.fin-bar-track {
+    flex: 1;
+    height: 6px;
+    background: #0d1f35;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.fin-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.fin-bar-fill.pre      { background: #7aadff; }
+.fin-bar-fill.aberto   { background: #4cda7a; }
+.fin-bar-fill.fechado  { background: #9ca3af; }
+.fin-bar-fill.cancelado { background: #ff6b6b; }
+
+.fin-bar-meta {
+    font-size: 11px;
+    color: #7aa3e0;
+    text-align: right;
+    width: 130px;
+    flex-shrink: 0;
+}
+
+/* Chart title & legend (linha) */
+.fin-chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.fin-chart-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #a6c8ff;
+}
+
+.fin-chart-legend {
+    display: flex;
+    gap: 10px;
+    font-size: 10px;
+    color: #7aa3e0;
+    flex-wrap: wrap;
+}
+
+.fin-legend-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+/* Rodapé modal */
+.fin-footer {
+    height: 38px;
+    border-top: 1px solid #737373;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 12px;
+    gap: 8px;
+    flex-shrink: 0;
+    background: linear-gradient(to bottom, #253150, #16213b);
+}
+
+.fin-footer button {
+    background: #253150;
+    border: 1px solid #737373;
+    color: #a6a6a6;
+    padding: 4px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+.fin-footer button:hover { background: #2f3e63; }
+.fin-footer .btn-fin-fechar {
+    background: #4b1414;
+    border-color: #8c2020;
+    color: #ff9999;
+}
+.fin-footer .btn-fin-fechar:hover { background: #6b1c1c; }
+
+</style>
+
+
+<!-- ═══════════════════════════════════════════════════
+     HTML — colar antes do </body>
+═══════════════════════════════════════════════════ -->
+
+<div id="overlayFinanceiro"></div>
+
+<div id="modalFinanceiro">
+
+    <div id="financeiroTitlebar">
+        <span>💰 Financeiro — Ordens de Serviço</span>
+        <div class="erp-controls">
+            <button onclick="fecharFinanceiro()" title="Fechar">✖</button>
+        </div>
+    </div>
+
+    <div class="fin-body">
+
+        <!-- ── Painel Esquerdo ── -->
+        <div class="fin-painel-os">
+
+            <div class="fin-painel-os-header">
+                📋 Ordens de Serviço
+            </div>
+
+            <div class="fin-os-busca">
+                <input type="text" id="finBuscaOS" placeholder="Buscar OS..." oninput="finFiltrarOS()">
+            </div>
+
+            <!-- Filtro por Status -->
+            <div class="fin-filtro-status">
+                <button class="fin-filtro-btn ativo" data-status="Todos"     onclick="finFiltroStatus(this)">Todos</button>
+                <button class="fin-filtro-btn"        data-status="Pré-Ordem" onclick="finFiltroStatus(this)">Pré-Ordem</button>
+                <button class="fin-filtro-btn"        data-status="Aberto"    onclick="finFiltroStatus(this)">Aberto</button>
+                <button class="fin-filtro-btn"        data-status="Fechado"   onclick="finFiltroStatus(this)">Fechado</button>
+                <button class="fin-filtro-btn"        data-status="Cancelado" onclick="finFiltroStatus(this)">Cancelado</button>
+            </div>
+
+            <div class="fin-os-lista" id="finListaOS">
+                <!-- Preenchido via JS -->
+            </div>
+
+            <div class="fin-os-footer">
+                <span class="fin-os-footer-label" id="finContadorOS">0 registros</span>
+                <span class="fin-os-footer-valor" id="finTotalGeral">R$ 0,00</span>
+            </div>
+
+        </div>
+
+        <!-- ── Painel Direito ── -->
+        <div class="fin-painel-dash">
+
+            <!-- KPI Cards -->
+            <div class="fin-kpi-row">
+                <div class="fin-kpi-card pre">
+                    <div class="fin-kpi-label">Pré-Ordem</div>
+                    <div class="fin-kpi-valor" id="kpi-pre">0</div>
+                    <div class="fin-kpi-sub" id="kpi-pre-val">R$ 0,00</div>
+                </div>
+                <div class="fin-kpi-card aberto">
+                    <div class="fin-kpi-label">Aberto</div>
+                    <div class="fin-kpi-valor" id="kpi-aberto">0</div>
+                    <div class="fin-kpi-sub" id="kpi-aberto-val">R$ 0,00</div>
+                </div>
+                <div class="fin-kpi-card fechado">
+                    <div class="fin-kpi-label">Fechado</div>
+                    <div class="fin-kpi-valor" id="kpi-fechado">0</div>
+                    <div class="fin-kpi-sub" id="kpi-fechado-val">R$ 0,00</div>
+                </div>
+                <div class="fin-kpi-card cancelado">
+                    <div class="fin-kpi-label">Cancelado</div>
+                    <div class="fin-kpi-valor" id="kpi-cancelado">0</div>
+                    <div class="fin-kpi-sub" id="kpi-cancelado-val">R$ 0,00</div>
+                </div>
+            </div>
+
+            <!-- Área de gráficos -->
+            <div class="fin-chart-area">
+
+                <!-- Linha superior: gráfico de linhas + pizza -->
+                <div class="fin-charts-top">
+
+                    <!-- Gráfico de Linhas -->
+                    <div class="fin-chart-line-wrap">
+                        <div class="fin-chart-header">
+                            <span class="fin-chart-title">Evolução por Status (últimos 6 meses)</span>
+                            <div class="fin-chart-legend">
+                                <span><span class="fin-legend-dot" style="background:#7aadff"></span>Pré-Ordem</span>
+                                <span><span class="fin-legend-dot" style="background:#4cda7a"></span>Aberto</span>
+                                <span><span class="fin-legend-dot" style="background:#9ca3af"></span>Fechado</span>
+                                <span><span class="fin-legend-dot" style="background:#ff6b6b"></span>Cancelado</span>
+                            </div>
+                        </div>
+                        <div class="fin-chart-canvas-wrap">
+                            <canvas id="finChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Pizza (Donut) -->
+                    <div class="fin-chart-donut-wrap">
+                        <div class="fin-chart-title">Distribuição por Status</div>
+                        <div style="font-size:10px;color:#4a5e7a;margin-bottom:4px;">% do valor total por status</div>
+                        <div class="fin-chart-canvas-wrap" style="flex:1;min-height:0;">
+                            <canvas id="finDonutChart"></canvas>
+                        </div>
+                        <div class="fin-donut-legend">
+                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#4cda7a"></span>Aberto</div>
+                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#7aadff"></span>Pré-Ordem</div>
+                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#9ca3af"></span>Fechado</div>
+                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#ff6b6b"></span>Cancelado</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Barras: Valor por Status -->
+                <div class="fin-bars-section">
+                    <div class="fin-bars-title">Valor por Status</div>
+                    <div class="fin-bar-row">
+                        <div class="fin-bar-label">Pré-Ordem</div>
+                        <div class="fin-bar-track"><div class="fin-bar-fill pre" id="bar-pre" style="width:0%"></div></div>
+                        <div class="fin-bar-meta" id="bar-pre-meta">R$ 0,00 · 0%</div>
+                    </div>
+                    <div class="fin-bar-row">
+                        <div class="fin-bar-label">Aberto</div>
+                        <div class="fin-bar-track"><div class="fin-bar-fill aberto" id="bar-aberto" style="width:0%"></div></div>
+                        <div class="fin-bar-meta" id="bar-aberto-meta">R$ 0,00 · 0%</div>
+                    </div>
+                    <div class="fin-bar-row">
+                        <div class="fin-bar-label">Cancelado</div>
+                        <div class="fin-bar-track"><div class="fin-bar-fill cancelado" id="bar-cancelado" style="width:0%"></div></div>
+                        <div class="fin-bar-meta" id="bar-cancelado-meta">R$ 0,00 · 0%</div>
+                    </div>
+                    <div class="fin-bar-row">
+                        <div class="fin-bar-label">Fechado</div>
+                        <div class="fin-bar-track"><div class="fin-bar-fill fechado" id="bar-fechado" style="width:0%"></div></div>
+                        <div class="fin-bar-meta" id="bar-fechado-meta">R$ 0,00 · 0%</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="fin-footer">
+        <button onclick="finExportar()">📄 Exportar</button>
+        <button onclick="fecharFinanceiro()" class="btn-fin-fechar">✖ Fechar</button>
+    </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     JS — colar no final do <script> existente
+═══════════════════════════════════════════════════ -->
+<script id="financeiro-js">
+
+/* Dependência: Chart.js (CDN) — adicionar no <head>:
+   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><\/script>
+*/
+
+let _finChartInstance   = null;
+let _finDonutInstance   = null;
+let _finFiltroAtivo     = "Todos";
+
+const _finDadosMensais = {
+    labels:    ["Nov", "Dez", "Jan", "Fev", "Mar", "Abr"],
+    preOrdem:  [4, 6, 3, 8, 5, null],
+    aberto:    [8, 5, 9, 6, 7, null],
+    fechado:   [12,10, 8,14,11, null],
+    cancelado: [2, 1, 3, 2, 1, null],
+};
+
+/* ── Abre o modal ── */
+function abrirFinanceiro() {
+    document.getElementById("overlayFinanceiro").style.display = "block";
+    document.getElementById("modalFinanceiro").style.display   = "flex";
+    finAtualizarDados();
+}
+
+/* ── Fecha o modal ── */
+function fecharFinanceiro() {
+    document.getElementById("overlayFinanceiro").style.display = "none";
+    document.getElementById("modalFinanceiro").style.display   = "none";
+}
+
+/* ── Filtro por status (botões) ── */
+function finFiltroStatus(btn) {
+    document.querySelectorAll(".fin-filtro-btn").forEach(b => b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+    _finFiltroAtivo = btn.dataset.status;
+    const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
+    finRenderizarLista(dados);
+}
+
+/* ── Processa e exibe os dados ── */
+function finAtualizarDados() {
+    const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
+
+    const grupos = {
+        "Pré-Ordem":  { qtd: 0, total: 0 },
+        "Aberto":     { qtd: 0, total: 0 },
+        "Fechado":    { qtd: 0, total: 0 },
+        "Cancelado":  { qtd: 0, total: 0 },
+    };
+
+    dados.forEach(os => {
+        const st = os.status || "Pré-Ordem";
+        const vl = parseFloat((os.valor || "0").toString().replace(/[^\d,.-]/g,'').replace(',','.')) || 0;
+        if (grupos[st] !== undefined) {
+            grupos[st].qtd++;
+            grupos[st].total += vl;
+        }
+    });
+
+    const fmt = v => "R$ " + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    // KPIs
+    document.getElementById("kpi-pre").innerText        = grupos["Pré-Ordem"].qtd;
+    document.getElementById("kpi-pre-val").innerText    = fmt(grupos["Pré-Ordem"].total);
+    document.getElementById("kpi-aberto").innerText     = grupos["Aberto"].qtd;
+    document.getElementById("kpi-aberto-val").innerText = fmt(grupos["Aberto"].total);
+    document.getElementById("kpi-fechado").innerText    = grupos["Fechado"].qtd;
+    document.getElementById("kpi-fechado-val").innerText= fmt(grupos["Fechado"].total);
+    document.getElementById("kpi-cancelado").innerText  = grupos["Cancelado"].qtd;
+    document.getElementById("kpi-cancelado-val").innerText = fmt(grupos["Cancelado"].total);
+
+    // Barras Valor por Status
+    const totalGeral = Object.values(grupos).reduce((a, g) => a + g.total, 0);
+    const maxVal = Math.max(...Object.values(grupos).map(g => g.total), 1);
+
+    const barDefs = [
+        { key: "Pré-Ordem", barId: "bar-pre",      metaId: "bar-pre-meta" },
+        { key: "Aberto",    barId: "bar-aberto",    metaId: "bar-aberto-meta" },
+        { key: "Cancelado", barId: "bar-cancelado", metaId: "bar-cancelado-meta" },
+        { key: "Fechado",   barId: "bar-fechado",   metaId: "bar-fechado-meta" },
+    ];
+
+    barDefs.forEach(def => {
+        const g = grupos[def.key];
+        const pct = maxVal > 0 ? (g.total / maxVal * 100).toFixed(1) : 0;
+        const pctTotal = totalGeral > 0 ? (g.total / totalGeral * 100).toFixed(1) : 0;
+        document.getElementById(def.barId).style.width = pct + "%";
+        document.getElementById(def.metaId).innerText  = fmt(g.total) + " · " + pctTotal + "%";
+    });
+
+    // Atualiza mês atual no gráfico de linhas
+    const md = _finDadosMensais;
+    md.preOrdem[5]  = grupos["Pré-Ordem"].qtd  || 0;
+    md.aberto[5]    = grupos["Aberto"].qtd      || 0;
+    md.fechado[5]   = grupos["Fechado"].qtd     || 0;
+    md.cancelado[5] = grupos["Cancelado"].qtd   || 0;
+
+    finRenderizarLista(dados);
+
+    const totalGeral2 = dados.reduce((acc, os) => {
+        return acc + (parseFloat((os.valor || "0").toString().replace(/[^\d,.-]/g,'').replace(',','.')) || 0);
+    }, 0);
+    document.getElementById("finContadorOS").innerText = dados.length + " registro" + (dados.length !== 1 ? "s" : "");
+    document.getElementById("finTotalGeral").innerText = fmt(totalGeral2);
+
+    finDesenharGrafico();
+    finDesenharDonut(grupos);
+}
+
+/* ── Renderiza lista de OS ── */
+function finRenderizarLista(dados) {
+    const lista = document.getElementById("finListaOS");
+    const busca = (document.getElementById("finBuscaOS").value || "").toLowerCase();
+
+    let filtrado = dados.filter(os =>
+        !busca ||
+        (os.cliente || "").toLowerCase().includes(busca) ||
+        (os.codigo  || "").toLowerCase().includes(busca)
+    );
+
+    if (_finFiltroAtivo && _finFiltroAtivo !== "Todos") {
+        filtrado = filtrado.filter(os => (os.status || "Pré-Ordem") === _finFiltroAtivo);
+    }
+
+    if (filtrado.length === 0) {
+        lista.innerHTML = '<div style="padding:20px;text-align:center;color:#4a5e7a;font-size:12px;">Nenhuma OS encontrada</div>';
+        return;
+    }
+
+    const badgeClass = { "Pré-Ordem": "badge-pre", "Aberto": "badge-aberto", "Fechado": "badge-fechado", "Cancelado": "badge-cancelado" };
+
+    lista.innerHTML = filtrado.map((os, i) => {
+        const st = os.status || "Pré-Ordem";
+        const vl = parseFloat((os.valor || "0").toString().replace(/[^\d,.-]/g,'').replace(',','.')) || 0;
+        const vlFmt = "R$ " + vl.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        const badge = `<span class="os-status-badge ${badgeClass[st] || 'badge-pre'}">${st}</span>`;
+        return `
+        <div class="fin-os-item" onclick="finSelecionarOS(this)" data-idx="${i}">
+            <div class="fin-os-nome" title="${os.cliente || '—'}">${os.cliente || '—'}</div>
+            <div class="fin-os-valor">${vlFmt}</div>
+            <div class="fin-os-status">${badge} <span style="font-size:11px;color:#4a6a8a;margin-left:4px;">#${os.codigo || '—'}</span></div>
+        </div>`;
+    }).join('');
+}
+
+function finSelecionarOS(el) {
+    document.querySelectorAll(".fin-os-item").forEach(i => i.classList.remove("selecionada"));
+    el.classList.add("selecionada");
+}
+
+function finFiltrarOS() {
+    const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
+    finRenderizarLista(dados);
+}
+
+/* ── Gráfico de Linhas ── */
+function finDesenharGrafico() {
+    const canvas = document.getElementById("finChart");
+    if (!canvas || typeof Chart === "undefined") return;
+
+    if (_finChartInstance) { _finChartInstance.destroy(); _finChartInstance = null; }
+
+    const md = _finDadosMensais;
+
+    _finChartInstance = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels: md.labels,
+            datasets: [
+                { label: "Pré-Ordem", data: md.preOrdem,  borderColor: "#7aadff", backgroundColor: "rgba(122,173,255,0.10)", borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: "#7aadff", tension: 0.35, fill: true },
+                { label: "Aberto",    data: md.aberto,    borderColor: "#4cda7a", backgroundColor: "rgba(76,218,122,0.08)",   borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: "#4cda7a", tension: 0.35, fill: true },
+                { label: "Fechado",   data: md.fechado,   borderColor: "#9ca3af", backgroundColor: "rgba(156,163,175,0.08)",  borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: "#9ca3af", tension: 0.35, fill: true },
+                { label: "Cancelado", data: md.cancelado, borderColor: "#ff6b6b", backgroundColor: "rgba(255,107,107,0.08)",  borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: "#ff6b6b", tension: 0.35, fill: true },
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "#1b2744",
+                    borderColor: "#2a3a5c",
+                    borderWidth: 1,
+                    titleColor: "#a6c8ff",
+                    bodyColor: "#cfd8e3",
+                    padding: 10,
+                    callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} OS` }
+                },
+            },
+            scales: {
+                x: { grid: { color: "rgba(42,58,92,0.6)" }, ticks: { color: "#7aa3e0", font: { size: 11 } }, border: { color: "#2a3a5c" } },
+                y: { grid: { color: "rgba(42,58,92,0.6)" }, ticks: { color: "#7aa3e0", font: { size: 11 }, stepSize: 1 }, border: { color: "#2a3a5c" }, beginAtZero: true },
+            },
+        },
+    });
+}
+
+/* ── Gráfico de Pizza (Donut) ── */
+function finDesenharDonut(grupos) {
+    const canvas = document.getElementById("finDonutChart");
+    if (!canvas || typeof Chart === "undefined") return;
+
+    if (_finDonutInstance) { _finDonutInstance.destroy(); _finDonutInstance = null; }
+
+    const labels = ["Aberto", "Pré-Ordem", "Fechado", "Cancelado"];
+    const valores = [
+        grupos["Aberto"].total,
+        grupos["Pré-Ordem"].total,
+        grupos["Fechado"].total,
+        grupos["Cancelado"].total,
+    ];
+    const cores = ["#4cda7a", "#7aadff", "#9ca3af", "#ff6b6b"];
+    const total = valores.reduce((a, b) => a + b, 0);
+
+    _finDonutInstance = new Chart(canvas, {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: valores,
+                backgroundColor: cores,
+                borderColor: "#0b1b2b",
+                borderWidth: 2,
+                hoverOffset: 6,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "62%",
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "#1b2744",
+                    borderColor: "#2a3a5c",
+                    borderWidth: 1,
+                    titleColor: "#a6c8ff",
+                    bodyColor: "#cfd8e3",
+                    padding: 10,
+                    callbacks: {
+                        label: ctx => {
+                            const pct = total > 0 ? (ctx.parsed / total * 100).toFixed(1) : 0;
+                            const fmt = v => "R$ " + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            return ` ${ctx.label}: ${fmt(ctx.parsed)} (${pct}%)`;
+                        }
+                    }
+                },
+            },
+        },
+    });
+}
+
+/* ── Exportar (placeholder) ── */
+function finExportar() {
+    if (typeof Swal !== "undefined") {
+        Swal.fire({
+            icon: "info",
+            title: "Exportar",
+            text: "Função de exportação não implementada neste ambiente.",
+            confirmButtonColor: "#2d7dff",
+            scrollbarPadding: false,
+        });
+    } else {
+        alert("Exportar: função não implementada.");
+    }
+}
+
+/* ── Vincula clique no menu ── */
+document.addEventListener("DOMContentLoaded", function () {
+    const links = document.querySelectorAll(".dropdown-sistema a.btn-dropdown");
+    links.forEach(link => {
+        if (link.textContent.trim() === "Financeiro") {
+            link.addEventListener("click", function(e) {
+                e.preventDefault();
+                abrirFinanceiro();
+            });
+        }
+    });
+
+    const ov = document.getElementById("overlayFinanceiro");
+    if (ov) ov.addEventListener("click", fecharFinanceiro);
+});
+
+</script>
+
+<!--
+=============================================================================
+  DEPENDÊNCIA OBRIGATÓRIA — adicionar no <head> do sistema.html:
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  Sem isso os gráficos não serão renderizados.
+=============================================================================
+-->
