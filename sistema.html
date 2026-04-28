@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="assets\icon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
-
+/* ── Status badges na grid principal ─────────────── */
 .os-status-badge {
     display: inline-block;
     padding: 2px 9px;
@@ -23,6 +23,7 @@
 .badge-fechado    { background: rgba(120,120,130,.14); color: #9ca3af; border: 1px solid rgba(120,120,130,.28); }
 .badge-cancelado  { background: rgba(220,50,50,.15);   color: #ff6b6b; border: 1px solid rgba(220,50,50,.30); }
 
+/* ── Resize handle ───────────────────────────────── */
 #painel-inferior-handle {
     position: relative;
     flex-shrink: 0;
@@ -32,7 +33,7 @@
     background: transparent;
     z-index: 10;
 }
-
+/* Área de clique ampliada verticalmente */
 #painel-inferior-handle::before {
     content: '';
     position: absolute;
@@ -40,7 +41,7 @@
     top: -6px; bottom: -6px;
     cursor: row-resize;
 }
-
+/* Indicador visual central */
 #painel-inferior-handle::after {
     content: '';
     position: absolute;
@@ -98,267 +99,86 @@
     flex-shrink: 0;
     height: 36px;
 }
-
 #financeiroTitlebar .erp-controls button {
-    border: none;
-    background: transparent;
-    color: #a6a6a6;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 2px 6px;
+    border: none; background: transparent; color: #a6a6a6; font-size: 16px; cursor: pointer; padding: 2px 6px;
 }
 #financeiroTitlebar .erp-controls button:hover { color: white; }
 
-.fin-body {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
+.fin-body { display: flex; flex: 1; overflow: hidden; }
 
 .fin-painel-os {
-    width: 320px;
-    min-width: 220px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid #737373;
-    background: #0d1f35;
+    width: 320px; min-width: 220px; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    border-right: 1px solid #737373; background: #0d1f35;
 }
-
 .fin-painel-os-header {
-    height: 36px;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    border-bottom: 1px solid #737373;
-    font-size: 12px;
-    font-weight: 600;
-    color: #a6c8ff;
-    gap: 8px;
-    background: linear-gradient(to bottom, #1e2f52, #141e35);
-    flex-shrink: 0;
+    height: 36px; display: flex; align-items: center; padding: 0 10px;
+    border-bottom: 1px solid #737373; font-size: 12px; font-weight: 600; color: #a6c8ff; gap: 8px;
+    background: linear-gradient(to bottom, #1e2f52, #141e35); flex-shrink: 0;
 }
-
-.fin-os-busca {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #2a3a5c;
-    flex-shrink: 0;
-}
-
+.fin-os-busca { display: flex; align-items: center; border-bottom: 1px solid #2a3a5c; flex-shrink: 0; }
 .fin-os-busca input {
-    flex: 1;
-    background: #112035;
-    border: none;
-    color: #e5e7eb;
-    padding: 6px 10px;
-    font-size: 12px;
-    outline: none;
+    flex: 1; background: #112035; border: none; color: #e5e7eb;
+    padding: 6px 10px; font-size: 12px; outline: none;
 }
 .fin-os-busca input::placeholder { color: #4a5e7a; }
 .fin-os-busca input:focus { background: #162840; }
-
-.fin-os-lista {
-    flex: 1;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #2d3e69 #0d1f35;
-}
+.fin-os-lista { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2d3e69 #0d1f35; }
 .fin-os-lista::-webkit-scrollbar { width: 5px; }
 .fin-os-lista::-webkit-scrollbar-track { background: #0d1f35; }
 .fin-os-lista::-webkit-scrollbar-thumb { background: #2d3e69; border-radius: 3px; }
-
 .fin-os-item {
-    padding: 9px 12px;
-    border-bottom: 1px solid #1a2744;
-    cursor: pointer;
-    transition: background 0.12s;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 4px 8px;
-    align-items: start;
+    padding: 9px 12px; border-bottom: 1px solid #1a2744; cursor: pointer;
+    transition: background 0.12s; display: grid;
+    grid-template-columns: 1fr auto; gap: 4px 8px; align-items: start;
 }
 .fin-os-item:hover { background: #1a2e4a; }
 .fin-os-item.selecionada { background: #1f4a8a !important; }
-
-.fin-os-nome {
-    font-size: 12px;
-    font-weight: 600;
-    color: #e2e8f0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.fin-os-num {
-    font-size: 11px;
-    color: #7aa3e0;
-    white-space: nowrap;
-}
-
-.fin-os-valor {
-    font-size: 12px;
-    font-weight: 700;
-    color: #4cda7a;
-    text-align: right;
-    grid-column: 2;
-    grid-row: 1 / 3;
-    align-self: center;
-}
-
-.fin-os-status {
-    grid-column: 1;
-    grid-row: 2;
-}
-
+.fin-os-nome { font-size: 12px; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fin-os-num  { font-size: 11px; color: #7aa3e0; white-space: nowrap; }
+.fin-os-valor { font-size: 12px; font-weight: 700; color: #4cda7a; text-align: right; grid-column: 2; grid-row: 1 / 3; align-self: center; }
+.fin-os-status { grid-column: 1; grid-row: 2; }
 .fin-os-footer {
-    border-top: 1px solid #737373;
-    padding: 8px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #0d1f35;
-    flex-shrink: 0;
-    font-size: 12px;
+    border-top: 1px solid #737373; padding: 8px 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #0d1f35; flex-shrink: 0; font-size: 12px;
 }
 .fin-os-footer-label { color: #7aa3e0; }
 .fin-os-footer-valor { color: #4cda7a; font-weight: 700; }
-
-.fin-painel-dash {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background: #0b1b2b;
-}
-
-.fin-kpi-row {
-    display: flex;
-    gap: 10px;
-    padding: 12px 14px 8px;
-    flex-shrink: 0;
-}
-
+.fin-painel-dash { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #0b1b2b; }
+.fin-kpi-row { display: flex; gap: 10px; padding: 12px 14px 8px; flex-shrink: 0; }
 .fin-kpi-card {
-    flex: 1;
-    background: #112035;
-    border: 1px solid #2a3a5c;
-    border-radius: 6px;
-    padding: 10px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s;
+    flex: 1; background: #112035; border: 1px solid #2a3a5c; border-radius: 6px;
+    padding: 10px 12px; display: flex; flex-direction: column; gap: 4px;
+    position: relative; overflow: hidden; transition: border-color 0.2s;
 }
 .fin-kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 6px 6px 0 0;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 6px 6px 0 0;
 }
 .fin-kpi-card.pre::before      { background: #2d64dc; }
 .fin-kpi-card.aberto::before   { background: #22b464; }
 .fin-kpi-card.fechado::before  { background: #6b7280; }
 .fin-kpi-card.cancelado::before { background: #dc3232; }
 .fin-kpi-card:hover { border-color: #3a5080; }
-
-.fin-kpi-label {
-    font-size: 10px;
-    color: #7aa3e0;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.fin-kpi-valor {
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1;
-}
+.fin-kpi-label { font-size: 10px; color: #7aa3e0; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+.fin-kpi-valor { font-size: 22px; font-weight: 700; line-height: 1; }
 .fin-kpi-card.pre .fin-kpi-valor      { color: #7aadff; }
 .fin-kpi-card.aberto .fin-kpi-valor   { color: #4cda7a; }
 .fin-kpi-card.fechado .fin-kpi-valor  { color: #9ca3af; }
 .fin-kpi-card.cancelado .fin-kpi-valor { color: #ff6b6b; }
-
-.fin-kpi-sub {
-    font-size: 11px;
-    color: #4a5e7a;
-}
-
-.fin-chart-area {
-    flex: 1;
-    padding: 0 14px 12px;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-
-.fin-chart-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    flex-shrink: 0;
-}
-
-.fin-chart-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: #a6c8ff;
-}
-
-.fin-chart-legend {
-    display: flex;
-    gap: 12px;
-    font-size: 11px;
-    color: #cfd8e3;
-}
-
-.fin-legend-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-right: 4px;
-    vertical-align: middle;
-}
-
-.fin-chart-wrap {
-    flex: 1;
-    min-height: 0;
-    background: #112035;
-    border: 1px solid #2a3a5c;
-    border-radius: 6px;
-    padding: 12px;
-    position: relative;
-}
-
-canvas#finChart {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* ── Filtro por Status ── */
-.fin-filtro-status {
-    display: flex;
-    gap: 4px;
-    padding: 6px 8px;
-    border-bottom: 1px solid #2a3a5c;
-    flex-shrink: 0;
-    flex-wrap: wrap;
-}
+.fin-kpi-sub { font-size: 11px; color: #4a5e7a; }
+.fin-chart-area { flex: 1; padding: 0 14px 12px; display: flex; flex-direction: column; min-height: 0; }
+.fin-chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-shrink: 0; }
+.fin-chart-title { font-size: 12px; font-weight: 600; color: #a6c8ff; }
+.fin-chart-legend { display: flex; gap: 12px; font-size: 11px; color: #cfd8e3; }
+.fin-legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.fin-chart-wrap { flex: 1; min-height: 0; background: #112035; border: 1px solid #2a3a5c; border-radius: 6px; padding: 12px; position: relative; }
+canvas#finChart { width: 100% !important; height: 100% !important; }
+.fin-filtro-status { display: flex; gap: 4px; padding: 6px 8px; border-bottom: 1px solid #2a3a5c; flex-shrink: 0; flex-wrap: wrap; }
 .fin-filtro-btn {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 10px;
-    border: 1px solid #2a3a5c;
-    cursor: pointer;
-    transition: all 0.15s;
-    background: #0d1f35;
-    color: #7aa3e0;
+    font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 10px;
+    border: 1px solid #2a3a5c; cursor: pointer; transition: all 0.15s;
+    background: #0d1f35; color: #7aa3e0;
 }
 .fin-filtro-btn:hover { background: #1a2e4a; }
 .fin-filtro-btn[data-status="Todos"].ativo    { background: #253150; border-color: #7aa3e0; color: #a6c8ff; }
@@ -366,149 +186,190 @@ canvas#finChart {
 .fin-filtro-btn[data-status="Aberto"].ativo   { background: #0d3320; border-color: #4cda7a; color: #4cda7a; }
 .fin-filtro-btn[data-status="Fechado"].ativo  { background: #1e2530; border-color: #9ca3af; color: #9ca3af; }
 .fin-filtro-btn[data-status="Cancelado"].ativo { background: #3a1515; border-color: #ff6b6b; color: #ff6b6b; }
-
-/* ── Layout topo: linha + pizza ── */
-.fin-charts-top {
-    display: flex;
-    gap: 10px;
-    flex: 1;
-    min-height: 0;
-}
+.fin-charts-top { display: flex; gap: 10px; flex: 1; min-height: 0; }
 .fin-chart-line-wrap {
-    flex: 1;
-    min-width: 0;
-    background: #112035;
-    border: 1px solid #2a3a5c;
-    border-radius: 6px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex: 1; min-width: 0; background: #112035; border: 1px solid #2a3a5c;
+    border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;
 }
 .fin-chart-donut-wrap {
-    width: 210px;
-    flex-shrink: 0;
-    background: #112035;
-    border: 1px solid #2a3a5c;
-    border-radius: 6px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    width: 210px; flex-shrink: 0; background: #112035; border: 1px solid #2a3a5c;
+    border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 6px;
 }
-.fin-chart-canvas-wrap {
-    flex: 1;
-    min-height: 0;
-    position: relative;
-}
-canvas#finDonutChart {
-    width: 100% !important;
-    height: 100% !important;
-}
-.fin-donut-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 10px;
-    flex-shrink: 0;
-}
-.fin-donut-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    color: #a6c8ff;
-}
-.fin-donut-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-/* ── Barras Valor por Status ── */
-.fin-bars-section {
-    flex-shrink: 0;
-    background: #112035;
-    border: 1px solid #2a3a5c;
-    border-radius: 6px;
-    padding: 10px 14px;
-}
-.fin-bars-title {
-    font-size: 10px;
-    font-weight: 700;
-    color: #7aa3e0;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-}
-.fin-bar-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-}
+.fin-chart-canvas-wrap { flex: 1; min-height: 0; position: relative; }
+canvas#finDonutChart { width: 100% !important; height: 100% !important; }
+.fin-donut-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; flex-shrink: 0; }
+.fin-donut-legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #a6c8ff; }
+.fin-donut-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.fin-bars-section { flex-shrink: 0; background: #112035; border: 1px solid #2a3a5c; border-radius: 6px; padding: 10px 14px; }
+.fin-bars-title { font-size: 10px; font-weight: 700; color: #7aa3e0; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; }
+.fin-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .fin-bar-row:last-child { margin-bottom: 0; }
-.fin-bar-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: #c8d8f0;
-    width: 72px;
-    flex-shrink: 0;
-}
-.fin-bar-track {
-    flex: 1;
-    height: 6px;
-    background: #0d1f35;
-    border-radius: 3px;
-    overflow: hidden;
-}
-.fin-bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.5s ease;
-    width: 0%;
-}
+.fin-bar-label { font-size: 11px; font-weight: 600; color: #c8d8f0; width: 72px; flex-shrink: 0; }
+.fin-bar-track { flex: 1; height: 6px; background: #0d1f35; border-radius: 3px; overflow: hidden; }
+.fin-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; width: 0%; }
 .fin-bar-fill.pre      { background: #7aadff; }
 .fin-bar-fill.aberto   { background: #4cda7a; }
 .fin-bar-fill.fechado  { background: #9ca3af; }
 .fin-bar-fill.cancelado { background: #ff6b6b; }
-.fin-bar-meta {
-    font-size: 11px;
-    color: #7aa3e0;
-    text-align: right;
-    width: 130px;
-    flex-shrink: 0;
-}
-
+.fin-bar-meta { font-size: 11px; color: #7aa3e0; text-align: right; width: 130px; flex-shrink: 0; }
 .fin-footer {
-    height: 38px;
-    border-top: 1px solid #737373;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 12px;
-    gap: 8px;
-    flex-shrink: 0;
+    height: 38px; border-top: 1px solid #737373;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 0 12px; gap: 8px; flex-shrink: 0;
     background: linear-gradient(to bottom, #253150, #16213b);
 }
-
 .fin-footer button {
-    background: #253150;
-    border: 1px solid #737373;
-    color: #a6a6a6;
-    padding: 4px 14px;
-    font-size: 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.15s;
+    background: #253150; border: 1px solid #737373; color: #a6a6a6;
+    padding: 4px 14px; font-size: 12px; cursor: pointer; border-radius: 4px; transition: background 0.15s;
 }
 .fin-footer button:hover { background: #2f3e63; }
-.fin-footer .btn-fin-fechar {
-    background: #4b1414;
-    border-color: #8c2020;
-    color: #ff9999;
-}
+.fin-footer .btn-fin-fechar { background: #4b1414; border-color: #8c2020; color: #ff9999; }
 .fin-footer .btn-fin-fechar:hover { background: #6b1c1c; }
 
+/* ══════════════════════════════════════════
+   MODAL DE ANEXOS
+══════════════════════════════════════════ */
+#overlayAnexos {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none; z-index: 9000;
+}
+#modalAnexos {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+    width: 860px; background: #0b1b2b; border: 2px solid #737373;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7); color: #e5e7eb;
+    z-index: 9100; display: none; flex-direction: column;
+    max-height: calc(100vh - 100px);
+}
+.anexos-barra-acoes {
+    height: 36px; display: flex; align-items: center; gap: 6px;
+    padding: 0 8px; border-bottom: 1px solid #737373;
+    background: linear-gradient(to bottom, #253150 0px, #253150 16px, #2d3e69 20px, #16213b 130%);
+    flex-shrink: 0;
+}
+.btn-anexos-acao {
+    background: #253150; border: 1px solid #737373; color: #a6a6a6;
+    padding: 3px 10px; font-size: 12px; cursor: pointer; border-radius: 4px;
+    display: flex; align-items: center; gap: 5px; font-family: inherit;
+    transition: background 0.15s;
+}
+.btn-anexos-acao:hover { background: #2f3e63; color: #e2e8f0; }
+.anexos-info-count { margin-left: auto; font-size: 11px; color: #5c6b91; }
+.anexos-corpo {
+    display: flex; flex: 1; min-height: 420px; overflow: hidden;
+}
+.anexos-coluna-lista {
+    width: 270px; min-width: 160px; max-width: 440px; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    border-right: 1px solid #737373; background: #0f1d30;
+}
+.anexos-col-header {
+    background: linear-gradient(to bottom, #253150 0, #253150 18px, #1e2f4e 100%);
+    border-bottom: 1px solid #737373; padding: 5px 10px;
+    font-size: 11px; font-weight: 600; color: #7aa3e0; letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.anexos-badge-count {
+    background: #2d7dff; color: #fff; border-radius: 10px;
+    padding: 0 6px; font-size: 10px; font-weight: 700;
+}
+.anexos-lista-scroll {
+    flex: 1; overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: #2d3e69 #0f1d30;
+}
+.anexos-lista-scroll::-webkit-scrollbar { width: 5px; }
+.anexos-lista-scroll::-webkit-scrollbar-track { background: #0f1d30; }
+.anexos-lista-scroll::-webkit-scrollbar-thumb { background: #2d3e69; border-radius: 3px; }
+.anexo-item-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-bottom: 1px solid #1a2744;
+    cursor: pointer; transition: background 0.12s;
+}
+.anexo-item-row:hover { background: #1e3058; }
+.anexo-item-row.selecionado { background: #1f4a8a; }
+.anexo-item-row.selecionado .anexo-item-nome { color: #fff; }
+.anexo-tipo-icon {
+    width: 28px; height: 28px; border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+}
+.anexo-icon-pdf { background: #4c1414; color: #f87171; border: 1px solid #991b1b; }
+.anexo-icon-img { background: #1a3a4c; color: #60a5fa; border: 1px solid #1e5880; }
+.anexo-icon-doc { background: #1e3a5f; color: #93c5fd; border: 1px solid #2563eb; }
+.anexo-icon-xls { background: #1a4d2e; color: #4ade80; border: 1px solid #1c8536; }
+.anexo-icon-zip { background: #3b2f00; color: #fbbf24; border: 1px solid #92400e; }
+.anexo-icon-gen { background: #253150; color: #a6a6a6; border: 1px solid #737373; }
+.anexo-item-info { flex: 1; min-width: 0; }
+.anexo-item-nome {
+    font-size: 12px; color: #cfd8e3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.anexo-item-meta { font-size: 10px; color: #5c6b91; margin-top: 2px; }
+.anexo-item-del {
+    background: none; border: none; color: #5c6b91; cursor: pointer;
+    font-size: 12px; padding: 2px 4px; border-radius: 3px;
+    opacity: 0; transition: opacity 0.15s; flex-shrink: 0;
+}
+.anexo-item-row:hover .anexo-item-del { opacity: 1; }
+.anexo-item-del:hover { background: #4c1414; color: #f87171; }
+.anexos-dropzone {
+    border: 2px dashed rgba(45,125,255,0.22); border-radius: 5px;
+    margin: 8px; padding: 12px 8px; text-align: center;
+    font-size: 11px; color: #3a5080; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: background 0.15s, border-color 0.15s, color 0.15s; flex-shrink: 0;
+}
+.anexos-dropzone:hover { background: #0e2040; border-color: rgba(45,125,255,0.55); color: #7aadff; }
+.anexos-resize-handle {
+    width: 4px; background: transparent;
+    cursor: col-resize; flex-shrink: 0; transition: background 0.15s;
+}
+.anexos-resize-handle:hover { background: rgba(45,125,255,0.35); }
+.anexos-coluna-preview {
+    flex: 1; display: flex; flex-direction: column;
+    background: #0b1b2b; min-width: 0;
+}
+.anexos-preview-content {
+    flex: 1; display: flex; align-items: center;
+    justify-content: center; padding: 20px; overflow: auto;
+}
+.anexos-preview-vazio {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px; color: #2a3a5c;
+}
+.anexos-preview-vazio p { font-size: 13px; color: #3a5080; }
+.anexos-preview-pdf {
+    width: 100%; background: #16213b;
+    border: 1px solid #2a3a5c; border-radius: 4px; padding: 20px;
+}
+.anexos-pdf-linha {
+    height: 10px; background: #253150;
+    border-radius: 3px; margin-bottom: 10px;
+}
+.anexos-pdf-linha.titulo  { height: 14px; width: 55%; background: #2d3e69; margin-bottom: 20px; }
+.anexos-pdf-linha.medio   { width: 80%; }
+.anexos-pdf-linha.curto   { width: 55%; }
+.anexos-pdf-linha.full    { width: 100%; }
+.anexos-pdf-nota { font-size: 11px; color: #3a5080; text-align: center; margin-top: 14px; }
+.anexos-preview-img-wrap {
+    background: #16213b; border: 1px solid #2a3a5c;
+    border-radius: 4px; padding: 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.anexos-preview-img-placeholder {
+    width: 340px; height: 210px;
+    background: linear-gradient(135deg, #16213b, #253150);
+    border-radius: 4px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px; border: 1px solid #2a3a5c;
+}
+.anexos-preview-img-placeholder span { font-size: 11px; color: #3a5080; }
+.anexos-preview-sem-suporte {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px; min-height: 280px;
+}
+.anexos-preview-sem-suporte p { font-size: 13px; color: #5c6b91; }
+.anexos-preview-sem-suporte a { font-size: 12px; color: #2d7dff; cursor: pointer; text-decoration: underline; }
+.anexos-preview-sem-suporte a:hover { color: #7aadff; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -687,6 +548,7 @@ canvas#finDonutChart {
                     <a href="#" onclick="abrirAuditoria()">📋 Auditoria</a>
                     <a href="index.php" target="_blank">📄 Relatórios</a>
                     <a href="#">🔒 Fechamento</a>
+                    <a href="#" onclick="abrirAnexos('os'); return false;">📎 Anexos</a>
                 </div>
             </div>
             <div class="pesquisa-direita">
@@ -734,7 +596,7 @@ canvas#finDonutChart {
                 </button>
 
                 <div class="dropdown-botao">
-                    <a href="#">📎 Anexos</a>
+                    <a href="#" onclick="abrirAnexos('item'); return false;">📎 Anexos</a>
                     <a href="#">🔁 Transferir</a>
                     <a href="#">📄 Copiar</a>
                 </div>
@@ -1919,12 +1781,7 @@ function iniciarResizeColunas(seletor){
 
             function onMove(e){
                 const nova = Math.max(40, startW + (e.pageX - startX));
-                const outrasLarguras = ths.reduce((soma, t) => {
-                    return t === th ? soma : soma + t.getBoundingClientRect().width;
-                }, 0);
-                const grid = table.parentElement;
-                const maxDisponivel = grid.getBoundingClientRect().width - outrasLarguras - 2;
-                th.style.width = Math.min(nova, Math.max(40, maxDisponivel)) + "px";
+                th.style.width = nova + "px";
             }
             function onUp(){
                 handle.classList.remove("ativo");
@@ -2573,24 +2430,133 @@ function salvarOS(){
 
     Swal.fire({ icon:"success", title: idx !== -1 ? "OS atualizada" : "OS salva", timer:1500, showConfirmButton:false, scrollbarPadding:false });
 }
+</script>
+<!-- ══ OVERLAY + MODAL FINANCEIRO ══ -->
+<div id="overlayFinanceiro"></div>
 
+<div id="modalFinanceiro">
+    <div id="financeiroTitlebar">
+        <span>💰 Financeiro — Ordens de Serviço</span>
+        <div class="erp-controls">
+            <button onclick="fecharFinanceiro()" title="Fechar">✖</button>
+        </div>
+    </div>
 
+    <div class="fin-body">
+        <div class="fin-painel-os">
+            <div class="fin-painel-os-header">📋 Ordens de Serviço</div>
+            <div class="fin-os-busca">
+                <input type="text" id="finBuscaOS" placeholder="Buscar por cliente ou Nº OS..." oninput="finFiltrarOS()">
+            </div>
+            <div class="fin-filtro-status">
+                <button class="fin-filtro-btn ativo" data-status="Todos"     onclick="finFiltroStatus(this)">Todos</button>
+                <button class="fin-filtro-btn"        data-status="Pré-Ordem" onclick="finFiltroStatus(this)">Pré-Ordem</button>
+                <button class="fin-filtro-btn"        data-status="Aberto"    onclick="finFiltroStatus(this)">Aberto</button>
+                <button class="fin-filtro-btn"        data-status="Fechado"   onclick="finFiltroStatus(this)">Fechado</button>
+                <button class="fin-filtro-btn"        data-status="Cancelado" onclick="finFiltroStatus(this)">Cancelado</button>
+            </div>
+            <div class="fin-os-lista" id="finListaOS"></div>
+            <div class="fin-os-footer">
+                <span class="fin-os-footer-label" id="finContadorOS">0 registros</span>
+                <span class="fin-os-footer-valor" id="finTotalGeral">R$ 0,00</span>
+            </div>
+        </div>
+
+        <div class="fin-painel-dash">
+            <div class="fin-kpi-row">
+                <div class="fin-kpi-card pre">
+                    <div class="fin-kpi-label">Pré-Ordem</div>
+                    <div class="fin-kpi-valor" id="kpi-pre">0</div>
+                    <div class="fin-kpi-sub"   id="kpi-pre-val">R$ 0,00</div>
+                </div>
+                <div class="fin-kpi-card aberto">
+                    <div class="fin-kpi-label">Aberto</div>
+                    <div class="fin-kpi-valor" id="kpi-aberto">0</div>
+                    <div class="fin-kpi-sub"   id="kpi-aberto-val">R$ 0,00</div>
+                </div>
+                <div class="fin-kpi-card fechado">
+                    <div class="fin-kpi-label">Fechado</div>
+                    <div class="fin-kpi-valor" id="kpi-fechado">0</div>
+                    <div class="fin-kpi-sub"   id="kpi-fechado-val">R$ 0,00</div>
+                </div>
+                <div class="fin-kpi-card cancelado">
+                    <div class="fin-kpi-label">Cancelado</div>
+                    <div class="fin-kpi-valor" id="kpi-cancelado">0</div>
+                    <div class="fin-kpi-sub"   id="kpi-cancelado-val">R$ 0,00</div>
+                </div>
+            </div>
+
+            <div class="fin-chart-area">
+                <div class="fin-charts-top">
+                    <div class="fin-chart-line-wrap">
+                        <div class="fin-chart-header">
+                            <span class="fin-chart-title">Evolução por Status (últimos 6 meses)</span>
+                            <div class="fin-chart-legend">
+                                <span><span class="fin-legend-dot" style="background:#7aadff"></span>Pré-Ordem</span>
+                                <span><span class="fin-legend-dot" style="background:#4cda7a"></span>Aberto</span>
+                                <span><span class="fin-legend-dot" style="background:#9ca3af"></span>Fechado</span>
+                                <span><span class="fin-legend-dot" style="background:#ff6b6b"></span>Cancelado</span>
+                            </div>
+                        </div>
+                        <div class="fin-chart-canvas-wrap">
+                            <canvas id="finChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="fin-chart-donut-wrap">
+                        <div class="fin-chart-title">Distribuição por Status</div>
+                        <div style="font-size:10px;color:#4a5e7a;margin-bottom:4px;">% do valor total por status</div>
+                        <div class="fin-chart-canvas-wrap">
+                            <canvas id="finDonutChart"></canvas>
+                        </div>
+                        <div class="fin-donut-legend">
+                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#4cda7a"></span>Aberto</div>
+                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#7aadff"></span>Pré-Ordem</div>
+                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#9ca3af"></span>Fechado</div>
+                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#ff6b6b"></span>Cancelado</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fin-bars-section">
+                    <div class="fin-bars-title">Valor por Status</div>
+                    <div class="fin-bar-row">
+                        <div class="fin-bar-label">Pré-Ordem</div>
+                        <div class="fin-bar-track"><div class="fin-bar-fill pre" id="bar-pre"></div></div>
+                        <div class="fin-bar-meta" id="bar-pre-meta">R$ 0,00 · 0%</div>
+                    </div>
+                    <div class="fin-bar-row">
+                        <div class="fin-bar-label">Aberto</div>
+                        <div class="fin-bar-track"><div class="fin-bar-fill aberto" id="bar-aberto"></div></div>
+                        <div class="fin-bar-meta" id="bar-aberto-meta">R$ 0,00 · 0%</div>
+                    </div>
+                    <div class="fin-bar-row">
+                        <div class="fin-bar-label">Cancelado</div>
+                        <div class="fin-bar-track"><div class="fin-bar-fill cancelado" id="bar-cancelado"></div></div>
+                        <div class="fin-bar-meta" id="bar-cancelado-meta">R$ 0,00 · 0%</div>
+                    </div>
+                    <div class="fin-bar-row">
+                        <div class="fin-bar-label">Fechado</div>
+                        <div class="fin-bar-track"><div class="fin-bar-fill fechado" id="bar-fechado"></div></div>
+                        <div class="fin-bar-meta" id="bar-fechado-meta">R$ 0,00 · 0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fin-footer">
+        <button onclick="finExportar()">📄 Exportar</button>
+        <button onclick="fecharFinanceiro()" class="btn-fin-fechar">✖ Fechar</button>
+    </div>
+</div>
+
+<script>
 /* ══ FINANCEIRO JS ══ */
-
-/* Parse robusto: aceita "R$ 1.200,50", "1200,50", "1200.50", etc. */
 function finParsearValor(v) {
     let s = (v || "0").toString().replace(/R\$\s*/g, '').trim();
-    // Formato BR com ponto de milhar: 1.200,50
-    if (/^\d{1,3}(\.\d{3})*(,\d+)?$/.test(s)) {
-        return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
-    }
-    // Remove tudo que não for dígito, ponto ou vírgula
+    if (/^\d{1,3}(\.\d{3})*(,\d+)?$/.test(s)) return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
     s = s.replace(/[^\d,.]/g, '');
-    // Vírgula sem ponto → decimal BR simples: 850,00
-    if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) {
-        return parseFloat(s.replace(',', '.')) || 0;
-    }
-    // Qualquer outro caso: remove pontos, troca vírgula por ponto
+    if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) return parseFloat(s.replace(',', '.')) || 0;
     return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
 }
 
@@ -2621,67 +2587,44 @@ function finFiltroStatus(btn) {
     document.querySelectorAll(".fin-filtro-btn").forEach(b => b.classList.remove("ativo"));
     btn.classList.add("ativo");
     _finFiltroAtivo = btn.dataset.status;
-    const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
-    finRenderizarLista(dados);
+    finRenderizarLista(typeof _dadosOS !== "undefined" ? _dadosOS : []);
 }
 
 function finAtualizarDados() {
     const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
-
-    const grupos = {
-        "Pré-Ordem": { qtd: 0, total: 0 },
-        "Aberto":    { qtd: 0, total: 0 },
-        "Fechado":   { qtd: 0, total: 0 },
-        "Cancelado": { qtd: 0, total: 0 },
-    };
-
+    const grupos = { "Pré-Ordem": { qtd:0, total:0 }, "Aberto": { qtd:0, total:0 }, "Fechado": { qtd:0, total:0 }, "Cancelado": { qtd:0, total:0 } };
     dados.forEach(os => {
         const st = os.status || "Pré-Ordem";
         const vl = finParsearValor(os.valor);
-        if (grupos[st] !== undefined) { grupos[st].qtd++; grupos[st].total += vl; }
+        if (grupos[st]) { grupos[st].qtd++; grupos[st].total += vl; }
     });
-
     const fmt = v => "R$ " + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-    document.getElementById("kpi-pre").innerText          = grupos["Pré-Ordem"].qtd;
-    document.getElementById("kpi-pre-val").innerText      = fmt(grupos["Pré-Ordem"].total);
-    document.getElementById("kpi-aberto").innerText       = grupos["Aberto"].qtd;
-    document.getElementById("kpi-aberto-val").innerText   = fmt(grupos["Aberto"].total);
-    document.getElementById("kpi-fechado").innerText      = grupos["Fechado"].qtd;
-    document.getElementById("kpi-fechado-val").innerText  = fmt(grupos["Fechado"].total);
-    document.getElementById("kpi-cancelado").innerText    = grupos["Cancelado"].qtd;
-    document.getElementById("kpi-cancelado-val").innerText= fmt(grupos["Cancelado"].total);
-
-    // Barras Valor por Status
-    const totalValor = Object.values(grupos).reduce((a, g) => a + g.total, 0);
-    const maxVal = Math.max(...Object.values(grupos).map(g => g.total), 1);
-    const barDefs = [
-        { key: "Pré-Ordem", barId: "bar-pre",      metaId: "bar-pre-meta" },
-        { key: "Aberto",    barId: "bar-aberto",    metaId: "bar-aberto-meta" },
-        { key: "Cancelado", barId: "bar-cancelado", metaId: "bar-cancelado-meta" },
-        { key: "Fechado",   barId: "bar-fechado",   metaId: "bar-fechado-meta" },
-    ];
-    barDefs.forEach(def => {
-        const g        = grupos[def.key];
-        const pct      = maxVal    > 0 ? (g.total / maxVal    * 100).toFixed(1) : 0;
-        const pctTotal = totalValor > 0 ? (g.total / totalValor * 100).toFixed(1) : 0;
-        const el = document.getElementById(def.barId);
-        if (el) el.style.width = pct + "%";
-        const me = document.getElementById(def.metaId);
-        if (me) me.innerText = fmt(g.total) + " · " + pctTotal + "%";
+    document.getElementById("kpi-pre").innerText           = grupos["Pré-Ordem"].qtd;
+    document.getElementById("kpi-pre-val").innerText       = fmt(grupos["Pré-Ordem"].total);
+    document.getElementById("kpi-aberto").innerText        = grupos["Aberto"].qtd;
+    document.getElementById("kpi-aberto-val").innerText    = fmt(grupos["Aberto"].total);
+    document.getElementById("kpi-fechado").innerText       = grupos["Fechado"].qtd;
+    document.getElementById("kpi-fechado-val").innerText   = fmt(grupos["Fechado"].total);
+    document.getElementById("kpi-cancelado").innerText     = grupos["Cancelado"].qtd;
+    document.getElementById("kpi-cancelado-val").innerText = fmt(grupos["Cancelado"].total);
+    const totalValor = Object.values(grupos).reduce((a,g) => a + g.total, 0);
+    const maxVal     = Math.max(...Object.values(grupos).map(g => g.total), 1);
+    [["Pré-Ordem","bar-pre","bar-pre-meta"],["Aberto","bar-aberto","bar-aberto-meta"],
+     ["Cancelado","bar-cancelado","bar-cancelado-meta"],["Fechado","bar-fechado","bar-fechado-meta"]].forEach(([key,bid,mid]) => {
+        const g   = grupos[key];
+        const pct = maxVal > 0 ? (g.total / maxVal * 100).toFixed(1) : 0;
+        const pctT = totalValor > 0 ? (g.total / totalValor * 100).toFixed(1) : 0;
+        const el = document.getElementById(bid); if(el) el.style.width = pct + "%";
+        const me = document.getElementById(mid); if(me) me.innerText = fmt(g.total) + " · " + pctT + "%";
     });
-
     _finDadosMensais.preOrdem[5]  = grupos["Pré-Ordem"].qtd;
     _finDadosMensais.aberto[5]    = grupos["Aberto"].qtd;
     _finDadosMensais.fechado[5]   = grupos["Fechado"].qtd;
     _finDadosMensais.cancelado[5] = grupos["Cancelado"].qtd;
-
     finRenderizarLista(dados);
-
-    const totalGeral = dados.reduce((acc, os) => acc + finParsearValor(os.valor), 0);
+    const totalGeral = dados.reduce((acc,os) => acc + finParsearValor(os.valor), 0);
     document.getElementById("finContadorOS").innerText = dados.length + " registro" + (dados.length !== 1 ? "s" : "");
     document.getElementById("finTotalGeral").innerText = fmt(totalGeral);
-
     finDesenharGrafico();
     finDesenharDonut(grupos);
 }
@@ -2689,131 +2632,65 @@ function finAtualizarDados() {
 function finRenderizarLista(dados) {
     const lista = document.getElementById("finListaOS");
     const busca = (document.getElementById("finBuscaOS").value || "").toLowerCase();
-
-    const filtrado_busca = dados.filter(os =>
-        !busca ||
-        (os.cliente || "").toLowerCase().includes(busca) ||
-        (os.codigo  || "").toLowerCase().includes(busca)
-    );
-
-    const filtrado = (_finFiltroAtivo && _finFiltroAtivo !== "Todos")
-        ? filtrado_busca.filter(os => (os.status || "Pré-Ordem") === _finFiltroAtivo)
-        : filtrado_busca;
-
-    if (filtrado.length === 0) {
-        lista.innerHTML = '<div style="padding:20px;text-align:center;color:#4a5e7a;font-size:12px;">Nenhuma OS encontrada</div>';
-        return;
-    }
-
-    const badgeClass = { "Pré-Ordem": "badge-pre", "Aberto": "badge-aberto", "Fechado": "badge-fechado", "Cancelado": "badge-cancelado" };
-
-    lista.innerHTML = filtrado.map((os, i) => {
-        const st    = os.status || "Pré-Ordem";
-        const vl    = finParsearValor(os.valor);
-        const vlFmt = "R$ " + vl.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        const badge = `<span class="os-status-badge ${badgeClass[st] || 'badge-pre'}">${st}</span>`;
-        return `
-        <div class="fin-os-item" onclick="finSelecionarOS(this)" data-idx="${i}">
-            <div class="fin-os-nome" title="${os.cliente || '—'}">${os.cliente || '—'}</div>
+    const filtBusca = dados.filter(os => !busca || (os.cliente||"").toLowerCase().includes(busca) || (os.codigo||"").toLowerCase().includes(busca));
+    const filtrado  = (_finFiltroAtivo && _finFiltroAtivo !== "Todos") ? filtBusca.filter(os => (os.status||"Pré-Ordem") === _finFiltroAtivo) : filtBusca;
+    if (!filtrado.length) { lista.innerHTML = '<div style="padding:20px;text-align:center;color:#4a5e7a;font-size:12px;">Nenhuma OS encontrada</div>'; return; }
+    const bc = { "Pré-Ordem":"badge-pre","Aberto":"badge-aberto","Fechado":"badge-fechado","Cancelado":"badge-cancelado" };
+    lista.innerHTML = filtrado.map((os,i) => {
+        const st=os.status||"Pré-Ordem", vl=finParsearValor(os.valor);
+        const vlFmt="R$ "+vl.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+        return `<div class="fin-os-item" onclick="finSelecionarOS(this)" data-idx="${i}">
+            <div class="fin-os-nome" title="${os.cliente||'—'}">${os.cliente||'—'}</div>
             <div class="fin-os-valor">${vlFmt}</div>
-            <div class="fin-os-status">${badge}<span style="font-size:11px;color:#4a6a8a;margin-left:4px;">#${os.codigo || '—'}</span></div>
+            <div class="fin-os-status"><span class="os-status-badge ${bc[st]||'badge-pre'}">${st}</span><span style="font-size:11px;color:#4a6a8a;margin-left:4px;">#${os.codigo||'—'}</span></div>
         </div>`;
     }).join('');
 }
 
-function finSelecionarOS(el) {
-    document.querySelectorAll(".fin-os-item").forEach(i => i.classList.remove("selecionada"));
-    el.classList.add("selecionada");
-}
-
-function finFiltrarOS() {
-    const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
-    finRenderizarLista(dados);
-}
+function finSelecionarOS(el) { document.querySelectorAll(".fin-os-item").forEach(i => i.classList.remove("selecionada")); el.classList.add("selecionada"); }
+function finFiltrarOS() { finRenderizarLista(typeof _dadosOS !== "undefined" ? _dadosOS : []); }
 
 function finDesenharGrafico() {
     const canvas = document.getElementById("finChart");
     if (!canvas || typeof Chart === "undefined") return;
-
     if (_finChartInstance) { _finChartInstance.destroy(); _finChartInstance = null; }
-
     const md = _finDadosMensais;
-
     _finChartInstance = new Chart(canvas, {
         type: "line",
-        data: {
-            labels: md.labels,
-            datasets: [
-                { label:"Pré-Ordem", data:md.preOrdem,  borderColor:"#7aadff", backgroundColor:"rgba(122,173,255,0.10)", borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#7aadff", tension:0.35, fill:true },
-                { label:"Aberto",    data:md.aberto,    borderColor:"#4cda7a", backgroundColor:"rgba(76,218,122,0.08)",  borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#4cda7a", tension:0.35, fill:true },
-                { label:"Fechado",   data:md.fechado,   borderColor:"#9ca3af", backgroundColor:"rgba(156,163,175,0.08)",borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#9ca3af", tension:0.35, fill:true },
-                { label:"Cancelado", data:md.cancelado, borderColor:"#ff6b6b", backgroundColor:"rgba(255,107,107,0.08)",borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#ff6b6b", tension:0.35, fill:true },
-            ],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode:"index", intersect:false },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor:"#1b2744", borderColor:"#2a3a5c", borderWidth:1,
-                    titleColor:"#a6c8ff", bodyColor:"#cfd8e3", padding:10,
-                    callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} OS` }
-                },
-            },
-            scales: {
-                x: { grid:{ color:"rgba(42,58,92,0.6)" }, ticks:{ color:"#7aa3e0", font:{size:11} }, border:{ color:"#2a3a5c" } },
-                y: { grid:{ color:"rgba(42,58,92,0.6)" }, ticks:{ color:"#7aa3e0", font:{size:11}, stepSize:1 }, border:{ color:"#2a3a5c" }, beginAtZero:true },
-            },
-        },
+        data: { labels: md.labels, datasets: [
+            { label:"Pré-Ordem", data:md.preOrdem,  borderColor:"#7aadff", backgroundColor:"rgba(122,173,255,0.10)", borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#7aadff", tension:0.35, fill:true },
+            { label:"Aberto",    data:md.aberto,    borderColor:"#4cda7a", backgroundColor:"rgba(76,218,122,0.08)",  borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#4cda7a", tension:0.35, fill:true },
+            { label:"Fechado",   data:md.fechado,   borderColor:"#9ca3af", backgroundColor:"rgba(156,163,175,0.08)",borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#9ca3af", tension:0.35, fill:true },
+            { label:"Cancelado", data:md.cancelado, borderColor:"#ff6b6b", backgroundColor:"rgba(255,107,107,0.08)",borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#ff6b6b", tension:0.35, fill:true },
+        ]},
+        options: { responsive:true, maintainAspectRatio:false, interaction:{mode:"index",intersect:false},
+            plugins:{ legend:{display:false}, tooltip:{ backgroundColor:"#1b2744",borderColor:"#2a3a5c",borderWidth:1,titleColor:"#a6c8ff",bodyColor:"#cfd8e3",padding:10, callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y} OS`} } },
+            scales:{ x:{grid:{color:"rgba(42,58,92,0.6)"},ticks:{color:"#7aa3e0",font:{size:11}},border:{color:"#2a3a5c"}}, y:{grid:{color:"rgba(42,58,92,0.6)"},ticks:{color:"#7aa3e0",font:{size:11},stepSize:1},border:{color:"#2a3a5c"},beginAtZero:true} }
+        }
     });
 }
 
 function finDesenharDonut(grupos) {
     const canvas = document.getElementById("finDonutChart");
     if (!canvas || typeof Chart === "undefined") return;
-
     if (_finDonutInstance) { _finDonutInstance.destroy(); _finDonutInstance = null; }
-
-    const labels  = ["Aberto", "Pré-Ordem", "Fechado", "Cancelado"];
-    const valores  = [grupos["Aberto"].total, grupos["Pré-Ordem"].total, grupos["Fechado"].total, grupos["Cancelado"].total];
-    const cores    = ["#4cda7a", "#7aadff", "#9ca3af", "#ff6b6b"];
-    const total    = valores.reduce((a, b) => a + b, 0);
-    const fmt      = v => "R$ " + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
+    const labels=["Aberto","Pré-Ordem","Fechado","Cancelado"];
+    const valores=[grupos["Aberto"].total,grupos["Pré-Ordem"].total,grupos["Fechado"].total,grupos["Cancelado"].total];
+    const cores=["#4cda7a","#7aadff","#9ca3af","#ff6b6b"];
+    const total=valores.reduce((a,b)=>a+b,0);
+    const fmt=v=>"R$ "+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
     _finDonutInstance = new Chart(canvas, {
-        type: "doughnut",
-        data: {
-            labels,
-            datasets: [{ data: valores, backgroundColor: cores, borderColor: "#0b1b2b", borderWidth: 2, hoverOffset: 6 }],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: "62%",
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor:"#1b2744", borderColor:"#2a3a5c", borderWidth:1,
-                    titleColor:"#a6c8ff", bodyColor:"#cfd8e3", padding:10,
-                    callbacks: {
-                        label: ctx => {
-                            const pct = total > 0 ? (ctx.parsed / total * 100).toFixed(1) : 0;
-                            return ` ${ctx.label}: ${fmt(ctx.parsed)} (${pct}%)`;
-                        }
-                    }
-                },
-            },
-        },
+        type:"doughnut", data:{ labels, datasets:[{data:valores,backgroundColor:cores,borderColor:"#0b1b2b",borderWidth:2,hoverOffset:6}] },
+        options:{ responsive:true, maintainAspectRatio:false, cutout:"62%",
+            plugins:{ legend:{display:false}, tooltip:{ backgroundColor:"#1b2744",borderColor:"#2a3a5c",borderWidth:1,titleColor:"#a6c8ff",bodyColor:"#cfd8e3",padding:10,
+                callbacks:{label:ctx=>{const pct=total>0?(ctx.parsed/total*100).toFixed(1):0; return ` ${ctx.label}: ${fmt(ctx.parsed)} (${pct}%)`;}}
+            }}
+        }
     });
 }
 
-function finExportar() {
-    Swal.fire({ icon:"info", title:"Exportar", text:"Função de exportação não implementada neste ambiente.", confirmButtonColor:"#2d7dff", scrollbarPadding:false });
-}
+function finExportar() { Swal.fire({ icon:"info", title:"Exportar", text:"Função de exportação não implementada neste ambiente.", confirmButtonColor:"#2d7dff", scrollbarPadding:false }); }
 
-/* Vincula clique no menu Financeiro */
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".dropdown-sistema a.btn-dropdown").forEach(link => {
         if (link.textContent.trim() === "Financeiro") {
@@ -2823,140 +2700,418 @@ document.addEventListener("DOMContentLoaded", function () {
     const ov = document.getElementById("overlayFinanceiro");
     if (ov) ov.addEventListener("click", fecharFinanceiro);
 });
-
 </script>
 
-<!-- ══ OVERLAY + MODAL FINANCEIRO ══ -->
-<div id="overlayFinanceiro"></div>
+<!-- ══════════════════════════════════════════════════
+     MODAL DE ANEXOS
+══════════════════════════════════════════════════ -->
+<div id="overlayAnexos"></div>
 
-<div id="modalFinanceiro">
-    <div id="financeiroTitlebar">
-        <span>💰 Financeiro — Ordens de Serviço</span>
+<div id="modalAnexos">
+    <div class="erp-titlebar" id="dragAnexos">
+        <span id="anexosTitulo">📎 Gerenciador de Anexos</span>
         <div class="erp-controls">
-            <button onclick="fecharFinanceiro()" title="Fechar">✖</button>
+            <button onclick="maximizarAnexos()">☐</button>
+            <button onclick="fecharAnexos()">✖</button>
         </div>
     </div>
 
-    <div class="fin-body">
+    <div class="anexos-barra-acoes">
+        <button class="btn-anexos-acao" onclick="triggerAnexosUpload()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar
+        </button>
+        <button class="btn-anexos-acao" onclick="excluirAnexoSelecionado()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+            Excluir
+        </button>
+        <button class="btn-anexos-acao" onclick="baixarAnexoSelecionado()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar
+        </button>
+        <span class="anexos-info-count" id="anexosInfoCount">0 arquivo(s)</span>
+        <input type="file" id="anexosFileInput" style="display:none" multiple onchange="anexosAdicionarArquivos(this.files)">
+    </div>
 
-        <!-- Painel Esquerdo: Lista de OS -->
-        <div class="fin-painel-os">
-            <div class="fin-painel-os-header">📋 Ordens de Serviço</div>
-            <div class="fin-os-busca">
-                <input type="text" id="finBuscaOS" placeholder="Buscar por cliente ou Nº OS..." oninput="finFiltrarOS()">
+    <div class="anexos-corpo">
+        <!-- Lista esquerda -->
+        <div class="anexos-coluna-lista" id="anexosColLista">
+            <div class="anexos-col-header">
+                ARQUIVOS <span class="anexos-badge-count" id="anexosBadge">0</span>
             </div>
-            <div class="fin-filtro-status">
-                <button class="fin-filtro-btn ativo" data-status="Todos"     onclick="finFiltroStatus(this)">Todos</button>
-                <button class="fin-filtro-btn"        data-status="Pré-Ordem" onclick="finFiltroStatus(this)">Pré-Ordem</button>
-                <button class="fin-filtro-btn"        data-status="Aberto"    onclick="finFiltroStatus(this)">Aberto</button>
-                <button class="fin-filtro-btn"        data-status="Fechado"   onclick="finFiltroStatus(this)">Fechado</button>
-                <button class="fin-filtro-btn"        data-status="Cancelado" onclick="finFiltroStatus(this)">Cancelado</button>
-            </div>
-            <div class="fin-os-lista" id="finListaOS"></div>
-            <div class="fin-os-footer">
-                <span class="fin-os-footer-label" id="finContadorOS">0 registros</span>
-                <span class="fin-os-footer-valor" id="finTotalGeral">R$ 0,00</span>
+            <div class="anexos-lista-scroll" id="anexosListaScroll"></div>
+            <div class="anexos-dropzone" id="anexosDropzone" onclick="triggerAnexosUpload()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Arraste arquivos aqui ou clique para selecionar
             </div>
         </div>
 
-        <!-- Painel Direito: Dashboard + Gráfico -->
-        <div class="fin-painel-dash">
+        <!-- Alça de redimensionamento -->
+        <div class="anexos-resize-handle" id="anexosResizeHandle"></div>
 
-            <div class="fin-kpi-row">
-                <div class="fin-kpi-card pre">
-                    <div class="fin-kpi-label">Pré-Ordem</div>
-                    <div class="fin-kpi-valor" id="kpi-pre">0</div>
-                    <div class="fin-kpi-sub"   id="kpi-pre-val">R$ 0,00</div>
-                </div>
-                <div class="fin-kpi-card aberto">
-                    <div class="fin-kpi-label">Aberto</div>
-                    <div class="fin-kpi-valor" id="kpi-aberto">0</div>
-                    <div class="fin-kpi-sub"   id="kpi-aberto-val">R$ 0,00</div>
-                </div>
-                <div class="fin-kpi-card fechado">
-                    <div class="fin-kpi-label">Fechado</div>
-                    <div class="fin-kpi-valor" id="kpi-fechado">0</div>
-                    <div class="fin-kpi-sub"   id="kpi-fechado-val">R$ 0,00</div>
-                </div>
-                <div class="fin-kpi-card cancelado">
-                    <div class="fin-kpi-label">Cancelado</div>
-                    <div class="fin-kpi-valor" id="kpi-cancelado">0</div>
-                    <div class="fin-kpi-sub"   id="kpi-cancelado-val">R$ 0,00</div>
+        <!-- Preview direita -->
+        <div class="anexos-coluna-preview">
+            <div class="anexos-col-header" id="anexosPreviewHeader">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                <span id="anexosPreviewNome" style="margin-left:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Nenhum arquivo selecionado</span>
+            </div>
+            <div class="anexos-preview-content" id="anexosPreviewContent">
+                <div class="anexos-preview-vazio">
+                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                    <p>Selecione um arquivo para visualizar</p>
                 </div>
             </div>
-
-            <div class="fin-chart-area">
-                <!-- Linha superior: gráfico de linhas + pizza -->
-                <div class="fin-charts-top">
-
-                    <!-- Gráfico de Linhas -->
-                    <div class="fin-chart-line-wrap">
-                        <div class="fin-chart-header">
-                            <span class="fin-chart-title">Evolução por Status (últimos 6 meses)</span>
-                            <div class="fin-chart-legend">
-                                <span><span class="fin-legend-dot" style="background:#7aadff"></span>Pré-Ordem</span>
-                                <span><span class="fin-legend-dot" style="background:#4cda7a"></span>Aberto</span>
-                                <span><span class="fin-legend-dot" style="background:#9ca3af"></span>Fechado</span>
-                                <span><span class="fin-legend-dot" style="background:#ff6b6b"></span>Cancelado</span>
-                            </div>
-                        </div>
-                        <div class="fin-chart-canvas-wrap">
-                            <canvas id="finChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Gráfico de Pizza (Donut) -->
-                    <div class="fin-chart-donut-wrap">
-                        <div class="fin-chart-title">Distribuição por Status</div>
-                        <div style="font-size:10px;color:#4a5e7a;margin-bottom:4px;">% do valor total por status</div>
-                        <div class="fin-chart-canvas-wrap">
-                            <canvas id="finDonutChart"></canvas>
-                        </div>
-                        <div class="fin-donut-legend">
-                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#4cda7a"></span>Aberto</div>
-                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#7aadff"></span>Pré-Ordem</div>
-                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#9ca3af"></span>Fechado</div>
-                            <div class="fin-donut-legend-item"><span class="fin-donut-dot" style="background:#ff6b6b"></span>Cancelado</div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Barras: Valor por Status -->
-                <div class="fin-bars-section">
-                    <div class="fin-bars-title">Valor por Status</div>
-                    <div class="fin-bar-row">
-                        <div class="fin-bar-label">Pré-Ordem</div>
-                        <div class="fin-bar-track"><div class="fin-bar-fill pre" id="bar-pre"></div></div>
-                        <div class="fin-bar-meta" id="bar-pre-meta">R$ 0,00 · 0%</div>
-                    </div>
-                    <div class="fin-bar-row">
-                        <div class="fin-bar-label">Aberto</div>
-                        <div class="fin-bar-track"><div class="fin-bar-fill aberto" id="bar-aberto"></div></div>
-                        <div class="fin-bar-meta" id="bar-aberto-meta">R$ 0,00 · 0%</div>
-                    </div>
-                    <div class="fin-bar-row">
-                        <div class="fin-bar-label">Cancelado</div>
-                        <div class="fin-bar-track"><div class="fin-bar-fill cancelado" id="bar-cancelado"></div></div>
-                        <div class="fin-bar-meta" id="bar-cancelado-meta">R$ 0,00 · 0%</div>
-                    </div>
-                    <div class="fin-bar-row">
-                        <div class="fin-bar-label">Fechado</div>
-                        <div class="fin-bar-track"><div class="fin-bar-fill fechado" id="bar-fechado"></div></div>
-                        <div class="fin-bar-meta" id="bar-fechado-meta">R$ 0,00 · 0%</div>
-                    </div>
-                </div>
-
-            </div>
-
         </div>
     </div>
 
-    <div class="fin-footer">
-        <button onclick="finExportar()">📄 Exportar</button>
-        <button onclick="fecharFinanceiro()" class="btn-fin-fechar">✖ Fechar</button>
+    <div class="erp-footer">
+        <button class="btn-footer-salvar" onclick="salvarAnexosModal()">💾 Salvar</button>
+        <button class="btn-footer-sair" onclick="fecharAnexos()">✖ Sair</button>
     </div>
 </div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   LÓGICA DO MODAL DE ANEXOS
+══════════════════════════════════════════════════ */
+(function(){
+
+    /* ── Estado ── */
+    const _anexosDB   = {};     // { "os:OS-0001": [...], "item:IT-001": [...] }
+    let   _ctxAnexos  = null;   // chave atual ex: "os:OS-0001"
+    let   _idxSel     = null;   // índice do arquivo selecionado
+    let   _maxAnexos  = false;
+
+    /* ── Helpers de tipo ── */
+    function getTipo(nome){
+        const ext = (nome.split('.').pop() || '').toLowerCase();
+        const mapa = { pdf:'pdf', jpg:'img', jpeg:'img', png:'img', gif:'img', webp:'img',
+                        xlsx:'xls', xls:'xls', doc:'doc', docx:'doc',
+                        zip:'zip', rar:'zip', '7z':'zip' };
+        return mapa[ext] || 'gen';
+    }
+    function getIconLabel(tipo){
+        return { pdf:'PDF', img:'IMG', doc:'DOC', xls:'XLS', zip:'ZIP' }[tipo] || 'ARQ';
+    }
+    function getIconClass(tipo){
+        return { pdf:'anexo-icon-pdf', img:'anexo-icon-img', doc:'anexo-icon-doc',
+                 xls:'anexo-icon-xls', zip:'anexo-icon-zip' }[tipo] || 'anexo-icon-gen';
+    }
+    function fmtTamanho(bytes){
+        if(!bytes) return '—';
+        return bytes > 1048576 ? (bytes/1048576).toFixed(1)+' MB' : Math.round(bytes/1024)+' KB';
+    }
+    function fmtData(d){ return d.toLocaleDateString('pt-BR'); }
+
+    /* ── Lista atual ── */
+    function lista(){ return _anexosDB[_ctxAnexos] || (_anexosDB[_ctxAnexos] = []); }
+
+    /* ── Renderizar lista ── */
+    function renderLista(){
+        const scroll = document.getElementById('anexosListaScroll');
+        const arr    = lista();
+        scroll.innerHTML = '';
+
+        arr.forEach((a, i) => {
+            const div = document.createElement('div');
+            div.className = 'anexo-item-row' + (i === _idxSel ? ' selecionado' : '');
+
+            div.innerHTML = `
+                <div class="anexo-tipo-icon ${getIconClass(a.tipo)}">${getIconLabel(a.tipo)}</div>
+                <div class="anexo-item-info">
+                    <div class="anexo-item-nome" title="${a.nome}">${a.nome}</div>
+                    <div class="anexo-item-meta">${a.tamanho} · ${a.data}</div>
+                </div>
+                <button class="anexo-item-del" title="Excluir">✖</button>`;
+
+            div.querySelector('.anexo-item-del').addEventListener('click', function(e){
+                e.stopPropagation();
+                excluirIdx(i);
+            });
+            div.addEventListener('click', function(){ selecionarIdx(i); });
+            scroll.appendChild(div);
+        });
+
+        const cnt = arr.length;
+        document.getElementById('anexosBadge').textContent    = cnt;
+        document.getElementById('anexosInfoCount').textContent = cnt + ' arquivo(s)';
+    }
+
+    /* ── Selecionar item ── */
+    function selecionarIdx(i){
+        _idxSel = i;
+        renderLista();
+        renderPreview(lista()[i]);
+    }
+
+    /* ── Preview ── */
+    function renderPreview(a){
+        document.getElementById('anexosPreviewNome').textContent = a ? a.nome : 'Nenhum arquivo selecionado';
+        const area = document.getElementById('anexosPreviewContent');
+
+        if(!a){
+            area.innerHTML = vazioHTML();
+            return;
+        }
+
+        if(a.tipo === 'pdf'){
+            area.innerHTML = `
+                <div class="anexos-preview-pdf">
+                    <div class="anexos-pdf-linha titulo"></div>
+                    <div class="anexos-pdf-linha full"></div>
+                    <div class="anexos-pdf-linha medio"></div>
+                    <div class="anexos-pdf-linha curto"></div>
+                    <div class="anexos-pdf-linha full"></div>
+                    <div class="anexos-pdf-linha medio"></div>
+                    <div class="anexos-pdf-linha full"></div>
+                    <div class="anexos-pdf-linha curto"></div>
+                    <div class="anexos-pdf-linha medio"></div>
+                    <div class="anexos-pdf-linha full"></div>
+                    <div class="anexos-pdf-nota">Prévia do PDF — somente leitura</div>
+                </div>`;
+        } else if(a.tipo === 'img'){
+            const src = a.dataURL || null;
+            area.innerHTML = `
+                <div class="anexos-preview-img-wrap">
+                    ${src
+                        ? `<img src="${src}" style="max-width:100%;max-height:320px;border-radius:3px;border:1px solid #2a3a5c;display:block;">`
+                        : `<div class="anexos-preview-img-placeholder">
+                             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3a5080" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                             <span>${a.nome}</span>
+                           </div>`
+                    }
+                    <div style="font-size:11px;color:#3a5080;">Prévia da imagem</div>
+                </div>`;
+        } else {
+            area.innerHTML = `
+                <div class="anexos-preview-sem-suporte">
+                    <div class="anexo-tipo-icon ${getIconClass(a.tipo)}" style="width:52px;height:52px;font-size:16px;">${getIconLabel(a.tipo)}</div>
+                    <p>Prévia não disponível para este formato</p>
+                    <a onclick="baixarAnexoSelecionado()">⬇ Clique para baixar o arquivo</a>
+                </div>`;
+        }
+    }
+
+    function vazioHTML(){
+        return `<div class="anexos-preview-vazio">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <p>Selecione um arquivo para visualizar</p>
+        </div>`;
+    }
+
+    /* ── Excluir ── */
+    function excluirIdx(i){
+        lista().splice(i, 1);
+        if(_idxSel === i){
+            _idxSel = null;
+            document.getElementById('anexosPreviewNome').textContent = 'Nenhum arquivo selecionado';
+            document.getElementById('anexosPreviewContent').innerHTML = vazioHTML();
+        } else if(_idxSel !== null && _idxSel > i){
+            _idxSel--;
+        }
+        renderLista();
+    }
+
+    /* ── Drag & drop ── */
+    function initDrop(el){
+        el.addEventListener('dragover', e => { e.preventDefault(); });
+        el.addEventListener('drop', e => {
+            e.preventDefault();
+            if(e.dataTransfer.files.length) anexosAdicionarArquivos(e.dataTransfer.files);
+        });
+    }
+
+    /* ── Resize coluna ── */
+    function initResize(){
+        const handle = document.getElementById('anexosResizeHandle');
+        const col    = document.getElementById('anexosColLista');
+        const modal  = document.getElementById('modalAnexos');
+        if(!handle || !col || !modal) return;
+        let isRes = false;
+        handle.addEventListener('mousedown', e => {
+            isRes = true;
+            document.addEventListener('mousemove', onResMove);
+            document.addEventListener('mouseup',   onResUp);
+        });
+        function onResMove(e){
+            if(!isRes) return;
+            const rect = modal.getBoundingClientRect();
+            const w = Math.max(160, Math.min(440, e.clientX - rect.left));
+            col.style.width = w + 'px';
+        }
+        function onResUp(){ isRes = false; document.removeEventListener('mousemove',onResMove); document.removeEventListener('mouseup',onResUp); }
+    }
+
+    /* ── Drag modal ── */
+    (function(){
+        const dragBar = document.getElementById('dragAnexos');
+        const modal   = document.getElementById('modalAnexos');
+        dragBar.onmousedown = function(e){
+            if(_maxAnexos) return;
+            let sx = e.clientX - modal.getBoundingClientRect().left;
+            let sy = e.clientY - modal.getBoundingClientRect().top;
+            function mv(e){ modal.style.left = (e.pageX - sx)+'px'; modal.style.top = (e.pageY - sy)+'px'; modal.style.transform='none'; }
+            function up(){ document.removeEventListener('mousemove',mv); document.onmouseup=null; }
+            document.addEventListener('mousemove', mv);
+            document.onmouseup = up;
+        };
+    })();
+
+    /* ── Init ── */
+    document.addEventListener('DOMContentLoaded', function(){
+        initDrop(document.getElementById('anexosDropzone'));
+        initDrop(document.getElementById('anexosListaScroll'));
+        initResize();
+    });
+
+    /* ══ API pública ══ */
+
+    window.abrirAnexos = function(contexto){
+        const modal   = document.getElementById('modalAnexos');
+        const overlay = document.getElementById('overlayAnexos');
+
+        /* Monta a chave de contexto com base na OS/item selecionado */
+        let chave = contexto;
+        if(contexto === 'os'){
+            const os = typeof osSelecionada !== 'undefined' ? osSelecionada : null;
+            chave = os ? ('os:' + os.codigo) : 'os:__geral__';
+            const titulo = os ? ('📎 Anexos — OS ' + os.codigo + ' · ' + (os.descricao||'')) : '📎 Anexos — OS';
+            document.getElementById('anexosTitulo').textContent = titulo;
+        } else if(contexto === 'item'){
+            const os   = typeof osSelecionada !== 'undefined' ? osSelecionada : null;
+            const item = typeof itemSelecionado !== 'undefined' ? itemSelecionado : null;
+            chave = (os && item) ? ('item:' + os.codigo + ':' + item.codItem) : 'item:__geral__';
+            const titulo = (os && item) ? ('📎 Anexos — Item ' + item.codItem + ' · ' + (item.descricao||'')) : '📎 Anexos — Item';
+            document.getElementById('anexosTitulo').textContent = titulo;
+        }
+
+        _ctxAnexos = chave;
+        _idxSel    = null;
+
+        modal.style.display   = 'flex';
+        overlay.style.display = 'block';
+        modal.style.position  = 'fixed';
+        modal.style.left      = '50%';
+        modal.style.top       = '80px';
+        modal.style.transform = 'translateX(-50%)';
+        modal.style.width     = '860px';
+        _maxAnexos = false;
+
+        renderLista();
+        document.getElementById('anexosPreviewNome').textContent = 'Nenhum arquivo selecionado';
+        document.getElementById('anexosPreviewContent').innerHTML = vazioHTML();
+    };
+
+    window.fecharAnexos = function(){
+        document.getElementById('modalAnexos').style.display   = 'none';
+        document.getElementById('overlayAnexos').style.display = 'none';
+        _maxAnexos = false;
+    };
+
+    window.maximizarAnexos = function(){
+        const modal   = document.getElementById('modalAnexos');
+        const cm      = document.querySelector('.container-main');
+        const overlay = document.getElementById('overlayAnexos');
+        if(!_maxAnexos){
+            modal.dataset.prev = modal.style.cssText;
+            cm.appendChild(modal);
+            modal.style.position  = 'absolute';
+            modal.style.top       = '0';
+            modal.style.left      = '0';
+            modal.style.width     = '100%';
+            modal.style.height    = '100%';
+            modal.style.transform = 'none';
+            modal.style.maxHeight = 'none';
+            overlay.style.display = 'none';
+            _maxAnexos = true;
+        } else {
+            document.body.appendChild(modal);
+            modal.style.cssText   = modal.dataset.prev;
+            overlay.style.display = 'block';
+            _maxAnexos = false;
+        }
+    };
+
+    window.triggerAnexosUpload = function(){
+        document.getElementById('anexosFileInput').click();
+    };
+
+    window.anexosAdicionarArquivos = function(files){
+        Array.from(files).forEach(f => {
+            const tipo = getTipo(f.name);
+            const reg  = {
+                nome:    f.name,
+                tipo:    tipo,
+                tamanho: fmtTamanho(f.size),
+                data:    fmtData(new Date()),
+                dataURL: null,
+                file:    f,
+            };
+            /* Pré-carregar imagens para preview */
+            if(tipo === 'img'){
+                const reader = new FileReader();
+                reader.onload = function(e){
+                    reg.dataURL = e.target.result;
+                    if(_idxSel !== null && lista()[_idxSel] === reg) renderPreview(reg);
+                };
+                reader.readAsDataURL(f);
+            }
+            lista().push(reg);
+        });
+        /* Reset input para permitir re-upload do mesmo arquivo */
+        document.getElementById('anexosFileInput').value = '';
+        renderLista();
+    };
+
+    window.excluirAnexoSelecionado = function(){
+        if(_idxSel === null){
+            Swal.fire({ icon:'warning', title:'Atenção', text:'Selecione um arquivo para excluir.', confirmButtonColor:'#2d7dff', scrollbarPadding:false });
+            return;
+        }
+        excluirIdx(_idxSel);
+    };
+
+    window.baixarAnexoSelecionado = function(){
+        if(_idxSel === null){
+            Swal.fire({ icon:'warning', title:'Atenção', text:'Selecione um arquivo para baixar.', confirmButtonColor:'#2d7dff', scrollbarPadding:false });
+            return;
+        }
+        const a = lista()[_idxSel];
+        if(a.file){
+            const url  = URL.createObjectURL(a.file);
+            const link = document.createElement('a');
+            link.href  = url;
+            link.download = a.nome;
+            link.click();
+            URL.revokeObjectURL(url);
+        } else {
+            Swal.fire({ icon:'info', title:'Baixar', text:'Arquivo: ' + a.nome, confirmButtonColor:'#2d7dff', scrollbarPadding:false });
+        }
+    };
+
+    window.salvarAnexosModal = function(){
+        const cnt = lista().length;
+        Swal.fire({ icon:'success', title:'Anexos salvos', text: cnt + ' arquivo(s) vinculado(s) com sucesso.', timer:1800, showConfirmButton:false, scrollbarPadding:false });
+    };
+
+})();
+</script>
 
 </body>
 </html>
