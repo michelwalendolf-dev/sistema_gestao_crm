@@ -226,6 +226,69 @@ canvas#finDonutChart { width: 100% !important; height: 100% !important; }
 .fin-footer .btn-fin-fechar { background: #4b1414; border-color: #8c2020; color: #ff9999; }
 .fin-footer .btn-fin-fechar:hover { background: #6b1c1c; }
 
+/* ── Filtros dos gráficos ── */
+.fin-chart-filtros {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.fin-chart-filtros label {
+    font-size: 10px;
+    color: #5c6b91;
+    margin-right: 2px;
+}
+.fin-graf-btn {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 8px;
+    border: 1px solid #2a3a5c;
+    cursor: pointer;
+    background: #0d1f35;
+    color: #7aa3e0;
+    transition: all 0.14s;
+    font-family: inherit;
+}
+.fin-graf-btn:hover { background: #1a2e4a; }
+.fin-graf-btn.ativo { background: #1f4a8a; border-color: #2d7dff; color: #a6c8ff; }
+
+.fin-serie-legend {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.fin-serie-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #cfd8e3;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: all 0.14s;
+    user-select: none;
+}
+.fin-serie-item:hover { background: rgba(255,255,255,0.05); }
+.fin-serie-item.inativo { opacity: 0.35; }
+.fin-serie-item.inativo .fin-legend-dot { filter: grayscale(1); }
+
+.fin-donut-metric-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.fin-bars-metric-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.fin-bars-metric-row .fin-bars-title { margin-bottom: 0; }
+
 /* ══════════════════════════════════════════
    MODAL DE ANEXOS
 ══════════════════════════════════════════ */
@@ -523,6 +586,9 @@ canvas#finDonutChart { width: 100% !important; height: 100% !important; }
         </div>
         <div class="dropdown-sistema" id="dropdownSistema">
             <a href="#" class="btn-dropdown">Administração</a>
+            <div class="btn-dropdown-submenu-wrap">
+                <a href="#" class="btn-dropdown btn-dropdown-has-sub" id="btnOrigens">Origens</a>
+            </div>
             <a href="#" class="btn-dropdown">Financeiro</a>
             <a href="#" class="btn-dropdown">Relatórios</a>
             <a href="#" class="btn-dropdown">Configurações Técnicas</a>
@@ -1095,17 +1161,22 @@ canvas#finDonutChart { width: 100% !important; height: 100% !important; }
 
         if(statusDropdown){
 
-            const statusButton = statusDropdown.querySelector('.btn-dropdown');
             const statusMenu = statusDropdown.querySelector('.dropdown-menu');
             const statusInput = statusDropdown.querySelector('input');
 
-            if(statusButton && statusMenu && statusInput){
+            if(statusMenu && statusInput){
 
-                statusButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    statusDropdown.classList.toggle('ativo');
+                /* Abre ao passar o mouse sobre o container */
+                statusDropdown.addEventListener('mouseenter', () => {
+                    statusDropdown.classList.add('ativo');
                 });
 
+                /* Fecha ao sair do container */
+                statusDropdown.addEventListener('mouseleave', () => {
+                    statusDropdown.classList.remove('ativo');
+                });
+
+                /* Seleciona opção e fecha */
                 statusMenu.querySelectorAll('.item').forEach(item => {
                     item.addEventListener('click', () => {
                         statusInput.value = item.textContent;
@@ -1114,6 +1185,7 @@ canvas#finDonutChart { width: 100% !important; height: 100% !important; }
                     });
                 });
 
+                /* Fecha ao clicar fora */
                 document.addEventListener('click', (e) => {
                     if (!statusDropdown.contains(e.target)) {
                         statusDropdown.classList.remove('ativo');
@@ -2488,23 +2560,49 @@ function salvarOS(){
 
             <div class="fin-chart-area">
                 <div class="fin-charts-top">
+                    <!-- Gráfico de Linhas -->
                     <div class="fin-chart-line-wrap">
-                        <div class="fin-chart-header">
-                            <span class="fin-chart-title">Evolução por Status (últimos 6 meses)</span>
-                            <div class="fin-chart-legend">
-                                <span><span class="fin-legend-dot" style="background:#7aadff"></span>Pré-Ordem</span>
-                                <span><span class="fin-legend-dot" style="background:#4cda7a"></span>Aberto</span>
-                                <span><span class="fin-legend-dot" style="background:#9ca3af"></span>Fechado</span>
-                                <span><span class="fin-legend-dot" style="background:#ff6b6b"></span>Cancelado</span>
+                        <div class="fin-chart-header" style="flex-direction:column;align-items:flex-start;gap:6px;">
+                            <!-- Linha 1: título + período -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+                                <span class="fin-chart-title">Evolução por Status</span>
+                                <div class="fin-chart-filtros">
+                                    <label>Período:</label>
+                                    <button class="fin-graf-btn" data-meses="3" onclick="finFiltrarPeriodo(this)">3m</button>
+                                    <button class="fin-graf-btn ativo" data-meses="6" onclick="finFiltrarPeriodo(this)">6m</button>
+                                    <button class="fin-graf-btn" data-meses="12" onclick="finFiltrarPeriodo(this)">12m</button>
+                                </div>
+                            </div>
+                            <!-- Linha 2: filtro status + toggle séries -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:6px;">
+                                <div class="fin-chart-filtros">
+                                    <label>Status:</label>
+                                    <button class="fin-graf-btn fin-graf-status ativo" data-status-linha="Todos"     onclick="finFiltrarLinhaStatus(this)">Todos</button>
+                                    <button class="fin-graf-btn fin-graf-status" data-status-linha="Pré-Ordem" onclick="finFiltrarLinhaStatus(this)" style="color:#7aadff;">Pré-Ordem</button>
+                                    <button class="fin-graf-btn fin-graf-status" data-status-linha="Aberto"    onclick="finFiltrarLinhaStatus(this)" style="color:#4cda7a;">Aberto</button>
+                                    <button class="fin-graf-btn fin-graf-status" data-status-linha="Fechado"   onclick="finFiltrarLinhaStatus(this)" style="color:#9ca3af;">Fechado</button>
+                                    <button class="fin-graf-btn fin-graf-status" data-status-linha="Cancelado" onclick="finFiltrarLinhaStatus(this)" style="color:#ff6b6b;">Cancelado</button>
+                                </div>
+                                <div class="fin-serie-legend" id="finSerieLegend">
+                                    <div class="fin-serie-item" data-serie="0" onclick="finToggleSerie(this)"><span class="fin-legend-dot" style="background:#7aadff"></span>Pré-Ordem</div>
+                                    <div class="fin-serie-item" data-serie="1" onclick="finToggleSerie(this)"><span class="fin-legend-dot" style="background:#4cda7a"></span>Aberto</div>
+                                    <div class="fin-serie-item" data-serie="2" onclick="finToggleSerie(this)"><span class="fin-legend-dot" style="background:#9ca3af"></span>Fechado</div>
+                                    <div class="fin-serie-item" data-serie="3" onclick="finToggleSerie(this)"><span class="fin-legend-dot" style="background:#ff6b6b"></span>Cancelado</div>
+                                </div>
                             </div>
                         </div>
                         <div class="fin-chart-canvas-wrap">
                             <canvas id="finChart"></canvas>
                         </div>
                     </div>
+
+                    <!-- Gráfico Donut -->
                     <div class="fin-chart-donut-wrap">
                         <div class="fin-chart-title">Distribuição por Status</div>
-                        <div style="font-size:10px;color:#4a5e7a;margin-bottom:4px;">% do valor total por status</div>
+                        <div class="fin-donut-metric-row">
+                            <button class="fin-graf-btn ativo" data-metric="valor" onclick="finFiltrarDonut(this)">Valor R$</button>
+                            <button class="fin-graf-btn" data-metric="qtd" onclick="finFiltrarDonut(this)">Qtd OS</button>
+                        </div>
                         <div class="fin-chart-canvas-wrap">
                             <canvas id="finDonutChart"></canvas>
                         </div>
@@ -2517,8 +2615,15 @@ function salvarOS(){
                     </div>
                 </div>
 
+                <!-- Barras -->
                 <div class="fin-bars-section">
-                    <div class="fin-bars-title">Valor por Status</div>
+                    <div class="fin-bars-metric-row">
+                        <div class="fin-bars-title">VALOR POR STATUS</div>
+                        <div class="fin-chart-filtros">
+                            <button class="fin-graf-btn ativo" data-bars="valor" onclick="finFiltrarBars(this)">Valor R$</button>
+                            <button class="fin-graf-btn" data-bars="qtd" onclick="finFiltrarBars(this)">Qtd OS</button>
+                        </div>
+                    </div>
                     <div class="fin-bar-row">
                         <div class="fin-bar-label">Pré-Ordem</div>
                         <div class="fin-bar-track"><div class="fin-bar-fill pre" id="bar-pre"></div></div>
@@ -2563,13 +2668,20 @@ function finParsearValor(v) {
 let _finChartInstance = null;
 let _finDonutInstance = null;
 let _finFiltroAtivo   = "Todos";
+let _finPeriodoMeses  = 6;
+let _finDonutMetric   = "valor";   // "valor" | "qtd"
+let _finBarsMetric    = "valor";   // "valor" | "qtd"
+let _finLinhaStatus   = "Todos";   // "Todos" | "Pré-Ordem" | "Aberto" | "Fechado" | "Cancelado"
+let _finSeriesAtivas  = [true, true, true, true]; // Pré-Ordem, Aberto, Fechado, Cancelado
+let _finGruposCache   = null;
 
+/* Dados históricos mensais (12 meses: Mai→Abr) */
 const _finDadosMensais = {
-    labels:    ["Nov", "Dez", "Jan", "Fev", "Mar", "Abr"],
-    preOrdem:  [4, 6, 3, 8, 5, 0],
-    aberto:    [8, 5, 9, 6, 7, 0],
-    fechado:   [12,10, 8,14,11, 0],
-    cancelado: [2, 1, 3, 2, 1, 0],
+    labels:    ["Mai","Jun","Jul","Ago","Set","Out","Nov","Dez","Jan","Fev","Mar","Abr"],
+    preOrdem:  [3, 5, 4, 6, 3, 7, 4, 6, 3, 8, 5, 0],
+    aberto:    [6, 7, 8, 5, 9, 6, 8, 5, 9, 6, 7, 0],
+    fechado:   [10,9,12,10, 8,14,12,10, 8,14,11, 0],
+    cancelado: [1, 2, 2, 1, 3, 2, 2, 1, 3, 2, 1, 0],
 };
 
 function abrirFinanceiro() {
@@ -2590,6 +2702,60 @@ function finFiltroStatus(btn) {
     finRenderizarLista(typeof _dadosOS !== "undefined" ? _dadosOS : []);
 }
 
+/* ── Filtro período (gráfico de linha) ── */
+function finFiltrarPeriodo(btn) {
+    document.querySelectorAll(".fin-graf-btn[data-meses]").forEach(b => b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+    _finPeriodoMeses = parseInt(btn.dataset.meses);
+    finDesenharGrafico();
+}
+
+/* ── Toggle série na legenda ── */
+/* ── Filtro status gráfico de linha ── */
+function finFiltrarLinhaStatus(btn) {
+    document.querySelectorAll(".fin-graf-btn[data-status-linha]").forEach(b => b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+    _finLinhaStatus = btn.dataset.statusLinha;
+
+    /* Sincroniza visibilidade dos toggles de série */
+    const map = ["Pré-Ordem","Aberto","Fechado","Cancelado"];
+    document.querySelectorAll(".fin-serie-item").forEach(el => {
+        const idx = parseInt(el.dataset.serie);
+        const mostrar = _finLinhaStatus === "Todos" ? _finSeriesAtivas[idx] : (map[idx] === _finLinhaStatus);
+        el.classList.toggle("inativo", !mostrar);
+    });
+
+    finDesenharGrafico();
+}
+
+function finToggleSerie(el) {
+    /* Só funciona quando "Todos" está ativo */
+    if (_finLinhaStatus !== "Todos") return;
+    const idx = parseInt(el.dataset.serie);
+    _finSeriesAtivas[idx] = !_finSeriesAtivas[idx];
+    el.classList.toggle("inativo", !_finSeriesAtivas[idx]);
+    if (_finChartInstance) {
+        _finChartInstance.data.datasets[idx].hidden = !_finSeriesAtivas[idx];
+        _finChartInstance.update();
+    }
+}
+
+/* ── Filtro métrica donut ── */
+function finFiltrarDonut(btn) {
+    document.querySelectorAll(".fin-graf-btn[data-metric]").forEach(b => b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+    _finDonutMetric = btn.dataset.metric;
+    if (_finGruposCache) finDesenharDonut(_finGruposCache);
+}
+
+/* ── Filtro métrica barras ── */
+function finFiltrarBars(btn) {
+    document.querySelectorAll(".fin-graf-btn[data-bars]").forEach(b => b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+    _finBarsMetric = btn.dataset.bars;
+    if (_finGruposCache) finRenderizarBars(_finGruposCache);
+}
+
 function finAtualizarDados() {
     const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
     const grupos = { "Pré-Ordem": { qtd:0, total:0 }, "Aberto": { qtd:0, total:0 }, "Fechado": { qtd:0, total:0 }, "Cancelado": { qtd:0, total:0 } };
@@ -2598,6 +2764,8 @@ function finAtualizarDados() {
         const vl = finParsearValor(os.valor);
         if (grupos[st]) { grupos[st].qtd++; grupos[st].total += vl; }
     });
+    _finGruposCache = grupos;
+
     const fmt = v => "R$ " + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     document.getElementById("kpi-pre").innerText           = grupos["Pré-Ordem"].qtd;
     document.getElementById("kpi-pre-val").innerText       = fmt(grupos["Pré-Ordem"].total);
@@ -2607,26 +2775,47 @@ function finAtualizarDados() {
     document.getElementById("kpi-fechado-val").innerText   = fmt(grupos["Fechado"].total);
     document.getElementById("kpi-cancelado").innerText     = grupos["Cancelado"].qtd;
     document.getElementById("kpi-cancelado-val").innerText = fmt(grupos["Cancelado"].total);
-    const totalValor = Object.values(grupos).reduce((a,g) => a + g.total, 0);
-    const maxVal     = Math.max(...Object.values(grupos).map(g => g.total), 1);
-    [["Pré-Ordem","bar-pre","bar-pre-meta"],["Aberto","bar-aberto","bar-aberto-meta"],
-     ["Cancelado","bar-cancelado","bar-cancelado-meta"],["Fechado","bar-fechado","bar-fechado-meta"]].forEach(([key,bid,mid]) => {
-        const g   = grupos[key];
-        const pct = maxVal > 0 ? (g.total / maxVal * 100).toFixed(1) : 0;
-        const pctT = totalValor > 0 ? (g.total / totalValor * 100).toFixed(1) : 0;
-        const el = document.getElementById(bid); if(el) el.style.width = pct + "%";
-        const me = document.getElementById(mid); if(me) me.innerText = fmt(g.total) + " · " + pctT + "%";
-    });
-    _finDadosMensais.preOrdem[5]  = grupos["Pré-Ordem"].qtd;
-    _finDadosMensais.aberto[5]    = grupos["Aberto"].qtd;
-    _finDadosMensais.fechado[5]   = grupos["Fechado"].qtd;
-    _finDadosMensais.cancelado[5] = grupos["Cancelado"].qtd;
+
+    /* Atualiza mês atual nos dados históricos */
+    _finDadosMensais.preOrdem[11]  = grupos["Pré-Ordem"].qtd;
+    _finDadosMensais.aberto[11]    = grupos["Aberto"].qtd;
+    _finDadosMensais.fechado[11]   = grupos["Fechado"].qtd;
+    _finDadosMensais.cancelado[11] = grupos["Cancelado"].qtd;
+
     finRenderizarLista(dados);
+    finRenderizarBars(grupos);
+
     const totalGeral = dados.reduce((acc,os) => acc + finParsearValor(os.valor), 0);
     document.getElementById("finContadorOS").innerText = dados.length + " registro" + (dados.length !== 1 ? "s" : "");
     document.getElementById("finTotalGeral").innerText = fmt(totalGeral);
+
     finDesenharGrafico();
     finDesenharDonut(grupos);
+}
+
+function finRenderizarBars(grupos) {
+    const isValor = _finBarsMetric === "valor";
+    const fmt = v => "R$ " + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    const totalValor = Object.values(grupos).reduce((a,g) => a + g.total, 0);
+    const totalQtd   = Object.values(grupos).reduce((a,g) => a + g.qtd,   0);
+    const maxVal     = Math.max(...Object.values(grupos).map(g => isValor ? g.total : g.qtd), 1);
+
+    /* Atualizar título */
+    const titulo = document.querySelector(".fin-bars-metric-row .fin-bars-title");
+    if (titulo) titulo.textContent = isValor ? "VALOR POR STATUS" : "QUANTIDADE POR STATUS";
+
+    [["Pré-Ordem","bar-pre","bar-pre-meta"],["Aberto","bar-aberto","bar-aberto-meta"],
+     ["Cancelado","bar-cancelado","bar-cancelado-meta"],["Fechado","bar-fechado","bar-fechado-meta"]].forEach(([key,bid,mid]) => {
+        const g    = grupos[key];
+        const val  = isValor ? g.total : g.qtd;
+        const tot  = isValor ? totalValor : totalQtd;
+        const pct  = maxVal > 0 ? (val / maxVal * 100).toFixed(1) : 0;
+        const pctT = tot   > 0 ? (val / tot * 100).toFixed(1) : 0;
+        const el = document.getElementById(bid); if(el) el.style.width = pct + "%";
+        const me = document.getElementById(mid);
+        if (me) me.innerText = isValor ? (fmt(val) + " · " + pctT + "%") : (val + " OS · " + pctT + "%");
+    });
 }
 
 function finRenderizarLista(dados) {
@@ -2654,18 +2843,61 @@ function finDesenharGrafico() {
     const canvas = document.getElementById("finChart");
     if (!canvas || typeof Chart === "undefined") return;
     if (_finChartInstance) { _finChartInstance.destroy(); _finChartInstance = null; }
-    const md = _finDadosMensais;
+
+    const n   = Math.min(_finPeriodoMeses, _finDadosMensais.labels.length);
+    const lbl = _finDadosMensais.labels.slice(-n);
+    const slc = arr => arr.slice(-n);
+
+    /* Mapa de séries com suas configs */
+    const todasSeries = [
+        { label:"Pré-Ordem", data:slc(_finDadosMensais.preOrdem),  borderColor:"#7aadff", backgroundColor:"rgba(122,173,255,0.10)", pointBackgroundColor:"#7aadff", idx:0 },
+        { label:"Aberto",    data:slc(_finDadosMensais.aberto),    borderColor:"#4cda7a", backgroundColor:"rgba(76,218,122,0.08)",  pointBackgroundColor:"#4cda7a", idx:1 },
+        { label:"Fechado",   data:slc(_finDadosMensais.fechado),   borderColor:"#9ca3af", backgroundColor:"rgba(156,163,175,0.08)",pointBackgroundColor:"#9ca3af", idx:2 },
+        { label:"Cancelado", data:slc(_finDadosMensais.cancelado), borderColor:"#ff6b6b", backgroundColor:"rgba(255,107,107,0.08)",pointBackgroundColor:"#ff6b6b", idx:3 },
+    ];
+
+    /* Quando um status específico está selecionado, exibe só ele em destaque */
+    const datasets = todasSeries.map(s => {
+        let hidden = false;
+        if (_finLinhaStatus === "Todos") {
+            hidden = !_finSeriesAtivas[s.idx];
+        } else {
+            hidden = s.label !== _finLinhaStatus;
+        }
+        return {
+            label: s.label,
+            data:  s.data,
+            borderColor:        hidden ? "transparent" : s.borderColor,
+            backgroundColor:    hidden ? "transparent" : s.backgroundColor,
+            pointBackgroundColor: s.pointBackgroundColor,
+            borderWidth: _finLinhaStatus !== "Todos" && !hidden ? 2.5 : 2,
+            pointRadius: _finLinhaStatus !== "Todos" && !hidden ? 5 : 4,
+            pointHoverRadius: 6,
+            tension: 0.35,
+            fill: true,
+            hidden,
+        };
+    });
+
     _finChartInstance = new Chart(canvas, {
         type: "line",
-        data: { labels: md.labels, datasets: [
-            { label:"Pré-Ordem", data:md.preOrdem,  borderColor:"#7aadff", backgroundColor:"rgba(122,173,255,0.10)", borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#7aadff", tension:0.35, fill:true },
-            { label:"Aberto",    data:md.aberto,    borderColor:"#4cda7a", backgroundColor:"rgba(76,218,122,0.08)",  borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#4cda7a", tension:0.35, fill:true },
-            { label:"Fechado",   data:md.fechado,   borderColor:"#9ca3af", backgroundColor:"rgba(156,163,175,0.08)",borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#9ca3af", tension:0.35, fill:true },
-            { label:"Cancelado", data:md.cancelado, borderColor:"#ff6b6b", backgroundColor:"rgba(255,107,107,0.08)",borderWidth:2, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:"#ff6b6b", tension:0.35, fill:true },
-        ]},
-        options: { responsive:true, maintainAspectRatio:false, interaction:{mode:"index",intersect:false},
-            plugins:{ legend:{display:false}, tooltip:{ backgroundColor:"#1b2744",borderColor:"#2a3a5c",borderWidth:1,titleColor:"#a6c8ff",bodyColor:"#cfd8e3",padding:10, callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y} OS`} } },
-            scales:{ x:{grid:{color:"rgba(42,58,92,0.6)"},ticks:{color:"#7aa3e0",font:{size:11}},border:{color:"#2a3a5c"}}, y:{grid:{color:"rgba(42,58,92,0.6)"},ticks:{color:"#7aa3e0",font:{size:11},stepSize:1},border:{color:"#2a3a5c"},beginAtZero:true} }
+        data: { labels: lbl, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode:"index", intersect:false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor:"#1b2744", borderColor:"#2a3a5c", borderWidth:1,
+                    titleColor:"#a6c8ff", bodyColor:"#cfd8e3", padding:10,
+                    filter: item => !item.dataset.hidden,
+                    callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} OS` }
+                }
+            },
+            scales: {
+                x: { grid:{color:"rgba(42,58,92,0.6)"}, ticks:{color:"#7aa3e0",font:{size:11}}, border:{color:"#2a3a5c"} },
+                y: { grid:{color:"rgba(42,58,92,0.6)"}, ticks:{color:"#7aa3e0",font:{size:11},stepSize:1}, border:{color:"#2a3a5c"}, beginAtZero:true }
+            }
         }
     });
 }
@@ -2674,16 +2906,25 @@ function finDesenharDonut(grupos) {
     const canvas = document.getElementById("finDonutChart");
     if (!canvas || typeof Chart === "undefined") return;
     if (_finDonutInstance) { _finDonutInstance.destroy(); _finDonutInstance = null; }
-    const labels=["Aberto","Pré-Ordem","Fechado","Cancelado"];
-    const valores=[grupos["Aberto"].total,grupos["Pré-Ordem"].total,grupos["Fechado"].total,grupos["Cancelado"].total];
-    const cores=["#4cda7a","#7aadff","#9ca3af","#ff6b6b"];
-    const total=valores.reduce((a,b)=>a+b,0);
-    const fmt=v=>"R$ "+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+
+    const isValor = _finDonutMetric === "valor";
+    const labels  = ["Aberto","Pré-Ordem","Fechado","Cancelado"];
+    const valores  = isValor
+        ? [grupos["Aberto"].total, grupos["Pré-Ordem"].total, grupos["Fechado"].total, grupos["Cancelado"].total]
+        : [grupos["Aberto"].qtd,   grupos["Pré-Ordem"].qtd,   grupos["Fechado"].qtd,   grupos["Cancelado"].qtd];
+    const cores   = ["#4cda7a","#7aadff","#9ca3af","#ff6b6b"];
+    const total   = valores.reduce((a,b)=>a+b,0);
+    const fmt     = v => "R$ "+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+
     _finDonutInstance = new Chart(canvas, {
         type:"doughnut", data:{ labels, datasets:[{data:valores,backgroundColor:cores,borderColor:"#0b1b2b",borderWidth:2,hoverOffset:6}] },
         options:{ responsive:true, maintainAspectRatio:false, cutout:"62%",
             plugins:{ legend:{display:false}, tooltip:{ backgroundColor:"#1b2744",borderColor:"#2a3a5c",borderWidth:1,titleColor:"#a6c8ff",bodyColor:"#cfd8e3",padding:10,
-                callbacks:{label:ctx=>{const pct=total>0?(ctx.parsed/total*100).toFixed(1):0; return ` ${ctx.label}: ${fmt(ctx.parsed)} (${pct}%)`;}}
+                callbacks:{label:ctx=>{
+                    const pct = total > 0 ? (ctx.parsed/total*100).toFixed(1) : 0;
+                    const val = isValor ? fmt(ctx.parsed) : ctx.parsed+" OS";
+                    return ` ${ctx.label}: ${val} (${pct}%)`;
+                }}
             }}
         }
     });
@@ -3112,6 +3353,71 @@ document.addEventListener("DOMContentLoaded", function () {
 
 })();
 </script>
+
+
+<script>
+/* ── Submenu Origens — hover abre, clique fora ou em item fecha ── */
+(function () {
+    function initSubmenuOrigens() {
+        const btn     = document.getElementById('btnOrigens');
+        const submenu = document.getElementById('submenuOrigens');
+        if (!btn || !submenu) return;
+
+        function posicionar() {
+            const rect = btn.getBoundingClientRect();
+            submenu.style.top  = rect.top + 'px';
+            submenu.style.left = (rect.right + 6) + 'px';
+        }
+
+        function abrir() {
+            posicionar();
+            submenu.classList.add('sub-visivel');
+            btn.classList.add('sub-aberto');
+        }
+
+        function fechar() {
+            submenu.classList.remove('sub-visivel');
+            btn.classList.remove('sub-aberto');
+        }
+
+        /* Abre ao passar o mouse */
+        btn.addEventListener('mouseenter', abrir);
+
+        /* Fecha ao clicar em qualquer item */
+        submenu.querySelectorAll('.btn-submenu-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                fechar();
+            });
+        });
+
+        /* Fecha ao clicar fora (botão ou submenu) */
+        document.addEventListener('click', function (e) {
+            if (!submenu.contains(e.target) && e.target !== btn) {
+                fechar();
+            }
+        });
+
+        /* Reposiciona se janela redimensionada */
+        window.addEventListener('resize', function () {
+            if (submenu.classList.contains('sub-visivel')) posicionar();
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSubmenuOrigens);
+    } else {
+        initSubmenuOrigens();
+    }
+})();
+</script>
+
+<!-- Submenu Origens fora do fluxo para position:fixed funcionar corretamente -->
+<div class="dropdown-submenu" id="submenuOrigens">
+    <a href="#" class="btn-submenu-item">👤 Cadastro de Clientes</a>
+    <a href="#" class="btn-submenu-item">👷 Cadastro de Funcionários</a>
+    <a href="#" class="btn-submenu-item">🏭 Cadastro de Fornecedores</a>
+    <a href="#" class="btn-submenu-item">🔑 Usuários</a>
+</div>
 
 </body>
 </html>
