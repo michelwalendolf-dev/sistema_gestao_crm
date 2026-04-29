@@ -59,7 +59,6 @@
     overflow: hidden;
 }
 
-/* ── Painel esquerdo: lista de OS ── */
 .fin-painel-os {
     width: 320px;
     min-width: 220px;
@@ -103,7 +102,6 @@
 .fin-os-busca input::placeholder { color: #4a5e7a; }
 .fin-os-busca input:focus { background: #162840; }
 
-/* ── Filtro por Status ── */
 .fin-filtro-status {
     display: flex;
     gap: 4px;
@@ -203,7 +201,6 @@
 .fin-os-footer-label { color: #7aa3e0; }
 .fin-os-footer-valor { color: #4cda7a; font-weight: 700; }
 
-/* ── Painel direito ── */
 .fin-painel-dash {
     flex: 1;
     display: flex;
@@ -212,7 +209,6 @@
     background: #0b1b2b;
 }
 
-/* KPI Cards */
 .fin-kpi-row {
     display: flex;
     gap: 10px;
@@ -273,7 +269,6 @@
     color: #4a5e7a;
 }
 
-/* ── Área dos gráficos ── */
 .fin-chart-area {
     flex: 1;
     padding: 0 14px 12px;
@@ -283,7 +278,6 @@
     gap: 10px;
 }
 
-/* Linha do topo: gráfico de linhas + pizza */
 .fin-charts-top {
     display: flex;
     gap: 10px;
@@ -327,7 +321,6 @@ canvas#finDonutChart {
     height: 100% !important;
 }
 
-/* Legenda pizza */
 .fin-donut-legend {
     display: flex;
     flex-wrap: wrap;
@@ -350,7 +343,6 @@ canvas#finDonutChart {
     flex-shrink: 0;
 }
 
-/* ── Barras Valor por Status ── */
 .fin-bars-section {
     flex-shrink: 0;
     background: #112035;
@@ -412,7 +404,6 @@ canvas#finDonutChart {
     flex-shrink: 0;
 }
 
-/* Chart title & legend (linha) */
 .fin-chart-header {
     display: flex;
     align-items: center;
@@ -442,7 +433,6 @@ canvas#finDonutChart {
     vertical-align: middle;
 }
 
-/* Rodapé modal */
 .fin-footer {
     height: 38px;
     border-top: 1px solid #737373;
@@ -626,16 +616,7 @@ canvas#finDonutChart {
     </div>
 
 </div>
-
-
-<!-- ═══════════════════════════════════════════════════
-     JS — colar no final do <script> existente
-═══════════════════════════════════════════════════ -->
 <script id="financeiro-js">
-
-/* Dependência: Chart.js (CDN) — adicionar no <head>:
-   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><\/script>
-*/
 
 let _finChartInstance   = null;
 let _finDonutInstance   = null;
@@ -649,20 +630,17 @@ const _finDadosMensais = {
     cancelado: [2, 1, 3, 2, 1, null],
 };
 
-/* ── Abre o modal ── */
 function abrirFinanceiro() {
     document.getElementById("overlayFinanceiro").style.display = "block";
     document.getElementById("modalFinanceiro").style.display   = "flex";
     finAtualizarDados();
 }
 
-/* ── Fecha o modal ── */
 function fecharFinanceiro() {
     document.getElementById("overlayFinanceiro").style.display = "none";
     document.getElementById("modalFinanceiro").style.display   = "none";
 }
 
-/* ── Filtro por status (botões) ── */
 function finFiltroStatus(btn) {
     document.querySelectorAll(".fin-filtro-btn").forEach(b => b.classList.remove("ativo"));
     btn.classList.add("ativo");
@@ -671,7 +649,6 @@ function finFiltroStatus(btn) {
     finRenderizarLista(dados);
 }
 
-/* ── Processa e exibe os dados ── */
 function finAtualizarDados() {
     const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
 
@@ -741,7 +718,6 @@ function finAtualizarDados() {
     finDesenharDonut(grupos);
 }
 
-/* ── Renderiza lista de OS ── */
 function finRenderizarLista(dados) {
     const lista = document.getElementById("finListaOS");
     const busca = (document.getElementById("finBuscaOS").value || "").toLowerCase();
@@ -787,7 +763,6 @@ function finFiltrarOS() {
     finRenderizarLista(dados);
 }
 
-/* ── Gráfico de Linhas ── */
 function finDesenharGrafico() {
     const canvas = document.getElementById("finChart");
     if (!canvas || typeof Chart === "undefined") return;
@@ -831,7 +806,6 @@ function finDesenharGrafico() {
     });
 }
 
-/* ── Gráfico de Pizza (Donut) ── */
 function finDesenharDonut(grupos) {
     const canvas = document.getElementById("finDonutChart");
     if (!canvas || typeof Chart === "undefined") return;
@@ -886,7 +860,6 @@ function finDesenharDonut(grupos) {
     });
 }
 
-/* ── Exportar (placeholder) ── */
 function finExportar() {
     if (typeof Swal !== "undefined") {
         Swal.fire({
@@ -901,7 +874,6 @@ function finExportar() {
     }
 }
 
-/* ── Vincula clique no menu ── */
 document.addEventListener("DOMContentLoaded", function () {
     const links = document.querySelectorAll(".dropdown-sistema a.btn-dropdown");
     links.forEach(link => {

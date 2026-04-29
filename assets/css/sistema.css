@@ -199,7 +199,6 @@ body{
     outline: none;
 }
 
-
 .container-datas input{
     width: 85%;
     height: 28px;
@@ -292,7 +291,6 @@ body{
     margin: 1px 0;
 }
 
-
 .container-datas .barra-acoes {
     flex: 1;
 }
@@ -376,7 +374,6 @@ body{
     overflow: visible;
 }
 
-/* Garante que o submenu fixo não seja cortado pelo container pai */
 .dropdown-sistema.ativo .btn-dropdown-submenu-wrap {
     overflow: visible;
 }
@@ -549,7 +546,7 @@ body.swal2-height-auto {
 
 .erp-modal{
     position: fixed;
-    width: 640px; /* menor */
+    width: 640px; 
     background: #0b1b2b;
     border: 2px solid #737373;
     box-shadow: 0 8px 25px rgba(0,0,0,0.6);
@@ -591,7 +588,6 @@ body.swal2-height-auto {
     color:white;
 }
 
-
 .erp-content{
     padding:12px;
 }
@@ -601,7 +597,6 @@ body.swal2-height-auto {
     border-bottom:1px solid #737373;
 }
 
-/* Barra que contém abas + campo de busca lado a lado */
 .erp-tabs-bar {
     display: flex;
     align-items: center;
@@ -908,19 +903,16 @@ body.swal2-height-auto {
     color:white;
 }
 
-/* GRID 2 COLUNAS */
 .erp-grid{
     display:grid;
     grid-template-columns: 1fr 1fr;
     gap:15px;
 }
 
-/* CAMPO FULL */
 .campo-full{
     grid-column: 1 / -1;
 }
 
-/* PARTE DE BAIXO FLEXÍVEL */
 .auditoria-area{
     display:flex;
     gap:10px;
@@ -928,7 +920,6 @@ body.swal2-height-auto {
     flex:1;
     min-height:250px;
 }
-
 
 .auditoria-grid{
     flex:2;
@@ -998,7 +989,6 @@ body.swal2-height-auto {
 .aud-badge-alteração { background: #3b2f00; color: #fbbf24; border: 1px solid #92400e; }
 .aud-badge-exclusão  { background: #4c1414; color: #f87171; border: 1px solid #991b1b; }
 
-/* DESCRIÇÃO */
 .auditoria-descricao{
     flex:1;
     display:flex;
@@ -1305,15 +1295,10 @@ body.swal2-height-auto {
     border-bottom: 2px solid #2d7dff;
 }
 
-/* ══════════════════════════════════════════
-   SUBMENU LATERAL — ORIGENS
-══════════════════════════════════════════ */
-
 .btn-dropdown-submenu-wrap {
     position: static;
 }
 
-/* Centraliza o texto e fixa a seta à direita */
 .btn-dropdown-has-sub {
     position: relative !important;
     justify-content: center !important;
@@ -1378,7 +1363,7 @@ body.swal2-height-auto {
     box-shadow: 0 0 10px #1f6bff60;
     border-color: #2d7dff;
 }
-/* ── Campos dos modais de cadastro ── */
+
 .campo-completo {
     display: flex;
     flex-direction: column;
@@ -1398,7 +1383,6 @@ body.swal2-height-auto {
     padding-top: 4px;
 }
 
-/* ── Área de foto nos modais de cadastro ── */
 .painel-com-foto {
     display: flex;
     gap: 18px;
@@ -1447,7 +1431,6 @@ body.swal2-height-auto {
     box-shadow: 0 4px 20px rgba(45,125,255,0.18);
 }
 
-/* Overlay hover ao passar o mouse quando já tem foto */
 .foto-perfil-wrap.tem-foto .foto-perfil::after {
     content: '✎ Alterar';
     position: absolute;
@@ -1496,7 +1479,6 @@ body.swal2-height-auto {
     color: inherit;
 }
 
-/* Label abaixo da foto */
 .foto-perfil-label {
     font-size: 10px;
     color: #4a6080;
@@ -1536,7 +1518,6 @@ body.swal2-height-auto {
     display: none;
 }
 
-/* ── Melhorias modais de cadastro ── */
 .btn-footer-novo {
     padding: 7px 22px;
     border: none;
@@ -1565,9 +1546,6 @@ body.swal2-height-auto {
     margin-bottom: 8px;
     margin-top: 2px;
 }
-/* ══════════════════════════════════════════
-   TELA BUSCA DE ORIGENS
-══════════════════════════════════════════ */
 
 #modalBuscaOrigem {
     top: 80px;
@@ -1585,7 +1563,6 @@ body.swal2-height-auto {
     min-height: 0;
 }
 
-/* ── Painel esquerdo filtros ── */
 .bo-filtros {
     width: 220px;
     min-width: 180px;
@@ -1695,7 +1672,6 @@ body.swal2-height-auto {
 }
 .bo-btn-buscar:hover { background: #2d5faa; }
 
-/* ── Painel direito lista ── */
 .bo-lista-wrap {
     flex: 1;
     display: flex;
@@ -1788,7 +1764,6 @@ body.swal2-height-auto {
     font-size: 13px;
 }
 
-/* ── Footer ── */
 .bo-footer {
     height: 40px;
     border-top: 1px solid #737373;
