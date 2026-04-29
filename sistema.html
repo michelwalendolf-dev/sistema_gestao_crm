@@ -1165,18 +1165,15 @@ canvas#finDonutChart { width: 100% !important; height: 100% !important; }
             if(statusMenu && statusInput){
 
                 /* Abre ao passar o mouse sobre o container */
-                statusDropdown.addEventListener('mouseenter', () => {
+                statusDropdown.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     statusDropdown.classList.add('ativo');
-                });
-
-                /* Fecha ao sair do container */
-                statusDropdown.addEventListener('mouseleave', () => {
-                    statusDropdown.classList.remove('ativo');
                 });
 
                 /* Seleciona opção e fecha */
                 statusMenu.querySelectorAll('.item').forEach(item => {
-                    item.addEventListener('click', () => {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
                         statusInput.value = item.textContent;
                         statusDropdown.classList.remove('ativo');
                         aplicarFiltros();
