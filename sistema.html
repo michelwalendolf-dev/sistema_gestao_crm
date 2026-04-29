@@ -1166,15 +1166,19 @@ canvas#finDonutChart { width: 100% !important; height: 100% !important; }
 
             if(statusMenu && statusInput){
 
-                statusDropdown.addEventListener('click', (e) => {
-                    e.stopPropagation();
+                /* Abre ao passar o mouse sobre o container */
+                statusDropdown.addEventListener('mouseenter', () => {
                     statusDropdown.classList.add('ativo');
+                });
+
+                /* Fecha ao sair do container */
+                statusDropdown.addEventListener('mouseleave', () => {
+                    statusDropdown.classList.remove('ativo');
                 });
 
                 /* Seleciona opção e fecha */
                 statusMenu.querySelectorAll('.item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        e.stopPropagation();
+                    item.addEventListener('click', () => {
                         statusInput.value = item.textContent;
                         statusDropdown.classList.remove('ativo');
                         aplicarFiltros();
@@ -1195,7 +1199,7 @@ canvas#finDonutChart { width: 100% !important; height: 100% !important; }
             const menu = btn.nextElementSibling;
 
             btn.addEventListener("click", function(e){
-                e.stopPropagation(); 
+                e.stopPropagation();
 
                 const rect = btn.getBoundingClientRect();
 
@@ -3407,6 +3411,874 @@ document.addEventListener("DOMContentLoaded", function () {
 })();
 </script>
 
+<!-- ═══════════════ MODAL CADASTRO DE CLIENTES ═══════════════ -->
+<div class="overlay-modal" id="overlayClientes" style="display:none;"></div>
+<div class="erp-modal" id="modalClientes" style="display:none; width:780px;">
+    <div class="erp-titlebar" id="dragClientes">
+        <span>Cadastro de Clientes</span>
+        <div class="erp-controls">
+            <button onclick="maximizarModal('modalClientes','overlayClientes')">☐</button>
+            <button onclick="fecharModal('modalClientes','overlayClientes')" title="Fechar">&#10006;</button>
+        </div>
+    </div>
+    <div class="erp-content">
+        <div class="erp-tabs-bar">
+            <div class="erp-tabs">
+                <div class="erp-tab active" onclick="trocarAbaModal(this,'painel-cli-dados')">Dados</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-cli-contato')">Contato</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-cli-end')">Endereço</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-cli-fin')">Financeiro</div>
+            </div>
+            <div class="bar-acoes busca-origem">
+                <input type="text" id="busca-cli" placeholder="Pesquisar cliente..." readonly onclick="abrirBuscaOrigem('cli',null)">
+                <div class="grupos">
+                    <button onclick="limparBuscaOrigem('cli')" title="Limpar">✖</button>
+                    <button class="btn-busca" onclick="abrirBuscaOrigem('cli',null)" title="Buscar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA DADOS -->
+        <div class="erp-panel" id="painel-cli-dados">
+            <div class="painel-com-foto">
+                <div class="foto-perfil-wrap">
+                    <div class="foto-perfil" id="foto-cli-preview" onclick="document.getElementById('foto-cli-input').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        <span>Clique para<br>adicionar foto</span>
+                    </div>
+                    <input type="file" id="foto-cli-input" accept="image/*" style="display:none" onchange="carregarFoto(this,'foto-cli-preview')">
+                    <button class="btn-remover-foto" onclick="removerFoto('foto-cli-preview','foto-cli-input')" title="Remover foto">&#10006; Remover</button>
+                </div>
+                <div class="erp-grid">
+                    <div class="campo-completo">
+                        <label>C&#243;digo</label>
+                        <div class="bar-acoes"><input type="text" id="cli-codigo" placeholder="Auto"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>CPF / CNPJ</label>
+                        <div class="bar-acoes"><input type="text" id="cli-doc" placeholder="000.000.000-00"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo campo-full">
+                        <label>Nome / Raz&#227;o Social <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes"><input type="text" id="cli-nome"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo campo-full">
+                        <label>Nome Fantasia</label>
+                        <div class="bar-acoes"><input type="text" id="cli-fantasia"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Data de Nascimento</label>
+                        <div class="bar-acoes"><input type="text" id="cli-nascimento" class="campo-data" placeholder="dd/mm/aaaa"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>RG / IE</label>
+                        <div class="bar-acoes"><input type="text" id="cli-rg"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Tipo <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="cli-tipo" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">Pessoa F&#237;sica</div>
+                                <div class="item">Pessoa Jur&#237;dica</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Status <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="cli-status" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">&#9679; Ativo</div>
+                                <div class="item">&#9675; Inativo</div>
+                                <div class="item">&#9632; Bloqueado</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Grupo / Categoria</label>
+                        <div class="bar-acoes"><input type="text" id="cli-grupo"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Profissão</label>
+                        <div class="bar-acoes"><input type="text" id="cli-profissao"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Gênero</label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="cli-genero" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">Masculino</div>
+                                <div class="item">Feminino</div>
+                                <div class="item">Outro</div>
+                                <div class="item">Não informado</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Nacionalidade</label>
+                        <div class="bar-acoes"><input type="text" id="cli-nacionalidade" placeholder="Brasileira"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Vendedor Resp.</label>
+                        <div class="bar-acoes"><input type="text" id="cli-vendedor"><div class="grupos"><button class="btn-busca"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button></div></div>
+                    </div>
+                    <div class="campo-completo campo-full">
+                        <label>Observa&#231;&#227;o</label>
+                        <div class="bar-acoes" style="height:auto; padding:4px 8px;">
+                            <textarea id="cli-obs" style="width:100%;background:transparent;border:none;outline:none;color:#fff;resize:vertical;min-height:48px;font-family:inherit;font-size:13px;" placeholder="Observa&#231;&#245;es gerais sobre o cliente..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA CONTATO -->
+        <div class="erp-panel" id="painel-cli-contato" style="display:none;">
+            <div class="cad-secao-titulo">Telefones</div>
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>Telefone Fixo</label>
+                    <div class="bar-acoes"><input type="text" id="cli-tel" placeholder="(00) 0000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Celular</label>
+                    <div class="bar-acoes"><input type="text" id="cli-cel" placeholder="(00) 00000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>WhatsApp</label>
+                    <div class="bar-acoes"><input type="text" id="cli-whatsapp" placeholder="(00) 00000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Contato</label>
+                    <div class="bar-acoes"><input type="text" id="cli-contato" placeholder="Nome do respons&#225;vel"><div class="grupos"></div></div>
+                </div>
+            </div>
+            <div class="cad-secao-titulo" style="margin-top:10px;">Internet</div>
+            <div class="erp-grid">
+                <div class="campo-completo campo-full">
+                    <label>E-mail</label>
+                    <div class="bar-acoes"><input type="email" id="cli-email" placeholder="exemplo@email.com"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Site</label>
+                    <div class="bar-acoes"><input type="text" id="cli-site" placeholder="https://"><div class="grupos"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA ENDERE&#199;O -->
+        <div class="erp-panel" id="painel-cli-end" style="display:none;">
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>CEP</label>
+                    <div class="bar-acoes"><input type="text" id="cli-cep" placeholder="00000-000"><div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Estado</label>
+                    <div class="bar-acoes"><input type="text" id="cli-uf" maxlength="2" placeholder="UF"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Logradouro</label>
+                    <div class="bar-acoes"><input type="text" id="cli-rua"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>N&#250;mero</label>
+                    <div class="bar-acoes"><input type="text" id="cli-num"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Complemento</label>
+                    <div class="bar-acoes"><input type="text" id="cli-comp" placeholder="Apto, sala..."><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Bairro</label>
+                    <div class="bar-acoes"><input type="text" id="cli-bairro"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Cidade</label>
+                    <div class="bar-acoes"><input type="text" id="cli-cidade"><div class="grupos"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA FINANCEIRO -->
+        <div class="erp-panel" id="painel-cli-fin" style="display:none;">
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>Limite de Cr&#233;dito</label>
+                    <div class="bar-acoes"><input type="text" id="cli-limite" placeholder="R$ 0,00"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Prazo de Pagamento (dias)</label>
+                    <div class="bar-acoes"><input type="number" id="cli-prazo" placeholder="0"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Forma de Pagamento</label>
+                    <div class="bar-acoes dropdown-container">
+                        <input type="text" id="cli-forma-pag" placeholder="Selecione..." readonly>
+                        <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                        <div class="dropdown-menu">
+                            <div class="item">&#224; Vista</div>
+                            <div class="item">Boleto</div>
+                            <div class="item">Cart&#227;o</div>
+                            <div class="item">Pix</div>
+                            <div class="item">Transfer&#234;ncia</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Desconto Padr&#227;o (%)</label>
+                    <div class="bar-acoes"><input type="number" id="cli-desconto" placeholder="0,00"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Banco / Ag&#234;ncia / Conta</label>
+                    <div class="bar-acoes"><input type="text" id="cli-banco" placeholder="Banco — Ag&#234;ncia — Conta"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Observa&#231;&#245;es Financeiras</label>
+                    <div class="bar-acoes" style="height:auto;padding:4px 8px;">
+                        <textarea id="cli-obs-fin" style="width:100%;background:transparent;border:none;outline:none;color:#fff;resize:vertical;min-height:48px;font-family:inherit;font-size:13px;" placeholder="Restri&#231;&#245;es, acordos especiais..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="erp-footer">
+            <button class="btn-footer-novo" onclick="limparModal('modalClientes')">&#10010; Novo</button>
+            <button class="btn-footer-salvar">&#128190; Salvar</button>
+            <button class="btn-footer-sair" onclick="fecharModal('modalClientes','overlayClientes')">&#10006; Sair</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ MODAL CADASTRO DE FUNCION&#193;RIOS ═══════════════ -->
+<div class="overlay-modal" id="overlayFuncionarios" style="display:none;"></div>
+<div class="erp-modal" id="modalFuncionarios" style="display:none; width:780px;">
+    <div class="erp-titlebar" id="dragFuncionarios">
+        <span>Cadastro de Funcionários</span>
+        <div class="erp-controls">
+            <button onclick="maximizarModal('modalFuncionarios','overlayFuncionarios')">☐</button>
+            <button onclick="fecharModal('modalFuncionarios','overlayFuncionarios')" title="Fechar">&#10006;</button>
+        </div>
+    </div>
+    <div class="erp-content">
+        <div class="erp-tabs-bar">
+            <div class="erp-tabs">
+                <div class="erp-tab active" onclick="trocarAbaModal(this,'painel-func-dados')">Dados</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-func-contato')">Contato</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-func-end')">Endereço</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-func-contrato')">Contrato</div>
+            </div>
+            <div class="bar-acoes busca-origem">
+                <input type="text" id="busca-func" placeholder="Pesquisar funcionário..." readonly onclick="abrirBuscaOrigem('func',null)">
+                <div class="grupos">
+                    <button onclick="limparBuscaOrigem('func')" title="Limpar">✖</button>
+                    <button class="btn-busca" onclick="abrirBuscaOrigem('func',null)" title="Buscar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA DADOS -->
+        <div class="erp-panel" id="painel-func-dados">
+            <div class="painel-com-foto">
+                <div class="foto-perfil-wrap">
+                    <div class="foto-perfil" id="foto-func-preview" onclick="document.getElementById('foto-func-input').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        <span>Clique para<br>adicionar foto</span>
+                    </div>
+                    <input type="file" id="foto-func-input" accept="image/*" style="display:none" onchange="carregarFoto(this,'foto-func-preview')">
+                    <button class="btn-remover-foto" onclick="removerFoto('foto-func-preview','foto-func-input')" title="Remover foto">&#10006; Remover</button>
+                </div>
+                <div class="erp-grid">
+                    <div class="campo-completo">
+                        <label>C&#243;digo</label>
+                        <div class="bar-acoes"><input type="text" id="func-codigo" placeholder="Auto"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>CPF <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes"><input type="text" id="func-cpf" placeholder="000.000.000-00"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo campo-full">
+                        <label>Nome Completo <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes"><input type="text" id="func-nome"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>RG</label>
+                        <div class="bar-acoes"><input type="text" id="func-rg"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Data de Nascimento</label>
+                        <div class="bar-acoes"><input type="text" id="func-nascimento" class="campo-data" placeholder="dd/mm/aaaa"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Cargo / Função <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes"><input type="text" id="func-cargo"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Setor</label>
+                        <div class="bar-acoes"><input type="text" id="func-setor"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Departamento</label>
+                        <div class="bar-acoes"><input type="text" id="func-departamento"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Nível / Graduação</label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="func-nivel" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">Jrúnior</div>
+                                <div class="item">Pleno</div>
+                                <div class="item">Sênior</div>
+                                <div class="item">Especialista</div>
+                                <div class="item">Gestor</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Gênero</label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="func-genero" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">Masculino</div>
+                                <div class="item">Feminino</div>
+                                <div class="item">Outro</div>
+                                <div class="item">Não informado</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Nacionalidade</label>
+                        <div class="bar-acoes"><input type="text" id="func-nacionalidade" placeholder="Brasileira"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Status <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="func-status" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">&#9679; Ativo</div>
+                                <div class="item">&#9675; Inativo</div>
+                                <div class="item">&#9650; Afastado</div>
+                                <div class="item">&#10006; Demitido</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo" style="justify-content:flex-end;">
+                        <label style="visibility:hidden;">.</label>
+                        <div style="display:flex;gap:16px;align-items:center;height:28px;padding:0 4px;">
+                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#cfd8e3;cursor:pointer;">
+                                <input type="checkbox" id="func-tecnico" style="width:15px;height:15px;accent-color:#2d7dff;cursor:pointer;"> T&#233;cnico
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#cfd8e3;cursor:pointer;">
+                                <input type="checkbox" id="func-padrao" style="width:15px;height:15px;accent-color:#2d7dff;cursor:pointer;"> Padr&#227;o
+                            </label>
+                        </div>
+                    </div>
+                    <div class="campo-completo campo-full">
+                        <label>Observa&#231;&#227;o</label>
+                        <div class="bar-acoes" style="height:auto;padding:4px 8px;">
+                            <textarea id="func-obs" style="width:100%;background:transparent;border:none;outline:none;color:#fff;resize:vertical;min-height:48px;font-family:inherit;font-size:13px;" placeholder="Observa&#231;&#245;es gerais..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA CONTATO -->
+        <div class="erp-panel" id="painel-func-contato" style="display:none;">
+            <div class="cad-secao-titulo">Telefones</div>
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>Telefone</label>
+                    <div class="bar-acoes"><input type="text" id="func-tel" placeholder="(00) 0000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Celular</label>
+                    <div class="bar-acoes"><input type="text" id="func-cel" placeholder="(00) 00000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>WhatsApp</label>
+                    <div class="bar-acoes"><input type="text" id="func-whatsapp" placeholder="(00) 00000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Contato de Emerg&#234;ncia</label>
+                    <div class="bar-acoes"><input type="text" id="func-emergencia" placeholder="Nome e telefone"><div class="grupos"></div></div>
+                </div>
+            </div>
+            <div class="cad-secao-titulo" style="margin-top:10px;">Internet</div>
+            <div class="erp-grid">
+                <div class="campo-completo campo-full">
+                    <label>E-mail</label>
+                    <div class="bar-acoes"><input type="email" id="func-email" placeholder="exemplo@email.com"><div class="grupos"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA ENDERE&#199;O -->
+        <div class="erp-panel" id="painel-func-end" style="display:none;">
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>CEP</label>
+                    <div class="bar-acoes"><input type="text" id="func-cep" placeholder="00000-000"><div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Estado</label>
+                    <div class="bar-acoes"><input type="text" id="func-uf" maxlength="2" placeholder="UF"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Logradouro</label>
+                    <div class="bar-acoes"><input type="text" id="func-rua"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>N&#250;mero</label>
+                    <div class="bar-acoes"><input type="text" id="func-num"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Complemento</label>
+                    <div class="bar-acoes"><input type="text" id="func-comp" placeholder="Apto, casa..."><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Bairro</label>
+                    <div class="bar-acoes"><input type="text" id="func-bairro"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Cidade</label>
+                    <div class="bar-acoes"><input type="text" id="func-cidade"><div class="grupos"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA CONTRATO -->
+        <div class="erp-panel" id="painel-func-contrato" style="display:none;">
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>Data de Admiss&#227;o</label>
+                    <div class="bar-acoes"><input type="text" id="func-admissao" class="campo-data" placeholder="dd/mm/aaaa"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Data de Demiss&#227;o</label>
+                    <div class="bar-acoes"><input type="text" id="func-demissao" class="campo-data" placeholder="dd/mm/aaaa"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Sal&#225;rio</label>
+                    <div class="bar-acoes"><input type="text" id="func-salario" placeholder="R$ 0,00"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Tipo de Contrato</label>
+                    <div class="bar-acoes dropdown-container">
+                        <input type="text" id="func-tipo-contrato" placeholder="Selecione..." readonly>
+                        <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                        <div class="dropdown-menu">
+                            <div class="item">CLT</div>
+                            <div class="item">PJ</div>
+                            <div class="item">Est&#225;gio</div>
+                            <div class="item">Tempor&#225;rio</div>
+                            <div class="item">Aut&#244;nomo</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Carga Hor&#225;ria (h/sem)</label>
+                    <div class="bar-acoes"><input type="number" id="func-carga" placeholder="44"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>PIS / PASEP</label>
+                    <div class="bar-acoes"><input type="text" id="func-pis"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>CTPS N&#250;mero</label>
+                    <div class="bar-acoes"><input type="text" id="func-ctps"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>CTPS S&#233;rie</label>
+                    <div class="bar-acoes"><input type="text" id="func-ctps-serie"><div class="grupos"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="erp-footer">
+            <button class="btn-footer-novo" onclick="limparModal('modalFuncionarios')">&#10010; Novo</button>
+            <button class="btn-footer-salvar">&#128190; Salvar</button>
+            <button class="btn-footer-sair" onclick="fecharModal('modalFuncionarios','overlayFuncionarios')">&#10006; Sair</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ MODAL CADASTRO DE FORNECEDORES ═══════════════ -->
+<div class="overlay-modal" id="overlayFornecedores" style="display:none;"></div>
+<div class="erp-modal" id="modalFornecedores" style="display:none; width:780px;">
+    <div class="erp-titlebar" id="dragFornecedores">
+        <span>Cadastro de Fornecedores</span>
+        <div class="erp-controls">
+            <button onclick="maximizarModal('modalFornecedores','overlayFornecedores')">☐</button>
+            <button onclick="fecharModal('modalFornecedores','overlayFornecedores')" title="Fechar">&#10006;</button>
+        </div>
+    </div>
+    <div class="erp-content">
+        <div class="erp-tabs-bar">
+            <div class="erp-tabs">
+                <div class="erp-tab active" onclick="trocarAbaModal(this,'painel-forn-dados')">Dados</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-forn-contato')">Contato</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-forn-end')">Endereço</div>
+                <div class="erp-tab" onclick="trocarAbaModal(this,'painel-forn-fin')">Financeiro</div>
+            </div>
+            <div class="bar-acoes busca-origem">
+                <input type="text" id="busca-forn" placeholder="Pesquisar fornecedor..." readonly onclick="abrirBuscaOrigem('forn',null)">
+                <div class="grupos">
+                    <button onclick="limparBuscaOrigem('forn')" title="Limpar">✖</button>
+                    <button class="btn-busca" onclick="abrirBuscaOrigem('forn',null)" title="Buscar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA DADOS -->
+        <div class="erp-panel" id="painel-forn-dados">
+            <div class="painel-com-foto">
+                <div class="foto-perfil-wrap">
+                    <div class="foto-perfil" id="foto-forn-preview" onclick="document.getElementById('foto-forn-input').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        <span>Clique para<br>adicionar foto</span>
+                    </div>
+                    <input type="file" id="foto-forn-input" accept="image/*" style="display:none" onchange="carregarFoto(this,'foto-forn-preview')">
+                    <button class="btn-remover-foto" onclick="removerFoto('foto-forn-preview','foto-forn-input')" title="Remover foto">&#10006; Remover</button>
+                </div>
+                <div class="erp-grid">
+                    <div class="campo-completo">
+                        <label>C&#243;digo</label>
+                        <div class="bar-acoes"><input type="text" id="forn-codigo" placeholder="Auto"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>CNPJ / CPF <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes"><input type="text" id="forn-doc" placeholder="00.000.000/0000-00"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo campo-full">
+                        <label>Raz&#227;o Social <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes"><input type="text" id="forn-razao"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo campo-full">
+                        <label>Nome Fantasia</label>
+                        <div class="bar-acoes"><input type="text" id="forn-fantasia"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Inscri&#231;&#227;o Estadual</label>
+                        <div class="bar-acoes"><input type="text" id="forn-ie"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Inscri&#231;&#227;o Municipal</label>
+                        <div class="bar-acoes"><input type="text" id="forn-im"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Status <span style="color:#e05;">*</span></label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="forn-status" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">&#9679; Ativo</div>
+                                <div class="item">&#9675; Inativo</div>
+                                <div class="item">&#9632; Bloqueado</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Categoria</label>
+                        <div class="bar-acoes"><input type="text" id="forn-categoria" placeholder="Ex: Peças, Serviços..."><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Tipo de Fornecedor</label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="forn-tipo" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">Fabricante</div>
+                                <div class="item">Distribuidor</div>
+                                <div class="item">Atacadista</div>
+                                <div class="item">Prestador de Serviço</div>
+                                <div class="item">Importador</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Representante</label>
+                        <div class="bar-acoes"><input type="text" id="forn-representante"><div class="grupos"></div></div>
+                    </div>
+                    <div class="campo-completo">
+                        <label>Origem</label>
+                        <div class="bar-acoes dropdown-container">
+                            <input type="text" id="forn-origem" placeholder="Selecione..." readonly>
+                            <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                            <div class="dropdown-menu">
+                                <div class="item">Nacional</div>
+                                <div class="item">Internacional</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campo-completo campo-full">
+                        <label>Observa&#231;&#227;o</label>
+                        <div class="bar-acoes" style="height:auto;padding:4px 8px;">
+                            <textarea id="forn-obs" style="width:100%;background:transparent;border:none;outline:none;color:#fff;resize:vertical;min-height:48px;font-family:inherit;font-size:13px;" placeholder="Observa&#231;&#245;es gerais sobre o fornecedor..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA CONTATO -->
+        <div class="erp-panel" id="painel-forn-contato" style="display:none;">
+            <div class="cad-secao-titulo">Telefones</div>
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>Telefone</label>
+                    <div class="bar-acoes"><input type="text" id="forn-tel" placeholder="(00) 0000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Celular</label>
+                    <div class="bar-acoes"><input type="text" id="forn-cel" placeholder="(00) 00000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>WhatsApp</label>
+                    <div class="bar-acoes"><input type="text" id="forn-whatsapp" placeholder="(00) 00000-0000"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Contato Comercial</label>
+                    <div class="bar-acoes"><input type="text" id="forn-contato" placeholder="Nome do respons&#225;vel"><div class="grupos"></div></div>
+                </div>
+            </div>
+            <div class="cad-secao-titulo" style="margin-top:10px;">Internet</div>
+            <div class="erp-grid">
+                <div class="campo-completo campo-full">
+                    <label>E-mail</label>
+                    <div class="bar-acoes"><input type="email" id="forn-email" placeholder="exemplo@email.com"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Site</label>
+                    <div class="bar-acoes"><input type="text" id="forn-site" placeholder="https://"><div class="grupos"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA ENDERE&#199;O -->
+        <div class="erp-panel" id="painel-forn-end" style="display:none;">
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>CEP</label>
+                    <div class="bar-acoes"><input type="text" id="forn-cep" placeholder="00000-000"><div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Estado</label>
+                    <div class="bar-acoes"><input type="text" id="forn-uf" maxlength="2" placeholder="UF"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Logradouro</label>
+                    <div class="bar-acoes"><input type="text" id="forn-rua"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>N&#250;mero</label>
+                    <div class="bar-acoes"><input type="text" id="forn-num"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Complemento</label>
+                    <div class="bar-acoes"><input type="text" id="forn-comp" placeholder="Sala, bloco..."><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Bairro</label>
+                    <div class="bar-acoes"><input type="text" id="forn-bairro"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Cidade</label>
+                    <div class="bar-acoes"><input type="text" id="forn-cidade"><div class="grupos"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA FINANCEIRO -->
+        <div class="erp-panel" id="painel-forn-fin" style="display:none;">
+            <div class="erp-grid">
+                <div class="campo-completo">
+                    <label>Prazo de Pagamento (dias)</label>
+                    <div class="bar-acoes"><input type="number" id="forn-prazo" placeholder="0"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Limite de Cr&#233;dito</label>
+                    <div class="bar-acoes"><input type="text" id="forn-limite" placeholder="R$ 0,00"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo">
+                    <label>Forma de Pagamento</label>
+                    <div class="bar-acoes dropdown-container">
+                        <input type="text" id="forn-forma-pag" placeholder="Selecione..." readonly>
+                        <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button></div>
+                        <div class="dropdown-menu">
+                            <div class="item">Boleto</div>
+                            <div class="item">Pix</div>
+                            <div class="item">Transfer&#234;ncia</div>
+                            <div class="item">Cart&#227;o</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-completo">
+                    <label>Desconto Padr&#227;o (%)</label>
+                    <div class="bar-acoes"><input type="number" id="forn-desconto" placeholder="0,00"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Dados Banc&#225;rios</label>
+                    <div class="bar-acoes"><input type="text" id="forn-banco" placeholder="Banco — Ag&#234;ncia — Conta — Pix"><div class="grupos"></div></div>
+                </div>
+                <div class="campo-completo campo-full">
+                    <label>Observa&#231;&#245;es Financeiras</label>
+                    <div class="bar-acoes" style="height:auto;padding:4px 8px;">
+                        <textarea id="forn-obs-fin" style="width:100%;background:transparent;border:none;outline:none;color:#fff;resize:vertical;min-height:48px;font-family:inherit;font-size:13px;" placeholder="Condi&#231;&#245;es especiais, negocia&#231;&#245;es..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="erp-footer">
+            <button class="btn-footer-novo" onclick="limparModal('modalFornecedores')">&#10010; Novo</button>
+            <button class="btn-footer-salvar">&#128190; Salvar</button>
+            <button class="btn-footer-sair" onclick="fecharModal('modalFornecedores','overlayFornecedores')">&#10006; Sair</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ JS DOS MODAIS DE CADASTRO ═══════════════ -->
+<script>
+(function () {
+
+    /* ── Abre modal ── */
+    function abrirModal(modalId, overlayId) {
+        const modal   = document.getElementById(modalId);
+        const overlay = document.getElementById(overlayId);
+        if (!modal || !overlay) return;
+        modal.style.display   = 'block';
+        overlay.style.display = 'block';
+        modal.classList.remove('maximizado');
+        modal.style.position  = 'fixed';
+        modal.style.width     = '700px';
+        modal.style.height    = 'auto';
+        modal.style.left      = '50%';
+        modal.style.top       = '80px';
+        modal.style.transform = 'translateX(-50%)';
+        ativarDrag(modal, modal.querySelector('.erp-titlebar'));
+    }
+
+    /* ── Fecha modal ── */
+    window.fecharModal = function (modalId, overlayId) {
+        const modal   = document.getElementById(modalId);
+        const overlay = document.getElementById(overlayId);
+        if (modal)   modal.style.display   = 'none';
+        if (overlay) overlay.style.display = 'none';
+    };
+
+    /* ── Maximizar / restaurar ── */
+    window.maximizarModal = function (modalId, overlayId) {
+        const modal   = document.getElementById(modalId);
+        const overlay = document.getElementById(overlayId);
+        if (!modal) return;
+        if (!modal.classList.contains('maximizado')) {
+            modal.dataset.prev = modal.style.cssText;
+            modal.classList.add('maximizado');
+            modal.style.position  = 'fixed';
+            modal.style.top       = '80px';
+            modal.style.left      = '0';
+            modal.style.width     = '100%';
+            modal.style.height    = 'calc(100vh - 80px)';
+            modal.style.transform = 'none';
+            if (overlay) overlay.style.display = 'none';
+        } else {
+            modal.classList.remove('maximizado');
+            modal.style.cssText = modal.dataset.prev;
+            if (overlay) overlay.style.display = 'block';
+        }
+    };
+
+    /* ── Troca aba dentro do modal ── */
+    window.trocarAbaModal = function (tabEl, painelId) {
+        const modal = tabEl.closest('.erp-modal');
+        modal.querySelectorAll('.erp-tab').forEach(t => t.classList.remove('active'));
+        tabEl.classList.add('active');
+        modal.querySelectorAll('.erp-panel').forEach(p => p.style.display = 'none');
+        const painel = document.getElementById(painelId);
+        if (painel) painel.style.display = 'block';
+    };
+
+    /* ── Drag ── */
+    function ativarDrag(modal, handle) {
+        if (!handle || handle.dataset.drag) return;
+        handle.dataset.drag = '1';
+        handle.addEventListener('mousedown', function (e) {
+            if (modal.classList.contains('maximizado')) return;
+            let shiftX = e.clientX - modal.getBoundingClientRect().left;
+            let shiftY = e.clientY - modal.getBoundingClientRect().top;
+            function mover(e) {
+                modal.style.left      = (e.clientX - shiftX) + 'px';
+                modal.style.top       = (e.clientY - shiftY) + 'px';
+                modal.style.transform = 'none';
+            }
+            document.addEventListener('mousemove', mover);
+            document.addEventListener('mouseup', function () {
+                document.removeEventListener('mousemove', mover);
+            }, { once: true });
+        });
+    }
+
+    /* ── Dropdowns internos dos modais (status / tipo) ── */
+    function initDropdownsModal() {
+        document.querySelectorAll('#modalClientes .dropdown-container, #modalFuncionarios .dropdown-container, #modalFornecedores .dropdown-container').forEach(function (dc) {
+            if (dc.dataset.init) return;
+            dc.dataset.init = '1';
+            const input = dc.querySelector('input');
+            dc.addEventListener('mouseenter', () => dc.classList.add('ativo'));
+            dc.addEventListener('mouseleave', () => dc.classList.remove('ativo'));
+            dc.querySelectorAll('.item').forEach(item => {
+                item.addEventListener('click', () => {
+                    if (input) input.value = item.textContent;
+                    dc.classList.remove('ativo');
+                });
+            });
+        });
+    }
+
+    /* ── Vincular itens do submenu Origens ── */
+    const mapa = {
+        'cadastro de clientes':     () => abrirModal('modalClientes',    'overlayClientes'),
+        'cadastro de funcionários': () => abrirModal('modalFuncionarios', 'overlayFuncionarios'),
+        'cadastro de fornecedores': () => abrirModal('modalFornecedores', 'overlayFornecedores'),
+    };
+
+    function vincularSubmenu() {
+        const submenu = document.getElementById('submenuOrigens');
+        if (!submenu) return;
+        submenu.querySelectorAll('.btn-submenu-item').forEach(function (item) {
+            /* Remove emojis e espaços extras para comparar */
+            const texto = item.textContent.replace(/[^\p{L}\p{N}\s]/gu, '').trim().toLowerCase();
+            if (mapa[texto]) {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    mapa[texto]();
+                    initDropdownsModal();
+                });
+            }
+        });
+    }
+
+    /* Garante execução após todo o DOM estar pronto */
+    document.addEventListener('DOMContentLoaded', vincularSubmenu);
+
+})();
+</script>
+
 <!-- Submenu Origens fora do fluxo para position:fixed funcionar corretamente -->
 <div class="dropdown-submenu" id="submenuOrigens">
     <a href="#" class="btn-submenu-item">👤 Cadastro de Clientes</a>
@@ -3414,6 +4286,567 @@ document.addEventListener("DOMContentLoaded", function () {
     <a href="#" class="btn-submenu-item">🏭 Cadastro de Fornecedores</a>
     <a href="#" class="btn-submenu-item">🔑 Usuários</a>
 </div>
+
+
+<script>
+function carregarFoto(input, previewId) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById(previewId);
+        if (!preview) return;
+        let img = preview.querySelector('img');
+        if (!img) { img = document.createElement('img'); preview.appendChild(img); }
+        img.src = e.target.result;
+        preview.closest('.foto-perfil-wrap').classList.add('tem-foto');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removerFoto(previewId, inputId) {
+    const preview = document.getElementById(previewId);
+    const input   = document.getElementById(inputId);
+    if (preview) {
+        const img = preview.querySelector('img');
+        if (img) img.remove();
+        preview.closest('.foto-perfil-wrap').classList.remove('tem-foto');
+    }
+    if (input) input.value = '';
+}
+</script>
+
+
+<script>
+/* Limpar todos os inputs/textareas/selects de um modal */
+window.limparModal = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.querySelectorAll('input:not([type=checkbox]):not([type=file])').forEach(i => i.value = '');
+    modal.querySelectorAll('textarea').forEach(t => t.value = '');
+    modal.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+    /* Resetar foto */
+    modal.querySelectorAll('.foto-perfil').forEach(fp => {
+        const img = fp.querySelector('img');
+        if (img) img.remove();
+        fp.closest('.foto-perfil-wrap').classList.remove('tem-foto');
+    });
+    modal.querySelectorAll('input[type=file]').forEach(f => f.value = '');
+    /* Voltar para primeira aba */
+    const firstTab = modal.querySelector('.erp-tab');
+    if (firstTab) firstTab.click();
+};
+</script>
+
+<script>
+/* ── Busca nas telas de Origens ── */
+function buscarOrigem(prefixo) {
+    const termo = (document.getElementById('busca-' + prefixo)?.value || '').trim().toLowerCase();
+    const modal = document.getElementById('modal' + ({
+        cli: 'Clientes', func: 'Funcionarios', forn: 'Fornecedores'
+    }[prefixo]));
+    if (!modal) return;
+    /* Percorre todos os inputs de texto visíveis e destaca campos que batem */
+    modal.querySelectorAll('.erp-panel input[type=text], .erp-panel input:not([type])').forEach(function(inp) {
+        const wrap = inp.closest('.campo-completo');
+        if (!wrap) return;
+        if (!termo) {
+            wrap.style.outline = '';
+            wrap.style.borderRadius = '';
+            return;
+        }
+        const val = (inp.value || '').toLowerCase();
+        const lbl = (wrap.querySelector('label')?.textContent || '').toLowerCase();
+        if (val.includes(termo) || lbl.includes(termo)) {
+            wrap.style.outline = '1.5px solid #2d7dff';
+            wrap.style.borderRadius = '4px';
+        } else {
+            wrap.style.outline = '';
+            wrap.style.borderRadius = '';
+        }
+    });
+}
+
+function limparBuscaOrigem(prefixo) {
+    var inp = document.getElementById('busca-' + prefixo);
+    if (inp) inp.value = '';
+    /* Limpa campos do modal correspondente */
+    var camposMap = {
+        cli:  ['cli-codigo','cli-nome','cli-doc','cli-tel','cli-email'],
+        func: ['func-codigo','func-nome','func-cpf','func-cargo','func-tel','func-email'],
+        forn: ['forn-codigo','forn-razao','forn-doc','forn-contato','forn-tel'],
+    };
+    (camposMap[prefixo] || []).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+</script>
+
+<!-- ═══════════════ MODAL BUSCA DE ORIGENS ═══════════════ -->
+<div class="overlay-modal" id="overlayBuscaOrigem" style="display:none;"></div>
+<div class="erp-modal" id="modalBuscaOrigem" style="display:none; width:860px;">
+    <div class="erp-titlebar" id="dragBuscaOrigem">
+        <span id="buscaOrigemTitulo">Pesquisar Clientes</span>
+        <div class="erp-controls">
+            <button onclick="maximizarModal('modalBuscaOrigem','overlayBuscaOrigem')">☐</button>
+            <button onclick="fecharModal('modalBuscaOrigem','overlayBuscaOrigem')" title="Fechar">&#10006;</button>
+        </div>
+    </div>
+
+    <div class="bo-body">
+
+        <!-- PAINEL ESQUERDO — FILTROS -->
+        <div class="bo-filtros">
+            <div class="bo-filtros-header">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                Filtros
+            </div>
+
+            <div class="bo-filtros-body">
+                <div class="bo-filtro-grupo">
+                    <label class="bo-filtro-label">Código</label>
+                    <div class="bar-acoes">
+                        <input type="text" id="bo-f-codigo" placeholder="Ex.: 001" oninput="filtrarBuscaOrigem()">
+                        <div class="grupos">
+                            <button onclick="limparCampo('bo-f-codigo')">✖</button>
+                            <button class="btn-busca" onclick="filtrarBuscaOrigem()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bo-filtro-grupo">
+                    <label class="bo-filtro-label">Nome</label>
+                    <div class="bar-acoes">
+                        <input type="text" id="bo-f-nome" placeholder="Nome..." oninput="filtrarBuscaOrigem()">
+                        <div class="grupos">
+                            <button onclick="limparCampo('bo-f-nome')">✖</button>
+                            <button class="btn-busca" onclick="filtrarBuscaOrigem()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bo-filtro-grupo">
+                    <label class="bo-filtro-label">CPF / CNPJ</label>
+                    <div class="bar-acoes">
+                        <input type="text" id="bo-f-doc" placeholder="000.000.000-00" oninput="filtrarBuscaOrigem()">
+                        <div class="grupos">
+                            <button onclick="limparCampo('bo-f-doc')">✖</button>
+                            <button class="btn-busca" onclick="filtrarBuscaOrigem()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bo-filtro-grupo">
+                    <label class="bo-filtro-label">Telefone</label>
+                    <div class="bar-acoes">
+                        <input type="text" id="bo-f-tel" placeholder="(00) 00000-0000" oninput="filtrarBuscaOrigem()">
+                        <div class="grupos">
+                            <button onclick="limparCampo('bo-f-tel')">✖</button>
+                            <button class="btn-busca" onclick="filtrarBuscaOrigem()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bo-filtro-grupo">
+                    <label class="bo-filtro-label">E-mail</label>
+                    <div class="bar-acoes">
+                        <input type="text" id="bo-f-email" placeholder="email@..." oninput="filtrarBuscaOrigem()">
+                        <div class="grupos">
+                            <button onclick="limparCampo('bo-f-email')">✖</button>
+                            <button class="btn-busca" onclick="filtrarBuscaOrigem()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bo-filtro-grupo">
+                    <label class="bo-filtro-label">Cidade</label>
+                    <div class="bar-acoes">
+                        <input type="text" id="bo-f-cidade" placeholder="Cidade..." oninput="filtrarBuscaOrigem()">
+                        <div class="grupos">
+                            <button onclick="limparCampo('bo-f-cidade')">✖</button>
+                            <button class="btn-busca" onclick="filtrarBuscaOrigem()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bo-filtros-footer">
+                <button class="bo-btn-limpar-todos" onclick="limparTodosFiltrosBo()">✖ Limpar</button>
+                <button class="bo-btn-buscar" onclick="filtrarBuscaOrigem()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Buscar
+                </button>
+            </div>
+        </div>
+
+        <!-- PAINEL DIREITO — LISTA -->
+        <div class="bo-lista-wrap">
+            <!-- barra de ações da lista -->
+            <div class="bo-lista-toolbar">
+                <span class="bo-lista-count" id="bo-count">0 registro(s)</span>
+                <div style="display:flex; gap:4px; margin-left:auto;">
+                    <button class="bo-btn-tool" title="Novo" onclick="abrirNovoDeOrigem()">&#10010; Novo</button>
+                    <button class="bo-btn-tool" id="bo-btn-editar" title="Editar selecionado" onclick="editarSelecionadoBo()" disabled>&#9998; Editar</button>
+                    <button class="bo-btn-tool bo-btn-sel" id="bo-btn-selecionar" title="Selecionar" onclick="selecionarOrigem()" disabled>&#10003; Selecionar</button>
+                </div>
+            </div>
+
+            <!-- tabela -->
+            <div class="bo-table-wrap">
+                <table class="bo-table" id="bo-table">
+                    <thead>
+                        <tr id="bo-thead-row">
+                            <!-- colunas injetadas via JS conforme tipo -->
+                        </tr>
+                    </thead>
+                    <tbody id="bo-tbody">
+                        <tr>
+                            <td colspan="10" class="bo-vazio">Informe os filtros e clique em <strong>Buscar</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="bo-footer">
+        <span class="bo-footer-sel" id="bo-footer-sel">Nenhum registro selecionado</span>
+        <button class="btn-footer-salvar" id="bo-btn-ok" onclick="selecionarOrigem()" disabled>&#10003; Selecionar</button>
+        <button class="btn-footer-sair" onclick="fecharModal('modalBuscaOrigem','overlayBuscaOrigem')">&#10006; Fechar</button>
+    </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   TELA DE BUSCA DE ORIGENS
+══════════════════════════════════════════════════════ */
+(function () {
+
+    /* ── Mapeia dados demo → campos do modal ── */
+    var CAMPOS = {
+        cli: function(cols) {
+            set('cli-codigo',      cols[0]);
+            set('cli-nome',        cols[1]);
+            set('cli-doc',         cols[2]);
+            set('cli-tel',         cols[3]);
+            set('cli-email',       cols[4]);
+        },
+        func: function(cols) {
+            set('func-codigo',     cols[0]);
+            set('func-nome',       cols[1]);
+            set('func-cpf',        cols[2]);
+            set('func-cargo',      cols[3]);
+            set('func-tel',        cols[4]);
+            set('func-email',      cols[5]);
+        },
+        forn: function(cols) {
+            set('forn-codigo',     cols[0]);
+            set('forn-razao',      cols[1]);
+            set('forn-doc',        cols[2]);
+            set('forn-contato',    cols[3]);
+            set('forn-tel',        cols[4]);
+        },
+    };
+
+    function set(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.value = val || '';
+    }
+
+    /* ── Atualiza o campo de busca na barra de abas ── */
+    function atualizarCampoBusca(tipo, nome) {
+        var idMap = { cli: 'busca-cli', func: 'busca-func', forn: 'busca-forn' };
+        var inp = document.getElementById(idMap[tipo]);
+        if (inp) inp.value = nome || '';
+    }
+
+    /* Tipo atual: 'cli' | 'func' | 'forn' */
+    var _tipo = 'cli';
+    /* Linha selecionada */
+    var _linhaSel = null;
+    /* Callback opcional — chamado com o objeto da linha ao confirmar */
+    var _callback = null;
+
+    /* Colunas por tipo */
+    var COLUNAS = {
+        cli:  ['Cód.','Nome / Razão Social','CPF / CNPJ','Telefone','E-mail','Cidade'],
+        func: ['Cód.','Nome','CPF','Cargo','Telefone','E-mail'],
+        forn: ['Cód.','Razão Social','CNPJ','Contato','Telefone','Cidade'],
+    };
+
+    /* Filtros de cada tipo (IDs dos inputs) */
+    var FILTROS_IDS = ['bo-f-codigo','bo-f-nome','bo-f-doc','bo-f-tel','bo-f-email','bo-f-cidade'];
+
+    /* Títulos */
+    var TITULOS = { cli:'Pesquisar Clientes', func:'Pesquisar Funcionários', forn:'Pesquisar Fornecedores' };
+
+    /* Placeholders dos filtros por tipo */
+    var PLACEHOLDERS = {
+        cli:  ['Ex.: 001','Nome / Razão Social...','CPF / CNPJ...','Telefone...','E-mail...','Cidade...'],
+        func: ['Ex.: 001','Nome do funcionário...','CPF...','Cargo...','Telefone...','E-mail...'],
+        forn: ['Ex.: 001','Razão Social...','CNPJ...','Contato...','Telefone...','Cidade...'],
+    };
+    var LABELS = {
+        cli:  ['Código','Nome','CPF / CNPJ','Telefone','E-mail','Cidade'],
+        func: ['Código','Nome','CPF','Cargo','Telefone','E-mail'],
+        forn: ['Código','Razão Social','CNPJ','Contato','Telefone','Cidade'],
+    };
+
+    /* ── Abre a tela ── */
+    window.abrirBuscaOrigem = function (tipo, callback) {
+        _tipo     = tipo || 'cli';
+        _callback = callback || null;
+        _linhaSel = null;
+
+        /* Título */
+        document.getElementById('buscaOrigemTitulo').textContent = TITULOS[_tipo] || 'Pesquisar';
+
+        /* Atualiza labels e placeholders dos filtros */
+        var labels = LABELS[_tipo];
+        var phs    = PLACEHOLDERS[_tipo];
+        FILTROS_IDS.forEach(function (id, i) {
+            var inp = document.getElementById(id);
+            if (inp) {
+                inp.value       = '';
+                inp.placeholder = phs[i] || '';
+            }
+            var wrap = inp && inp.closest('.bo-filtro-grupo');
+            if (wrap) {
+                var lbl = wrap.querySelector('.bo-filtro-label');
+                if (lbl) lbl.textContent = labels[i] || '';
+            }
+        });
+
+        /* Colunas da tabela */
+        var tr = document.getElementById('bo-thead-row');
+        tr.innerHTML = COLUNAS[_tipo].map(function (c) {
+            return '<th>' + c + '</th>';
+        }).join('');
+
+        /* Limpa lista */
+        _resetLista('Informe os filtros e clique em <strong>Buscar</strong>');
+        _desativarBotoes();
+
+        /* Abre o modal diretamente */
+        var modal   = document.getElementById('modalBuscaOrigem');
+        var overlay = document.getElementById('overlayBuscaOrigem');
+        modal.style.display   = 'flex';
+        modal.style.position  = 'fixed';
+        modal.style.width     = '860px';
+        modal.style.height    = 'auto';
+        modal.style.maxHeight = 'calc(100vh - 100px)';
+        modal.style.left      = '50%';
+        modal.style.top       = '80px';
+        modal.style.transform = 'translateX(-50%)';
+        modal.style.zIndex    = '10500';
+        overlay.style.display = 'block';
+        overlay.style.zIndex  = '10400';
+        ativarDragBo();
+    };
+
+    /* ── Filtra / busca ── */
+    window.filtrarBuscaOrigem = function () {
+        /* Coleta os filtros */
+        var filtros = FILTROS_IDS.map(function (id) {
+            return (document.getElementById(id)?.value || '').trim().toLowerCase();
+        });
+
+        /* Fonte de dados: lê as linhas da grade principal (grid-principal) cujo tipo bate */
+        var linhas = coletarDados(filtros);
+
+        var tbody = document.getElementById('bo-tbody');
+        _linhaSel = null;
+        _desativarBotoes();
+
+        if (!linhas.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Nenhum registro encontrado</td></tr>';
+            document.getElementById('bo-count').textContent = '0 registro(s)';
+            return;
+        }
+
+        document.getElementById('bo-count').textContent = linhas.length + ' registro(s)';
+        tbody.innerHTML = linhas.map(function (cols, idx) {
+            return '<tr class="bo-row" data-idx="' + idx + '" onclick="selecionarLinhaBo(this)">' +
+                cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
+            '</tr>';
+        }).join('');
+    };
+
+    /* Coleta dados do modal correspondente */
+    function coletarDados(filtros) {
+        var modalId = { cli:'modalClientes', func:'modalFuncionarios', forn:'modalFornecedores' }[_tipo];
+        var modal   = document.getElementById(modalId);
+
+        /* Se o modal não tem dados reais ainda, retorna exemplo demonstrativo */
+        /* Em produção, substituir por chamada à API / array de registros real */
+        return dadosDemo(filtros);
+    }
+
+    /* Dados de demonstração — substitua por dados reais */
+    function dadosDemo(filtros) {
+        var demo = {
+            cli: [
+                ['001','João da Silva','123.456.789-00','(47) 99999-0001','joao@email.com','Joinville'],
+                ['002','Maria Souza','987.654.321-00','(47) 98888-0002','maria@email.com','Blumenau'],
+                ['003','Empresa ABC Ltda','12.345.678/0001-90','(47) 3333-0003','contato@abc.com','Joinville'],
+                ['004','Carlos Pereira','111.222.333-44','(47) 97777-0004','carlos@email.com','Florianópolis'],
+                ['005','Fernanda Lima','555.666.777-88','(47) 96666-0005','fernanda@email.com','Jaraguá do Sul'],
+            ],
+            func: [
+                ['001','Ana Paula Costa','111.111.111-11','Técnica','(47) 91111-1111','ana@empresa.com'],
+                ['002','Bruno Martins','222.222.222-22','Gerente','(47) 92222-2222','bruno@empresa.com'],
+                ['003','Cláudio Ramos','333.333.333-33','Suporte','(47) 93333-3333','claudio@empresa.com'],
+            ],
+            forn: [
+                ['001','Fornecedora XYZ Ltda','11.111.111/0001-11','Marcos','(47) 91010-1010','Joinville'],
+                ['002','Distribuidora Beta','22.222.222/0001-22','Lucia','(47) 92020-2020','São Paulo'],
+                ['003','TechParts S.A.','33.333.333/0001-33','Roberto','(47) 93030-3030','Curitiba'],
+            ],
+        };
+        var rows = demo[_tipo] || [];
+        /* Aplica filtros */
+        return rows.filter(function (cols) {
+            return filtros.every(function (f, i) {
+                return !f || (cols[i] || '').toLowerCase().includes(f);
+            });
+        });
+    }
+
+    /* ── Seleciona linha ── */
+    window.selecionarLinhaBo = function (tr) {
+        document.querySelectorAll('#bo-tbody .bo-row').forEach(function (r) {
+            r.classList.remove('bo-row-sel');
+        });
+        tr.classList.add('bo-row-sel');
+        _linhaSel = tr;
+
+        var nome = tr.cells[1]?.textContent || '';
+        document.getElementById('bo-footer-sel').textContent = 'Selecionado: ' + nome;
+
+        document.getElementById('bo-btn-editar').disabled    = false;
+        document.getElementById('bo-btn-selecionar').disabled = false;
+        document.getElementById('bo-btn-ok').disabled         = false;
+    };
+
+    /* ── Confirma seleção ── */
+    window.selecionarOrigem = function () {
+        if (!_linhaSel) return;
+
+        /* Coleta colunas da linha selecionada */
+        var cols = Array.from(_linhaSel.cells).map(function(c){ return c.textContent || ''; });
+
+        /* Preenche os campos do modal de origem correspondente */
+        if (CAMPOS[_tipo]) CAMPOS[_tipo](cols);
+
+        /* Atualiza campo de busca na barra de abas com o nome + mostra X */
+        atualizarCampoBusca(_tipo, cols[1] || cols[0] || '');
+
+        if (typeof _callback === 'function') {
+            var dados = {};
+            COLUNAS[_tipo].forEach(function(col, i){ dados[col] = cols[i] || ''; });
+            _callback(dados);
+        }
+
+        fecharModal('modalBuscaOrigem', 'overlayBuscaOrigem');
+    };
+
+    /* ── Abre cadastro novo a partir da busca ── */
+    window.abrirNovoDeOrigem = function () {
+        var map = { cli:['modalClientes','overlayClientes'], func:['modalFuncionarios','overlayFuncionarios'], forn:['modalFornecedores','overlayFornecedores'] };
+        var ids = map[_tipo];
+        if (ids) { limparModal(ids[0]); abrirModal(ids[0], ids[1]); }
+    };
+
+    window.editarSelecionadoBo = function () {
+        if (!_linhaSel) return;
+        abrirNovoDeOrigem();
+        /* Em produção: preencher o modal com os dados da linha selecionada */
+    };
+
+    /* ── Limpa todos os filtros ── */
+    window.limparTodosFiltrosBo = function () {
+        FILTROS_IDS.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        _resetLista('Informe os filtros e clique em <strong>Buscar</strong>');
+        _desativarBotoes();
+    };
+
+    window.limparCampo = function (id) {
+        var el = document.getElementById(id);
+        if (el) { el.value = ''; el.focus(); filtrarBuscaOrigem(); }
+    };
+
+    function _resetLista(msg) {
+        var tbody = document.getElementById('bo-tbody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">' + msg + '</td></tr>';
+        document.getElementById('bo-count').textContent = '0 registro(s)';
+        document.getElementById('bo-footer-sel').textContent = 'Nenhum registro selecionado';
+    }
+
+    function _desativarBotoes() {
+        ['bo-btn-editar','bo-btn-selecionar','bo-btn-ok'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.disabled = true;
+        });
+    }
+
+    /* ── Drag ── */
+    function ativarDragBo() {
+        var modal  = document.getElementById('modalBuscaOrigem');
+        var handle = document.getElementById('dragBuscaOrigem');
+        if (!handle || handle.dataset.drag) return;
+        handle.dataset.drag = '1';
+        handle.addEventListener('mousedown', function (e) {
+            if (modal.classList.contains('maximizado')) return;
+            var sx = e.clientX - modal.getBoundingClientRect().left;
+            var sy = e.clientY - modal.getBoundingClientRect().top;
+            function mv(e) {
+                modal.style.left      = (e.clientX - sx) + 'px';
+                modal.style.top       = (e.clientY - sy) + 'px';
+                modal.style.transform = 'none';
+            }
+            document.addEventListener('mousemove', mv);
+            document.addEventListener('mouseup', function () { document.removeEventListener('mousemove', mv); }, { once: true });
+        });
+    }
+
+    /* ── Vincula botão de lupa nas telas de origens ── */
+    document.addEventListener('DOMContentLoaded', function () {
+        /* Clique na lupa do campo busca-origem */
+        document.querySelectorAll('.busca-origem .btn-busca').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var wrap = btn.closest('.erp-modal') || btn.closest('[id^="modal"]');
+                var tipo = 'cli';
+                if (wrap) {
+                    var id = wrap.id || '';
+                    if (id.includes('Funcionarios')) tipo = 'func';
+                    else if (id.includes('Fornecedores')) tipo = 'forn';
+                }
+                abrirBuscaOrigem(tipo, null);
+            });
+        });
+    });
+
+})();
+</script>
 
 </body>
 </html>

@@ -601,6 +601,38 @@ body.swal2-height-auto {
     border-bottom:1px solid #737373;
 }
 
+/* Barra que contém abas + campo de busca lado a lado */
+.erp-tabs-bar {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #737373;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.erp-tabs-bar .erp-tabs {
+    border-bottom: none;
+    flex-shrink: 0;
+}
+
+.busca-origem {
+    width: 260px !important;
+    min-width: 0;
+    flex-shrink: 0;
+    margin: 0;
+    height: 28px !important;
+}
+
+.busca-origem input {
+    font-size: 13px !important;
+    height: 26px !important;
+    padding-left: 8px !important;
+}
+
+.busca-origem .grupos button {
+    width: 28px !important;
+}
+
 .erp-tab{
     padding:6px 14px;
     background:#253150;
@@ -1345,4 +1377,440 @@ body.swal2-height-auto {
     color: #ffffff;
     box-shadow: 0 0 10px #1f6bff60;
     border-color: #2d7dff;
+}
+/* ── Campos dos modais de cadastro ── */
+.campo-completo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.campo-completo label {
+    font-size: 12px;
+    color: #cfd8e3;
+}
+
+.campo-full {
+    grid-column: 1 / -1;
+}
+
+.erp-panel {
+    padding-top: 4px;
+}
+
+/* ── Área de foto nos modais de cadastro ── */
+.painel-com-foto {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding-top: 4px;
+}
+
+.painel-com-foto .erp-grid {
+    flex: 1;
+    min-width: 0;
+}
+
+.foto-perfil-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.foto-perfil {
+    width: 150px;
+    height: 180px;
+    border: 2px dashed #3d5a7a;
+    border-radius: 10px;
+    background: linear-gradient(160deg, #162033 0%, #0f1a2e 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    gap: 10px;
+    color: #6a8aaa;
+    font-size: 11px;
+    text-align: center;
+    transition: border-color 0.22s, background 0.22s, box-shadow 0.22s, color 0.22s;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+}
+
+.foto-perfil:hover {
+    border-color: #2d7dff;
+    background: linear-gradient(160deg, #1a2f4a 0%, #132035 100%);
+    color: #90b8d8;
+    box-shadow: 0 4px 20px rgba(45,125,255,0.18);
+}
+
+/* Overlay hover ao passar o mouse quando já tem foto */
+.foto-perfil-wrap.tem-foto .foto-perfil::after {
+    content: '✎ Alterar';
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 20, 40, 0.62);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #90c8ff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: 9px;
+}
+
+.foto-perfil-wrap.tem-foto .foto-perfil:hover::after {
+    opacity: 1;
+}
+
+.foto-perfil svg {
+    width: 44px;
+    height: 44px;
+    opacity: 0.45;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.foto-perfil:hover svg {
+    opacity: 0.65;
+    transform: scale(1.08);
+}
+
+.foto-perfil img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.foto-perfil span {
+    line-height: 1.5;
+    font-size: 11px;
+    color: inherit;
+}
+
+/* Label abaixo da foto */
+.foto-perfil-label {
+    font-size: 10px;
+    color: #4a6080;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.btn-remover-foto {
+    all: unset;
+    font-size: 11px;
+    color: #7a93b0;
+    cursor: pointer;
+    padding: 4px 10px;
+    border: 1px solid #3d5570;
+    border-radius: 5px;
+    background: #0f1a2e;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    display: none;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn-remover-foto:hover {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+    background: rgba(220, 50, 50, 0.08);
+}
+
+.foto-perfil-wrap.tem-foto .btn-remover-foto {
+    display: inline-block;
+}
+
+.foto-perfil-wrap.tem-foto .foto-perfil svg,
+.foto-perfil-wrap.tem-foto .foto-perfil span {
+    display: none;
+}
+
+/* ── Melhorias modais de cadastro ── */
+.btn-footer-novo {
+    padding: 7px 22px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: opacity 0.15s;
+    background: #253150;
+    color: #a6c8e8;
+    border: 1px solid #4a6080;
+    margin-right: auto;
+}
+
+.btn-footer-novo:hover { opacity: 0.82; }
+
+.cad-secao-titulo {
+    font-size: 11px;
+    font-weight: 600;
+    color: #7a93b0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid #2e3d55;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    margin-top: 2px;
+}
+/* ══════════════════════════════════════════
+   TELA BUSCA DE ORIGENS
+══════════════════════════════════════════ */
+
+#modalBuscaOrigem {
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    flex-direction: column;
+    max-height: calc(100vh - 100px);
+}
+
+.bo-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* ── Painel esquerdo filtros ── */
+.bo-filtros {
+    width: 220px;
+    min-width: 180px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #737373;
+    background: #0d1f35;
+}
+
+.bo-filtros-header {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #a6c8ff;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #737373;
+    background: linear-gradient(to bottom, #1e2f52, #141e35);
+    flex-shrink: 0;
+}
+
+.bo-filtros-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 10px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #2d3e69 #0d1f35;
+}
+
+.bo-filtros-body::-webkit-scrollbar { width: 4px; }
+.bo-filtros-body::-webkit-scrollbar-track { background: #0d1f35; }
+.bo-filtros-body::-webkit-scrollbar-thumb { background: #2d3e69; border-radius: 3px; }
+
+.bo-filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.bo-filtro-label {
+    font-size: 11px;
+    color: #7aa3e0;
+    font-weight: 500;
+}
+
+.bo-filtro-grupo .bar-acoes {
+    width: 100%;
+    height: 26px;
+    margin: 0;
+}
+
+.bo-filtro-grupo .bar-acoes input {
+    font-size: 12px;
+    height: 24px;
+}
+
+.bo-filtro-grupo .grupos button {
+    width: 26px;
+}
+
+.bo-filtros-footer {
+    border-top: 1px solid #737373;
+    padding: 8px 10px;
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    background: #0d1f35;
+}
+
+.bo-btn-limpar-todos {
+    flex: 1;
+    background: #253150;
+    border: 1px solid #4a6080;
+    color: #9ca3af;
+    font-size: 11px;
+    font-family: inherit;
+    padding: 5px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.bo-btn-limpar-todos:hover { background: #1a2e4a; color: #e2e8f0; }
+
+.bo-btn-buscar {
+    flex: 1;
+    background: #1f4a8a;
+    border: 1px solid #2d7dff;
+    color: #a6c8ff;
+    font-size: 11px;
+    font-family: inherit;
+    padding: 5px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: background 0.15s;
+}
+.bo-btn-buscar:hover { background: #2d5faa; }
+
+/* ── Painel direito lista ── */
+.bo-lista-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: #0b1b2b;
+}
+
+.bo-lista-toolbar {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 6px;
+    border-bottom: 1px solid #737373;
+    background: linear-gradient(to bottom, #253150 0px, #253150 16px, #2d3e69 20px, #16213b 130%);
+    flex-shrink: 0;
+}
+
+.bo-lista-count {
+    font-size: 11px;
+    color: #5c6b91;
+}
+
+.bo-btn-tool {
+    background: #253150;
+    border: 1px solid #737373;
+    color: #a6a6a6;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+}
+.bo-btn-tool:hover:not(:disabled) { background: #2f3e63; color: #e2e8f0; }
+.bo-btn-tool:disabled { opacity: 0.4; cursor: default; }
+.bo-btn-tool.bo-btn-sel { background: #1f4a8a; border-color: #2d7dff; color: #a6c8ff; }
+.bo-btn-tool.bo-btn-sel:hover:not(:disabled) { background: #2d5faa; }
+
+.bo-table-wrap {
+    flex: 1;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #2d3e69 #0b1b2b;
+}
+.bo-table-wrap::-webkit-scrollbar { width: 5px; height: 5px; }
+.bo-table-wrap::-webkit-scrollbar-track { background: #0b1b2b; }
+.bo-table-wrap::-webkit-scrollbar-thumb { background: #2d3e69; border-radius: 3px; }
+
+.bo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.bo-table thead th {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(to bottom, #253150, #1b2744);
+    border: 1px solid #2a3a5c;
+    padding: 6px 8px;
+    color: #a6c8ff;
+    font-weight: 600;
+    font-size: 11px;
+    text-align: left;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+    z-index: 2;
+}
+
+.bo-table tbody td {
+    border: 1px solid #1e2d44;
+    padding: 5px 8px;
+    color: #cfd8e3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.bo-row { cursor: pointer; transition: background 0.1s; }
+.bo-row:hover td { background: #1e3058; }
+.bo-row-sel td { background: #1f4a8a !important; color: #ffffff !important; }
+
+.bo-vazio {
+    text-align: center;
+    color: #3a5080;
+    padding: 40px 0 !important;
+    font-size: 13px;
+}
+
+/* ── Footer ── */
+.bo-footer {
+    height: 40px;
+    border-top: 1px solid #737373;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+    flex-shrink: 0;
+    background: linear-gradient(to bottom, #253150, #16213b);
+}
+
+.bo-footer-sel {
+    font-size: 11px;
+    color: #5c6b91;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bo-footer .btn-footer-salvar,
+.bo-footer .btn-footer-sair {
+    padding: 5px 16px;
+    font-size: 12px;
 }
