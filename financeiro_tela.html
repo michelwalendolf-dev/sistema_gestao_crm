@@ -1,4 +1,474 @@
-<style src="assets/css/financeiro.css"></style>
+<style id="financeiro-css">
+
+#overlayFinanceiro {
+    position: fixed;
+    inset: 0;
+    top: 80px;
+    background: rgba(0,0,0,0.60);
+    display: none;
+    z-index: 8500;
+}
+
+#modalFinanceiro {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0b1b2b;
+    border: 2px solid #737373;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    color: #e5e7eb;
+    z-index: 8600;
+    display: none;
+    flex-direction: column;
+}
+
+#financeiroTitlebar {
+    background: linear-gradient(
+        to bottom,
+        #253150 0px,
+        #253150 20px,
+        #2d3e69 20px,
+        #16213b 110%
+    );
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 13px;
+    border-bottom: 1px solid #737373;
+    flex-shrink: 0;
+    height: 36px;
+}
+
+#financeiroTitlebar .erp-controls button {
+    border: none;
+    background: transparent;
+    color: #a6a6a6;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+#financeiroTitlebar .erp-controls button:hover { color: white; }
+
+.fin-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.fin-painel-os {
+    width: 320px;
+    min-width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #737373;
+    background: #0d1f35;
+}
+
+.fin-painel-os-header {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-bottom: 1px solid #737373;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a6c8ff;
+    gap: 8px;
+    background: linear-gradient(to bottom, #1e2f52, #141e35);
+    flex-shrink: 0;
+}
+
+.fin-os-busca {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #2a3a5c;
+    flex-shrink: 0;
+}
+
+.fin-os-busca input {
+    flex: 1;
+    background: #112035;
+    border: none;
+    color: #e5e7eb;
+    padding: 6px 10px;
+    font-size: 12px;
+    outline: none;
+}
+.fin-os-busca input::placeholder { color: #4a5e7a; }
+.fin-os-busca input:focus { background: #162840; }
+
+.fin-filtro-status {
+    display: flex;
+    gap: 4px;
+    padding: 6px 8px;
+    border-bottom: 1px solid #2a3a5c;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.fin-filtro-btn {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    background: #0d1f35;
+    color: #7aa3e0;
+    border-color: #2a3a5c;
+}
+.fin-filtro-btn:hover { background: #1a2e4a; }
+.fin-filtro-btn.ativo { color: #fff; }
+.fin-filtro-btn[data-status="Todos"].ativo  { background: #253150; border-color: #7aa3e0; color: #a6c8ff; }
+.fin-filtro-btn[data-status="Pré-Ordem"].ativo  { background: #1a3470; border-color: #7aadff; color: #7aadff; }
+.fin-filtro-btn[data-status="Aberto"].ativo     { background: #0d3320; border-color: #4cda7a; color: #4cda7a; }
+.fin-filtro-btn[data-status="Fechado"].ativo    { background: #1e2530; border-color: #9ca3af; color: #9ca3af; }
+.fin-filtro-btn[data-status="Cancelado"].ativo  { background: #3a1515; border-color: #ff6b6b; color: #ff6b6b; }
+
+.fin-os-lista {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #2d3e69 #0d1f35;
+}
+
+.fin-os-lista::-webkit-scrollbar { width: 5px; }
+.fin-os-lista::-webkit-scrollbar-track { background: #0d1f35; }
+.fin-os-lista::-webkit-scrollbar-thumb { background: #2d3e69; border-radius: 3px; }
+
+.fin-os-item {
+    padding: 9px 12px;
+    border-bottom: 1px solid #1a2744;
+    cursor: pointer;
+    transition: background 0.12s;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 8px;
+    align-items: start;
+}
+
+.fin-os-item:hover { background: #1a2e4a; }
+.fin-os-item.selecionada { background: #1f4a8a !important; }
+
+.fin-os-nome {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fin-os-num {
+    font-size: 11px;
+    color: #7aa3e0;
+    white-space: nowrap;
+}
+
+.fin-os-valor {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4cda7a;
+    text-align: right;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+}
+
+.fin-os-status {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.fin-os-footer {
+    border-top: 1px solid #737373;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0d1f35;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+.fin-os-footer-label { color: #7aa3e0; }
+.fin-os-footer-valor { color: #4cda7a; font-weight: 700; }
+
+.fin-painel-dash {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #0b1b2b;
+}
+
+.fin-kpi-row {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px 8px;
+    flex-shrink: 0;
+}
+
+.fin-kpi-card {
+    flex: 1;
+    background: #112035;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.fin-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 6px 6px 0 0;
+}
+
+.fin-kpi-card.pre::before      { background: #2d64dc; }
+.fin-kpi-card.aberto::before   { background: #22b464; }
+.fin-kpi-card.fechado::before  { background: #6b7280; }
+.fin-kpi-card.cancelado::before { background: #dc3232; }
+
+.fin-kpi-card:hover { border-color: #3a5080; }
+
+.fin-kpi-label {
+    font-size: 10px;
+    color: #7aa3e0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.fin-kpi-valor {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.fin-kpi-card.pre .fin-kpi-valor      { color: #7aadff; }
+.fin-kpi-card.aberto .fin-kpi-valor   { color: #4cda7a; }
+.fin-kpi-card.fechado .fin-kpi-valor  { color: #9ca3af; }
+.fin-kpi-card.cancelado .fin-kpi-valor { color: #ff6b6b; }
+
+.fin-kpi-sub {
+    font-size: 11px;
+    color: #4a5e7a;
+}
+
+.fin-chart-area {
+    flex: 1;
+    padding: 0 14px 12px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    gap: 10px;
+}
+
+.fin-charts-top {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
+}
+
+.fin-chart-line-wrap {
+    flex: 1;
+    min-width: 0;
+    background: #112035;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fin-chart-donut-wrap {
+    width: 220px;
+    flex-shrink: 0;
+    background: #112035;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fin-chart-canvas-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+canvas#finChart,
+canvas#finDonutChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.fin-donut-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    flex-shrink: 0;
+}
+
+.fin-donut-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #a6c8ff;
+}
+
+.fin-donut-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.fin-bars-section {
+    flex-shrink: 0;
+    background: #112035;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+
+.fin-bars-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: #7aa3e0;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.fin-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.fin-bar-row:last-child { margin-bottom: 0; }
+
+.fin-bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #c8d8f0;
+    width: 72px;
+    flex-shrink: 0;
+}
+
+.fin-bar-track {
+    flex: 1;
+    height: 6px;
+    background: #0d1f35;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.fin-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.fin-bar-fill.pre      { background: #7aadff; }
+.fin-bar-fill.aberto   { background: #4cda7a; }
+.fin-bar-fill.fechado  { background: #9ca3af; }
+.fin-bar-fill.cancelado { background: #ff6b6b; }
+
+.fin-bar-meta {
+    font-size: 11px;
+    color: #7aa3e0;
+    text-align: right;
+    width: 130px;
+    flex-shrink: 0;
+}
+
+.fin-chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.fin-chart-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #a6c8ff;
+}
+
+.fin-chart-legend {
+    display: flex;
+    gap: 10px;
+    font-size: 10px;
+    color: #7aa3e0;
+    flex-wrap: wrap;
+}
+
+.fin-legend-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+.fin-footer {
+    height: 38px;
+    border-top: 1px solid #737373;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 12px;
+    gap: 8px;
+    flex-shrink: 0;
+    background: linear-gradient(to bottom, #253150, #16213b);
+}
+
+.fin-footer button {
+    background: #253150;
+    border: 1px solid #737373;
+    color: #a6a6a6;
+    padding: 4px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+.fin-footer button:hover { background: #2f3e63; }
+.fin-footer .btn-fin-fechar {
+    background: #4b1414;
+    border-color: #8c2020;
+    color: #ff9999;
+}
+.fin-footer .btn-fin-fechar:hover { background: #6b1c1c; }
+
+</style>
+
+
+<!-- ═══════════════════════════════════════════════════
+     HTML — colar antes do </body>
+═══════════════════════════════════════════════════ -->
 
 <div id="overlayFinanceiro"></div>
 
