@@ -1,139 +1,154 @@
 <?php
+// ============================================================
+//  IluminusTech — login.php
+//  Autentica o usuário contra a tabela "usuarios" no Supabase
+// ============================================================
+
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/supabase.php';
+require_once __DIR__ . '/session_check.php';
+
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Erro",
-        "mensagem" => "Requisição inválida."
-    ]);
+    echo json_encode(['sucesso' => false, 'titulo' => 'Erro', 'mensagem' => 'Requisição inválida.']);
     exit;
 }
-
-$usuarios = [
-    "admin" => "1234"
-];
 
 $usuario = trim($_POST['usuario'] ?? '');
-$senha   = trim($_POST['senha'] ?? '');
+$senha   = trim($_POST['senha']   ?? '');
 $captcha = $_POST['h-captcha-response'] ?? '';
-$usuarioExiste = isset($usuarios[$usuario]);
 
-if (!$usuarioExiste && $usuario !== '' && $senha !== '') {
-    echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Falha no Login",
-        "mensagem" => "Dados de login incorretos!"
-    ]);
-    exit;
-}
-
-if (!$usuarioExiste && $usuario !== '') {
-    echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Falha no Login",
-        "mensagem" => "Por favor revise os dados informados no campo de <b>Usuário</b>."
-    ]);
-    exit;
-}
-
-if ($usuarioExiste && $usuarios[$usuario] !== $senha && $senha !== '') {
-    echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Falha no Login",
-        "mensagem" => "Por favor revise os dados informados no campo de <b>Senha</b>."
-    ]);
-    exit;
-}
+// ── 1. Validação dos campos ──────────────────────────────────
 
 if ($usuario === '' && $senha === '') {
     echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Validação de Login",
-        "mensagem" => "Usuário não encontrado. Por favor, preencha os campos <b>Usuário</b> e <b>Senha</b>."
+        'sucesso'  => false,
+        'titulo'   => 'Validação de Login',
+        'mensagem' => 'Preencha os campos <b>Usuário</b> e <b>Senha</b>.',
     ]);
     exit;
 }
 
 if ($usuario === '') {
     echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Validação de Login",
-        "mensagem" => "Usuário não encontrado. Por favor, preencha o campo <b>usuário</b>."
+        'sucesso'  => false,
+        'titulo'   => 'Validação de Login',
+        'mensagem' => 'Preencha o campo <b>Usuário</b>.',
     ]);
     exit;
 }
 
 if ($senha === '') {
     echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Validação de Login",
-        "mensagem" => "Usuário não encontrado. Por favor, preencha o campo de <b>Senha</b>."
+        'sucesso'  => false,
+        'titulo'   => 'Validação de Login',
+        'mensagem' => 'Preencha o campo <b>Senha</b>.',
     ]);
     exit;
 }
 
 if (!$captcha) {
     echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Validação de Login",
-        "mensagem" => "Confirme que você não é um robô."
+        'sucesso'  => false,
+        'titulo'   => 'Validação de Login',
+        'mensagem' => 'Confirme que você não é um robô.',
     ]);
     exit;
 }
 
-$secret = "ES_e9189502a0794236ae323ad410a790f5";
+// ── 2. Verificação do hCaptcha ───────────────────────────────
 
-$data = [
-    'secret'   => $secret,
+$captchaData = [
+    'secret'   => HCAPTCHA_SECRET,
     'response' => $captcha,
-    'remoteip' => $_SERVER['REMOTE_ADDR']
+    'remoteip' => $_SERVER['REMOTE_ADDR'],
 ];
 
-$options = [
+$ctx = stream_context_create([
     'http' => [
-        'header'  => "Content-type: application/x-www-form-urlencoded",
         'method'  => 'POST',
-        'content' => http_build_query($data),
-        'timeout' => 10
+        'header'  => 'Content-type: application/x-www-form-urlencoded',
+        'content' => http_build_query($captchaData),
+        'timeout' => 10,
     ],
-];
+]);
 
-$context = stream_context_create($options);
-$result  = @file_get_contents('https://hcaptcha.com/siteverify', false, $context);
+$captchaResult = @file_get_contents('https://hcaptcha.com/siteverify', false, $ctx);
 
-if ($result === false) {
+if ($captchaResult === false) {
     echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Erro",
-        "mensagem" => "Não foi possível validar o captcha. Verifique sua conexão."
+        'sucesso'  => false,
+        'titulo'   => 'Erro',
+        'mensagem' => 'Não foi possível validar o captcha. Verifique sua conexão.',
     ]);
     exit;
 }
 
-$response = json_decode($result);
+$captchaResponse = json_decode($captchaResult);
 
-if (!$response || !isset($response->success)) {
+if (!$captchaResponse || !$captchaResponse->success) {
     echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Erro",
-        "mensagem" => "Resposta inválida do servidor de verificação."
+        'sucesso'  => false,
+        'titulo'   => 'Falha',
+        'mensagem' => 'Falha na verificação do captcha.',
     ]);
     exit;
 }
 
-if (!$response->success) {
+// ── 3. Busca usuário no Supabase ────────────────────────────
+
+try {
+    $db = new Supabase();
+
+    $rows = $db->select('usuarios', [
+        'login'  => "eq.$usuario",
+        'status' => 'eq.Ativo',
+    ], 'id,nome,login,email,senha_hash,grupo,setor');
+
+} catch (RuntimeException $e) {
+    error_log('[Login] Supabase error: ' . $e->getMessage());
     echo json_encode([
-        "sucesso" => false,
-        "titulo" => "Falha",
-        "mensagem" => "Falha na verificação do captcha."
+        'sucesso'  => false,
+        'titulo'   => 'Erro',
+        'mensagem' => 'Falha ao conectar com o servidor. Tente novamente.',
     ]);
     exit;
 }
+
+// ── 4. Valida usuário e senha ────────────────────────────────
+
+if (empty($rows)) {
+    echo json_encode([
+        'sucesso'  => false,
+        'titulo'   => 'Falha no Login',
+        'mensagem' => 'Por favor, revise os dados informados no campo <b>Usuário</b>.',
+    ]);
+    exit;
+}
+
+$user = $rows[0];
+
+// password_verify é compatível com hashes bcrypt ($2a$) gerados pelo pgcrypto
+if (!password_verify($senha, $user['senha_hash'] ?? '')) {
+    echo json_encode([
+        'sucesso'  => false,
+        'titulo'   => 'Falha no Login',
+        'mensagem' => 'Por favor, revise os dados informados no campo de <b>Senha</b>.',
+    ]);
+    exit;
+}
+
+// ── 5. Abre sessão ────────────────────────────────────────────
+
+$_SESSION['usuario_id']    = $user['id'];
+$_SESSION['usuario_nome']  = $user['nome'];
+$_SESSION['usuario_login'] = $user['login'];
+$_SESSION['usuario_grupo'] = $user['grupo'];
+$_SESSION['last_activity'] = time();
 
 echo json_encode([
-    "sucesso" => true,
-    "titulo" => "Login realizado",
-    "mensagem" => "Redirecionando..."
+    'sucesso'  => true,
+    'titulo'   => 'Login realizado',
+    'mensagem' => 'Redirecionando...',
 ]);
-exit;

@@ -2711,18 +2711,7 @@
         });
     </script>
     <script>
-        const dadosOS = [
-            { codigo: "OS-0001", codUnit: "UN-001", descricao: "Manutenção de Servidor", cliente: "Acme Tecnologia", contato: "(11) 98765-4321", dtCriacao: "01/04/2026", dtPrevista: "05/04/2026", tecnico: "João Silva", horas: "4", respExec: "João Silva", valor: "R$ 850,00" },
-            { codigo: "OS-0002", codUnit: "UN-002", descricao: "Instalação de Software", cliente: "Acme Tecnologia", contato: "(11) 98765-4321", dtCriacao: "02/04/2026", dtPrevista: "03/04/2026", tecnico: "Carlos Melo", horas: "2", respExec: "Carlos Melo", valor: "R$ 320,00" },
-            { codigo: "OS-0003", codUnit: "UN-003", descricao: "Troca de Disco SSD", cliente: "Acme Tecnologia", contato: "(11) 91234-5678", dtCriacao: "03/04/2026", dtPrevista: "08/04/2026", tecnico: "João Silva", horas: "1", respExec: "João Silva", valor: "R$ 480,00" },
-            { codigo: "OS-0004", codUnit: "UN-004", descricao: "Configuração de Rede", cliente: "Bella Distribuidora", contato: "(21) 97654-3210", dtCriacao: "01/04/2026", dtPrevista: "07/04/2026", tecnico: "Ana Rodrigues", horas: "6", respExec: "Ana Rodrigues", valor: "R$ 1.200,00" },
-            { codigo: "OS-0005", codUnit: "UN-005", descricao: "Suporte Remoto", cliente: "Bella Distribuidora", contato: "(21) 97654-3210", dtCriacao: "04/04/2026", dtPrevista: "04/04/2026", tecnico: "Carlos Melo", horas: "1", respExec: "Carlos Melo", valor: "R$ 150,00" },
-            { codigo: "OS-0006", codUnit: "UN-006", descricao: "Formatação de Estações", cliente: "Carlos & Filhos ME", contato: "(31) 93333-2222", dtCriacao: "02/04/2026", dtPrevista: "06/04/2026", tecnico: "Ana Rodrigues", horas: "8", respExec: "Ana Rodrigues", valor: "R$ 960,00" },
-            { codigo: "OS-0007", codUnit: "UN-007", descricao: "Upgrade de Memória RAM", cliente: "Carlos & Filhos ME", contato: "(31) 93333-2222", dtCriacao: "05/04/2026", dtPrevista: "10/04/2026", tecnico: "João Silva", horas: "3", respExec: "João Silva", valor: "R$ 540,00" },
-            { codigo: "OS-0008", codUnit: "UN-008", descricao: "Implantação de Firewall", cliente: "DataFlex Sistemas", contato: "(41) 99988-7766", dtCriacao: "01/04/2026", dtPrevista: "09/04/2026", tecnico: "Carlos Melo", horas: "12", respExec: "Carlos Melo", valor: "R$ 2.800,00" },
-            { codigo: "OS-0009", codUnit: "UN-009", descricao: "Backup e Restauração", cliente: "DataFlex Sistemas", contato: "(41) 99988-7766", dtCriacao: "03/04/2026", dtPrevista: "05/04/2026", tecnico: "Ana Rodrigues", horas: "5", respExec: "Ana Rodrigues", valor: "R$ 700,00" },
-            { codigo: "OS-0010", codUnit: "UN-010", descricao: "Auditoria de Segurança", cliente: "DataFlex Sistemas", contato: "(41) 92211-3344", dtCriacao: "06/04/2026", dtPrevista: "12/04/2026", tecnico: "João Silva", horas: "10", respExec: "João Silva", valor: "R$ 3.500,00" },
-        ];
+        const dadosOS = []; // populado via os.php
         const grupoAberto = new Map();
         const grupoToggle = new Map();
         const grupoLinhas = new Map();
@@ -2813,86 +2802,18 @@
             tr.classList.add("row-selecionada");
         }
 
-        const _dadosOS = [
-            { codigo: "OS-0001", codUnit: "UN-001", descricao: "Manutenção de Servidor", cliente: "Acme Tecnologia", contato: "(11) 98765-4321", dtCriacao: "01/04/2026", dtPrevista: "05/04/2026", tecnico: "João Silva", horas: "4", respExec: "João Silva", valor: "R$ 850,00", status: "Aberto" },
-            { codigo: "OS-0002", codUnit: "UN-002", descricao: "Instalação de Software", cliente: "Acme Tecnologia", contato: "(11) 98765-4321", dtCriacao: "02/04/2026", dtPrevista: "03/04/2026", tecnico: "Carlos Melo", horas: "2", respExec: "Carlos Melo", valor: "R$ 320,00", status: "Fechado" },
-            { codigo: "OS-0003", codUnit: "UN-003", descricao: "Troca de Disco SSD", cliente: "Acme Tecnologia", contato: "(11) 91234-5678", dtCriacao: "03/04/2026", dtPrevista: "08/04/2026", tecnico: "João Silva", horas: "1", respExec: "João Silva", valor: "R$ 480,00", status: "Aberto" },
-            { codigo: "OS-0004", codUnit: "UN-004", descricao: "Configuração de Rede", cliente: "Bella Distribuidora", contato: "(21) 97654-3210", dtCriacao: "01/04/2026", dtPrevista: "07/04/2026", tecnico: "Ana Rodrigues", horas: "6", respExec: "Ana Rodrigues", valor: "R$ 1.200,00", status: "Pré-Ordem" },
-            { codigo: "OS-0005", codUnit: "UN-005", descricao: "Suporte Remoto", cliente: "Bella Distribuidora", contato: "(21) 97654-3210", dtCriacao: "04/04/2026", dtPrevista: "04/04/2026", tecnico: "Carlos Melo", horas: "1", respExec: "Carlos Melo", valor: "R$ 150,00", status: "Fechado" },
-            { codigo: "OS-0006", codUnit: "UN-006", descricao: "Formatação de Estações", cliente: "Carlos & Filhos ME", contato: "(31) 93333-2222", dtCriacao: "02/04/2026", dtPrevista: "06/04/2026", tecnico: "Ana Rodrigues", horas: "8", respExec: "Ana Rodrigues", valor: "R$ 960,00", status: "Aberto" },
-            { codigo: "OS-0007", codUnit: "UN-007", descricao: "Upgrade de Memória RAM", cliente: "Carlos & Filhos ME", contato: "(31) 93333-2222", dtCriacao: "05/04/2026", dtPrevista: "10/04/2026", tecnico: "João Silva", horas: "3", respExec: "João Silva", valor: "R$ 540,00", status: "Pré-Ordem" },
-            { codigo: "OS-0008", codUnit: "UN-008", descricao: "Implantação de Firewall", cliente: "DataFlex Sistemas", contato: "(41) 99988-7766", dtCriacao: "01/04/2026", dtPrevista: "09/04/2026", tecnico: "Carlos Melo", horas: "12", respExec: "Carlos Melo", valor: "R$ 2.800,00", status: "Aberto" },
-            { codigo: "OS-0009", codUnit: "UN-009", descricao: "Backup e Restauração", cliente: "DataFlex Sistemas", contato: "(41) 99988-7766", dtCriacao: "03/04/2026", dtPrevista: "05/04/2026", tecnico: "Ana Rodrigues", horas: "5", respExec: "Ana Rodrigues", valor: "R$ 700,00", status: "Cancelado" },
-            { codigo: "OS-0010", codUnit: "UN-010", descricao: "Auditoria de Segurança", cliente: "DataFlex Sistemas", contato: "(41) 92211-3344", dtCriacao: "06/04/2026", dtPrevista: "12/04/2026", tecnico: "João Silva", horas: "10", respExec: "João Silva", valor: "R$ 3.500,00", status: "Pré-Ordem" },
-        ];
+        const _dadosOS = []; // populado via os.php
 
-        const _dadosItens = {
-            "OS-0001": [
-                { codItem: "IT-001", tipo: "Serviço", descricao: "Diagnóstico de Hardware", maquina: "Servidor Dell R740", dtCriacao: "01/04/2026", dtSolucao: "01/04/2026", tecnico: "João Silva", codBarras: "7891000000001", produto: "—", respExec: "João Silva", cadastrado: "admin", hrsEst: "2", hrsReal: "1.5", vlrServico: "R$ 300,00", vlrTotal: "R$ 300,00" },
-                { codItem: "IT-002", tipo: "Peça", descricao: "SSD Samsung 870 EVO 1TB", maquina: "Servidor Dell R740", dtCriacao: "01/04/2026", dtSolucao: "02/04/2026", tecnico: "João Silva", codBarras: "7891000000002", produto: "SSD Samsung 1TB", respExec: "João Silva", cadastrado: "admin", hrsEst: "0.5", hrsReal: "0.5", vlrServico: "R$ 50,00", vlrTotal: "R$ 650,00" },
-                { codItem: "IT-003", tipo: "Serviço", descricao: "Substituição e Configuração", maquina: "Servidor Dell R740", dtCriacao: "02/04/2026", dtSolucao: "03/04/2026", tecnico: "João Silva", codBarras: "7891000000003", produto: "—", respExec: "João Silva", cadastrado: "admin", hrsEst: "2", hrsReal: "2", vlrServico: "R$ 300,00", vlrTotal: "R$ 300,00" },
-            ],
-            "OS-0002": [
-                { codItem: "IT-001", tipo: "Serviço", descricao: "Instalação Pacote Office 365", maquina: "Desktop HP ProDesk", dtCriacao: "02/04/2026", dtSolucao: "02/04/2026", tecnico: "Carlos Melo", codBarras: "7891000000010", produto: "Licença Office", respExec: "Carlos Melo", cadastrado: "admin", hrsEst: "1", hrsReal: "1", vlrServico: "R$ 150,00", vlrTotal: "R$ 470,00" },
-                { codItem: "IT-002", tipo: "Software", descricao: "Licença Office 365 Business", maquina: "Desktop HP ProDesk", dtCriacao: "02/04/2026", dtSolucao: "02/04/2026", tecnico: "Carlos Melo", codBarras: "7891000000011", produto: "Office 365", respExec: "Carlos Melo", cadastrado: "admin", hrsEst: "0", hrsReal: "0", vlrServico: "R$ 0,00", vlrTotal: "R$ 320,00" },
-            ],
-            "OS-0003": [
-                { codItem: "IT-001", tipo: "Peça", descricao: "SSD Kingston A400 480GB", maquina: "Notebook Lenovo IdeaPad", dtCriacao: "03/04/2026", dtSolucao: "04/04/2026", tecnico: "João Silva", codBarras: "7891000000020", produto: "SSD Kingston", respExec: "João Silva", cadastrado: "admin", hrsEst: "0.5", hrsReal: "0.5", vlrServico: "R$ 50,00", vlrTotal: "R$ 330,00" },
-                { codItem: "IT-002", tipo: "Serviço", descricao: "Migração de Dados do HD", maquina: "Notebook Lenovo IdeaPad", dtCriacao: "03/04/2026", dtSolucao: "05/04/2026", tecnico: "João Silva", codBarras: "7891000000021", produto: "—", respExec: "João Silva", cadastrado: "admin", hrsEst: "2", hrsReal: "2", vlrServico: "R$ 300,00", vlrTotal: "R$ 300,00" },
-            ],
-            "OS-0004": [
-                { codItem: "IT-001", tipo: "Serviço", descricao: "Projeto de Rede Lógica", maquina: "Infraestrutura", dtCriacao: "01/04/2026", dtSolucao: "03/04/2026", tecnico: "Ana Rodrigues", codBarras: "7891000000030", produto: "—", respExec: "Ana Rodrigues", cadastrado: "admin", hrsEst: "4", hrsReal: "4", vlrServico: "R$ 600,00", vlrTotal: "R$ 600,00" },
-                { codItem: "IT-002", tipo: "Serviço", descricao: "Cabeamento Cat6 — 80m", maquina: "Infraestrutura", dtCriacao: "02/04/2026", dtSolucao: "05/04/2026", tecnico: "Ana Rodrigues", codBarras: "7891000000031", produto: "Cabo Cat6 100m", respExec: "Ana Rodrigues", cadastrado: "admin", hrsEst: "6", hrsReal: "5.5", vlrServico: "R$ 825,00", vlrTotal: "R$ 1.225,00" },
-                { codItem: "IT-003", tipo: "Peça", descricao: "Switch Cisco SG110 8P", maquina: "Infraestrutura", dtCriacao: "02/04/2026", dtSolucao: "05/04/2026", tecnico: "Ana Rodrigues", codBarras: "7891000000032", produto: "Switch Cisco SG110", respExec: "Ana Rodrigues", cadastrado: "admin", hrsEst: "0", hrsReal: "0", vlrServico: "R$ 0,00", vlrTotal: "R$ 480,00" },
-            ],
-            "OS-0005": [
-                { codItem: "IT-001", tipo: "Serviço", descricao: "Suporte Remoto via TeamViewer", "maquina": "Workstation", dtCriacao: "04/04/2026", dtSolucao: "04/04/2026", tecnico: "Carlos Melo", codBarras: "7891000000040", produto: "—", respExec: "Carlos Melo", cadastrado: "admin", hrsEst: "1", hrsReal: "1", vlrServico: "R$ 150,00", vlrTotal: "R$ 150,00" },
-            ],
-            "OS-0006": [
-                { codItem: "IT-001", tipo: "Serviço", descricao: "Formatação e Reinstalação", maquina: "Desktop Dell OptiPlex", dtCriacao: "02/04/2026", dtSolucao: "04/04/2026", tecnico: "Ana Rodrigues", codBarras: "7891000000050", produto: "—", respExec: "Ana Rodrigues", cadastrado: "admin", hrsEst: "2", hrsReal: "2", vlrServico: "R$ 300,00", vlrTotal: "R$ 300,00" },
-                { codItem: "IT-002", tipo: "Serviço", descricao: "Formatação e Reinstalação", maquina: "Desktop Dell OptiPlex 2", dtCriacao: "02/04/2026", dtSolucao: "04/04/2026", tecnico: "Ana Rodrigues", codBarras: "7891000000051", produto: "—", respExec: "Ana Rodrigues", cadastrado: "admin", hrsEst: "2", hrsReal: "2", vlrServico: "R$ 300,00", vlrTotal: "R$ 300,00" },
-                { codItem: "IT-003", tipo: "Serviço", descricao: "Configuração de Domínio AD", maquina: "Servidor", dtCriacao: "03/04/2026", dtSolucao: "06/04/2026", tecnico: "Ana Rodrigues", codBarras: "7891000000052", produto: "—", respExec: "Ana Rodrigues", cadastrado: "admin", hrsEst: "4", hrsReal: "4", vlrServico: "R$ 600,00", vlrTotal: "R$ 600,00" },
-            ],
-            "OS-0007": [
-                { codItem: "IT-001", tipo: "Peça", descricao: "Memória RAM 16GB DDR4 Kingston", "maquina": "Desktop Lenovo", dtCriacao: "05/04/2026", dtSolucao: "06/04/2026", tecnico: "João Silva", codBarras: "7891000000060", produto: "RAM Kingston 16GB", respExec: "João Silva", cadastrado: "admin", hrsEst: "0.5", hrsReal: "0.5", vlrServico: "R$ 75,00", vlrTotal: "R$ 375,00" },
-                { codItem: "IT-002", tipo: "Peça", descricao: "Memória RAM 16GB DDR4 Kingston", "maquina": "Desktop Lenovo 2", dtCriacao: "05/04/2026", dtSolucao: "06/04/2026", tecnico: "João Silva", codBarras: "7891000000061", produto: "RAM Kingston 16GB", respExec: "João Silva", cadastrado: "admin", hrsEst: "0.5", hrsReal: "0.5", vlrServico: "R$ 75,00", vlrTotal: "R$ 375,00" },
-                { codItem: "IT-003", tipo: "Serviço", descricao: "Instalação e Teste de Memória", "maquina": "Desktop Lenovo", dtCriacao: "05/04/2026", dtSolucao: "06/04/2026", tecnico: "João Silva", codBarras: "7891000000062", produto: "—", respExec: "João Silva", cadastrado: "admin", hrsEst: "1", hrsReal: "0.5", vlrServico: "R$ 75,00", vlrTotal: "R$ 75,00" },
-            ],
-            "OS-0008": [
-                { codItem: "IT-001", tipo: "Serviço", descricao: "Levantamento de Requisitos", maquina: "Servidor", dtCriacao: "01/04/2026", dtSolucao: "02/04/2026", tecnico: "Carlos Melo", codBarras: "7891000000070", produto: "—", respExec: "Carlos Melo", cadastrado: "admin", hrsEst: "4", hrsReal: "3", vlrServico: "R$ 600,00", vlrTotal: "R$ 600,00" },
-                { codItem: "IT-002", tipo: "Peça", descricao: "Firewall FortiGate 60F", maquina: "Servidor", dtCriacao: "01/04/2026", dtSolucao: "05/04/2026", tecnico: "Carlos Melo", codBarras: "7891000000071", produto: "FortiGate 60F", respExec: "Carlos Melo", cadastrado: "admin", hrsEst: "0", hrsReal: "0", vlrServico: "R$ 0,00", vlrTotal: "R$ 1.800,00" },
-                { codItem: "IT-003", tipo: "Serviço", descricao: "Configuração e Políticas", maquina: "Servidor", dtCriacao: "03/04/2026", dtSolucao: "07/04/2026", tecnico: "Carlos Melo", codBarras: "7891000000072", produto: "—", respExec: "Carlos Melo", cadastrado: "admin", hrsEst: "8", hrsReal: "9", vlrServico: "R$ 1.350,00", vlrTotal: "R$ 1.350,00" },
-            ],
-            "OS-0009": [
-                { codItem: "IT-001", tipo: "Serviço", descricao: "Configuração Backup Veeam", maquina: "Servidor NAS Synology", dtCriacao: "03/04/2026", dtSolucao: "04/04/2026", tecnico: "Ana Rodrigues", codBarras: "7891000000080", produto: "—", respExec: "Ana Rodrigues", cadastrado: "admin", hrsEst: "3", hrsReal: "3", vlrServico: "R$ 450,00", vlrTotal: "R$ 450,00" },
-                { codItem: "IT-002", tipo: "Serviço", descricao: "Restauração de Teste", maquina: "Servidor NAS Synology", dtCriacao: "04/04/2026", dtSolucao: "05/04/2026", tecnico: "Ana Rodrigues", codBarras: "7891000000081", produto: "—", respExec: "Ana Rodrigues", cadastrado: "admin", hrsEst: "2", hrsReal: "2", vlrServico: "R$ 300,00", vlrTotal: "R$ 300,00" },
-            ],
-            "OS-0010": [
-                { codItem: "IT-001", tipo: "Serviço", descricao: "Análise de Vulnerabilidades", maquina: "Toda a Infraestrutura", dtCriacao: "06/04/2026", dtSolucao: "09/04/2026", tecnico: "João Silva", codBarras: "7891000000090", produto: "—", respExec: "João Silva", cadastrado: "admin", hrsEst: "6", hrsReal: "6", vlrServico: "R$ 1.200,00", vlrTotal: "R$ 1.200,00" },
-                { codItem: "IT-002", tipo: "Serviço", descricao: "Relatório de Segurança", maquina: "Toda a Infraestrutura", dtCriacao: "09/04/2026", dtSolucao: "12/04/2026", tecnico: "João Silva", codBarras: "7891000000091", produto: "—", respExec: "João Silva", cadastrado: "admin", hrsEst: "4", hrsReal: "4", vlrServico: "R$ 800,00", vlrTotal: "R$ 800,00" },
-                { codItem: "IT-003", tipo: "Serviço", descricao: "Implementação de Correções", maquina: "Toda a Infraestrutura", dtCriacao: "10/04/2026", dtSolucao: "12/04/2026", tecnico: "João Silva", codBarras: "7891000000092", produto: "—", respExec: "João Silva", cadastrado: "admin", hrsEst: "6", hrsReal: "5", vlrServico: "R$ 1.000,00", vlrTotal: "R$ 1.000,00" },
-            ],
-        };
+        const _dadosItens = {}; // populado via os.php
 
+        // ── DB real: implementado em db_real.js (carregado no fim do body)
+        // As funções abaixo são placeholders substituídos pelo db_real.js
         const DB = {
-            async buscarOS(filtros = {}) {
-                return _dadosOS;
-            },
-            async buscarItensPorOS(codigoOS) {
-                return _dadosItens[codigoOS] || [];
-            },
-            async salvarOS(os) {
-                console.log("salvarOS →", os);
-                return { sucesso: true };
-            },
-            async atualizarOS(codigoOS, dados) {
-                console.log("atualizarOS →", codigoOS, dados);
-                return { sucesso: true };
-            },
-            async excluirOS(codigoOS) {
-                console.log("excluirOS →", codigoOS);
-                return { sucesso: true };
-            },
+            async buscarOS(filtros = {}) { return []; },
+            async buscarItensPorOS(osId) { return []; },
+            async salvarOS(os) { return { sucesso: false }; },
+            async atualizarOS(id, dados) { return { sucesso: false }; },
+            async excluirOS(id) { return { sucesso: false }; },
         };
 
         let osSelecionada = null;
@@ -2943,8 +2864,9 @@
             aplicarFiltros();
         }
 
+        // carregarOS real → implementado em db_real.js
         async function carregarOS() {
-            renderizarGrid(_dadosOS);
+            console.warn('[carregarOS] db_real.js ainda não carregou.');
         }
 
         function renderizarGrid(dados) {
@@ -3325,27 +3247,30 @@
         btnSair.addEventListener("click", async function (e) {
             e.preventDefault();
 
-            const resposta = await fetch("sistema.php", {
-                method: "POST"
+            // 1. Solicita confirmação ao backend
+            const resConfirm = await fetch("sistema.php", {
+                method: "POST",
+                body: new URLSearchParams({ acao: "logout_confirm" })
             });
 
-            const resultado = await resposta.json();
+            const confirm = await resConfirm.json();
 
-            if (!resultado.sucesso) {
+            if (!confirm.sucesso) {
                 Swal.fire({
                     icon: "error",
-                    title: resultado.titulo,
-                    html: resultado.mensagem,
+                    title: confirm.titulo,
+                    html: confirm.mensagem,
                     confirmButtonColor: "#2d7dff",
                     scrollbarPadding: false
                 });
                 return;
             }
 
-            Swal.fire({
+            // 2. Exibe SweetAlert de confirmação
+            const swalResult = await Swal.fire({
                 icon: "question",
-                title: resultado.titulo,
-                html: resultado.mensagem,
+                title: confirm.titulo,
+                html: confirm.mensagem,
                 showCancelButton: true,
                 confirmButtonText: "Sim",
                 cancelButtonText: "Não",
@@ -3354,13 +3279,16 @@
                 reverseButtons: true,
                 scrollbarPadding: false,
                 heightAuto: false
-            }).then((result) => {
-
-                if (result.isConfirmed) {
-                    window.location.href = "login.html";
-                }
-
             });
+
+            if (swalResult.isConfirmed) {
+                // 3. Efetiva o logout no backend (destrói sessão PHP)
+                await fetch("sistema.php", {
+                    method: "POST",
+                    body: new URLSearchParams({ acao: "logout" })
+                });
+                window.location.href = "login.html";
+            }
 
         });
     </script>
@@ -3559,30 +3487,9 @@
             };
         };
 
-        const _dadosAuditoria = [
-            { estacao: "loginSis", evento: "Login", data: "01/04/2026 08:02", usuario: "admin", descricao: "Login realizado com sucesso na estação PC-ADM-01." },
-            { estacao: "addOS", evento: "Inclusão", data: "01/04/2026 08:15", usuario: "admin", descricao: "OS-0001 criada: Manutenção de Servidor — Acme Tecnologia." },
-            { estacao: "loginSis", evento: "Login", data: "01/04/2026 09:00", usuario: "joao.silva", descricao: "Login realizado com sucesso na estação PC-TEC-02." },
-            { estacao: "editOS", evento: "Alteração", data: "01/04/2026 09:45", usuario: "joao.silva", descricao: "OS-0001 atualizada: total de horas alterado de 3h para 4h." },
-            { estacao: "addOS", evento: "Inclusão", data: "02/04/2026 08:30", usuario: "admin", descricao: "OS-0002 criada: Instalação de Software — Acme Tecnologia." },
-            { estacao: "loginSis", evento: "Login", data: "02/04/2026 09:10", usuario: "carlos.melo", descricao: "Login realizado com sucesso na estação PC-TEC-03." },
-            { estacao: "editOS", evento: "Alteração", data: "02/04/2026 10:20", usuario: "carlos.melo", descricao: "OS-0002 atualizada: técnico responsável alterado para Carlos Melo." },
-            { estacao: "addOS", evento: "Inclusão", data: "03/04/2026 08:05", usuario: "admin", descricao: "OS-0003 criada: Troca de Disco SSD — Acme Tecnologia." },
-            { estacao: "editOS", evento: "Alteração", data: "03/04/2026 11:00", usuario: "joao.silva", descricao: "OS-0003 atualizada: data prevista alterada para 08/04/2026." },
-            { estacao: "addOS", evento: "Inclusão", data: "01/04/2026 14:00", usuario: "admin", descricao: "OS-0004 criada: Configuração de Rede — Bella Distribuidora." },
-            { estacao: "loginSis", evento: "Login", data: "04/04/2026 08:00", usuario: "ana.rodrigues", descricao: "Login realizado com sucesso na estação PC-TEC-04." },
-            { estacao: "editOS", evento: "Alteração", data: "04/04/2026 09:30", usuario: "ana.rodrigues", descricao: "OS-0004 atualizada: valor total ajustado para R$ 1.200,00." },
-            { estacao: "addOS", evento: "Inclusão", data: "04/04/2026 10:00", usuario: "admin", descricao: "OS-0005 criada: Suporte Remoto — Bella Distribuidora." },
-            { estacao: "editOS", evento: "Alteração", data: "04/04/2026 15:00", usuario: "carlos.melo", descricao: "OS-0005 finalizada: status alterado para Concluído." },
-            { estacao: "deletOS", evento: "Exclusão", data: "05/04/2026 09:00", usuario: "admin", descricao: "Registro duplicado OS-0004-B excluído pelo administrador." },
-            { estacao: "logoutSis", evento: "Logout", data: "05/04/2026 18:00", usuario: "admin", descricao: "Logout realizado na estação PC-ADM-01." },
-            { estacao: "logoutSis", evento: "Logout", data: "05/04/2026 17:45", usuario: "joao.silva", descricao: "Logout realizado na estação PC-TEC-02." },
-            { estacao: "logoutSis", evento: "Logout", data: "05/04/2026 17:50", usuario: "ana.rodrigues", descricao: "Logout realizado na estação PC-TEC-04." },
-            { estacao: "loginSis", evento: "Login", data: "06/04/2026 08:01", usuario: "admin", descricao: "Login realizado com sucesso na estação PC-ADM-01." },
-            { estacao: "addOS", evento: "Inclusão", data: "06/04/2026 08:20", usuario: "admin", descricao: "OS-0010 criada: Auditoria de Segurança — DataFlex Sistemas." },
-        ];
+        const _dadosAuditoria = []; // populado via logs.php
 
-        let audDadosFiltrados = [..._dadosAuditoria];
+        let audDadosFiltrados = []; // populado via logs.php
         let audResizeIniciado = false;
         let audItemSelecionado = null;
 
@@ -3920,36 +3827,9 @@
             Swal.fire({ icon: "success", title: modoItemEdicao ? "Item atualizado" : "Item salvo", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
         }
 
+        // salvarOS real → implementado em db_real.js
         function salvarOS() {
-            const codigo = document.getElementById("cad-codigo").value.trim();
-            if (!codigo) {
-                Swal.fire({ icon: "warning", title: "Atenção", text: "Informe o código da OS.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
-                return;
-            }
-            const dados = {
-                codigo,
-                codUnit: document.getElementById("cad-codUnit").value.trim(),
-                cliente: document.getElementById("cad-cliente").value.trim(),
-                tecnico: document.getElementById("cad-tecnico").value.trim(),
-                servico: document.getElementById("cad-servico").value.trim(),
-                descricao: document.getElementById("cad-descricao").value.trim(),
-                dtCriacao: document.getElementById("cad-dtCriacao").value.trim(),
-                dtPrevista: document.getElementById("cad-dtPrevista").value.trim(),
-                horas: document.getElementById("cad-horas").value,
-                respExec: document.getElementById("cad-respExec").value.trim(),
-                valor: document.getElementById("cad-valor").value.trim(),
-                contato: document.getElementById("cad-contato").value.trim(),
-                status: document.getElementById("cad-status").value.trim(),
-            };
-
-            const idx = _dadosOS.findIndex(o => o.codigo === codigo);
-            if (idx !== -1) _dadosOS[idx] = { ..._dadosOS[idx], ...dados };
-            else _dadosOS.push(dados);
-
-            carregarOS();
-            fecharTelaCad();
-
-            Swal.fire({ icon: "success", title: idx !== -1 ? "OS atualizada" : "OS salva", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
+            console.warn('[salvarOS] db_real.js ainda não carregou.');
         }
     </script>
     <!-- ══ OVERLAY + MODAL FINANCEIRO ══ -->
@@ -7834,18 +7714,7 @@
                 if (ov) ov.addEventListener('click', window.usr_fechar);
             });
 
-            var _usrDados = [
-                { id: 'USR-001', nome: 'Ana Rodrigues', funcionario: 'FUN-010', setor: 'TI', grupo: 'Administrador', email: 'ana@empresa.com', login: 'ana.rodrigues', status: 'Ativo', suspensao: false, dataSaida: '', obs: '' },
-                { id: 'USR-002', nome: 'Carlos Melo', funcionario: 'FUN-014', setor: 'TI', grupo: 'Técnico', email: 'carlos@empresa.com', login: 'carlos.melo', status: 'Ativo', suspensao: false, dataSaida: '', obs: '' },
-                { id: 'USR-003', nome: 'João Silva', funcionario: 'FUN-007', setor: 'Operações', grupo: 'Técnico', email: 'joao@empresa.com', login: 'joao.silva', status: 'Ativo', suspensao: false, dataSaida: '', obs: '' },
-                { id: 'USR-004', nome: 'Mariana Costa', funcionario: 'FUN-022', setor: 'Financeiro', grupo: 'Financeiro', email: 'mariana@empresa.com', login: 'mariana.costa', status: 'Ativo', suspensao: false, dataSaida: '', obs: '' },
-                { id: 'USR-005', nome: 'Pedro Alves', funcionario: 'FUN-031', setor: 'Comercial', grupo: 'Vendas', email: 'pedro@empresa.com', login: 'pedro.alves', status: 'Inativo', suspensao: false, dataSaida: '15/03/2026', obs: '' },
-                { id: 'USR-006', nome: 'Fernanda Lima', funcionario: 'FUN-018', setor: 'RH', grupo: 'RH', email: 'fernanda@empresa.com', login: 'fernanda.lima', status: 'Ativo', suspensao: false, dataSaida: '', obs: '' },
-                { id: 'USR-007', nome: 'Ricardo Santos', funcionario: 'FUN-009', setor: 'TI', grupo: 'Técnico', email: 'ricardo@empresa.com', login: 'ricardo.santos', status: 'Suspenso', suspensao: true, dataSaida: '', obs: '' },
-                { id: 'USR-008', nome: 'Juliana Ferreira', funcionario: 'FUN-044', setor: 'Financeiro', grupo: 'Financeiro', email: 'juliana@empresa.com', login: 'juliana.f', status: 'Ativo', suspensao: false, dataSaida: '', obs: '' },
-                { id: 'USR-009', nome: 'Thiago Pereira', funcionario: 'FUN-056', setor: 'Operações', grupo: 'Técnico', email: 'thiago@empresa.com', login: 'thiago.pereira', status: 'Inativo', suspensao: false, dataSaida: '01/04/2026', obs: '' },
-                { id: 'USR-010', nome: 'Camila Rocha', funcionario: 'FUN-003', setor: 'Administração', grupo: 'Administrador', email: 'camila@empresa.com', login: 'camila.rocha', status: 'Ativo', suspensao: false, dataSaida: '', obs: '' },
-            ];
+            var _usrDados = []; // populado via usuarios.php
 
             var _usrSel = null;
             var _usrModo = null;
@@ -7964,43 +7833,14 @@
                 var dica = document.getElementById('usr-dica-senha'); if (dica) dica.textContent = '';
             };
 
+            // usr_salvar real → implementado em db_real.js
             window.usr_salvar = function () {
-                var nome = _g('usr-f-nome').value.trim();
-                if (!nome) { alert('Informe o nome do usuário.'); _g('usr-f-nome').focus(); return; }
-                var s1 = _g('usr-f-senha').value, s2 = _g('usr-f-senha-conf').value;
-                if (s1 && s1 !== s2) { alert('As senhas não conferem.'); _g('usr-f-senha-conf').focus(); return; }
-                var novoStatus = _g('usr-f-suspenso').checked ? 'Suspenso' : 'Ativo';
-                var dados = {
-                    nome: nome, funcionario: _g('usr-f-funcionario').value,
-                    setor: _g('usr-f-setor').value, grupo: _g('usr-f-grupo').value,
-                    email: _g('usr-f-email').value, login: _g('usr-f-login').value,
-                    status: novoStatus, suspensao: _g('usr-f-suspenso').checked,
-                    dataSaida: _g('usr-f-data-saida').value, obs: _g('usr-f-obs').value,
-                };
-                if (_usrModo === 'novo') {
-                    dados.id = 'USR-' + String(_usrDados.length + 1).padStart(3, '0');
-                    _usrDados.push(dados);
-                } else if (_usrModo === 'editar' && _usrSel) {
-                    var idx = _usrDados.findIndex(function (u) { return u.id === _usrSel.id; });
-                    if (idx > -1) _usrDados[idx] = Object.assign(_usrDados[idx], dados);
-                }
-                usr_filtrar();
-                usr_cancelar();
+                console.warn('[usr_salvar] db_real.js ainda não carregou.');
             };
 
+            // usr_excluir real → implementado em db_real.js
             window.usr_excluir = function () {
-                if (!_usrSel) return;
-                if (!confirm('Deseja excluir o usuário "' + _usrSel.nome + '"?')) return;
-                var idx = _usrDados.findIndex(function (u) { return u.id === _usrSel.id; });
-                if (idx > -1) _usrDados.splice(idx, 1);
-                _usrSel = null;
-                var bEdit = document.getElementById('btnEditarUsr');
-                var bExcl = document.getElementById('btnExcluirUsr');
-                if (bEdit) { bEdit.disabled = true; bEdit.classList.remove('habilitado'); }
-                if (bExcl) bExcl.disabled = true;
-                var sb = document.getElementById('usr-status-bar'); if (sb) sb.textContent = 'Nenhum usuário selecionado';
-                usr_filtrar();
-                usr_cancelar();
+                console.warn('[usr_excluir] db_real.js ainda não carregou.');
             };
 
             var _CAMPOS = ['usr-f-nome', 'usr-f-funcionario', 'usr-f-setor', 'usr-f-grupo', 'usr-f-email', 'usr-f-login', 'usr-f-senha', 'usr-f-senha-conf', 'usr-f-obs', 'usr-f-suspenso', 'usr-f-data-saida'];
@@ -8046,6 +7886,9 @@
 
         })();
     </script>
+
+    <!-- ══ INTEGRAÇÃO REAL COM BANCO ══ -->
+    <script src="assets/js/db_real.js"></script>
 
 </body>
 
