@@ -48,6 +48,13 @@ if ($senha === '') {
     exit;
 }
 
+// ── 2. Verificação do hCaptcha (DESATIVADO EM DESENVOLVIMENTO LOCAL) ─
+// Para reativar em produção:
+//   1. Descomente todo o bloco abaixo
+//   2. Coloque a secret key real no config.php
+//   3. Coloque a site key real no HTML do formulário
+
+/*
 if (!$captcha) {
     echo json_encode([
         'sucesso'  => false,
@@ -56,8 +63,6 @@ if (!$captcha) {
     ]);
     exit;
 }
-
-// ── 2. Verificação do hCaptcha ───────────────────────────────
 
 $captchaData = [
     'secret'   => HCAPTCHA_SECRET,
@@ -95,6 +100,7 @@ if (!$captchaResponse || !$captchaResponse->success) {
     ]);
     exit;
 }
+*/
 
 // ── 3. Busca usuário no Supabase ────────────────────────────
 

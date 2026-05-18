@@ -10,9 +10,9 @@ session_name(SESSION_NAME);
 session_set_cookie_params([
     'lifetime' => SESSION_LIFETIME,
     'path'     => '/',
-    'secure'   => isset($_SERVER['HTTPS']),  // true em HTTPS
+    'secure'   => isset($_SERVER['HTTPS']),
     'httponly' => true,
-    'samesite' => 'Lax',
+    'samesite' => 'Strict',
 ]);
 session_start();
 

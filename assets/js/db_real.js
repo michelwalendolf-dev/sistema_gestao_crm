@@ -25,7 +25,7 @@
         for (const [k, v] of Object.entries(params)) {
             fd.append(k, v);
         }
-        const res = await fetch(endpoint, { method: 'POST', body: fd });
+        const res = await fetch(endpoint, { method: 'POST', body: fd, credentials: 'same-origin' });
         if (!res.ok) throw new Error(`HTTP ${res.status} em ${endpoint}`);
         return res.json();
     }

@@ -16,7 +16,7 @@ define('BREVO_SENDER_NAME',  'IluminusTech');
 define('BREVO_SENDER_EMAIL', 'seuemail@dominio.com.br');
 
 // ── hCaptcha ────────────────────────────────────────────────
-define('HCAPTCHA_SECRET', 'seu_hcaptcha_secret_aqui');
+define('HCAPTCHA_SECRET', 'ES_5f0cff6ae80643388ee12d6b609cf55f');
 
 // ── Sessão ──────────────────────────────────────────────────
 define('SESSION_LIFETIME', 7200);   // 2 horas em segundos

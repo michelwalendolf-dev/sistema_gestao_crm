@@ -39,6 +39,8 @@ class Supabase
             CURLOPT_CUSTOMREQUEST  => strtoupper($method),
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_TIMEOUT        => 15,
+            CURLOPT_SSL_VERIFYPEER => false,  // desativado para desenvolvimento local
+            CURLOPT_SSL_VERIFYHOST => false,  // desativado para desenvolvimento local
         ]);
 
         if ($body !== null) {

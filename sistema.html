@@ -2802,13 +2802,13 @@
             tr.classList.add("row-selecionada");
         }
 
-        const _dadosOS = []; // populado via os.php
+        var _dadosOS = []; // populado via os.php
 
-        const _dadosItens = {}; // populado via os.php
+        var _dadosItens = {}; // populado via os.php
 
         // ── DB real: implementado em db_real.js (carregado no fim do body)
         // As funções abaixo são placeholders substituídos pelo db_real.js
-        const DB = {
+        var DB = {
             async buscarOS(filtros = {}) { return []; },
             async buscarItensPorOS(osId) { return []; },
             async salvarOS(os) { return { sucesso: false }; },
@@ -3487,7 +3487,7 @@
             };
         };
 
-        const _dadosAuditoria = []; // populado via logs.php
+        var _dadosAuditoria = []; // populado via logs.php
 
         let audDadosFiltrados = []; // populado via logs.php
         let audResizeIniciado = false;
