@@ -1597,8 +1597,10 @@
             <input type="text" id="filtro-cliente" placeholder="Cliente" oninput="aplicarFiltros()">
             <div class="grupo-botoes">
                 <button onclick="limparFiltro('filtro-cliente')">✖</button>
-                <button class="meio">⋯</button>
-                <button class="btn-busca" onclick="aplicarFiltros()">
+                <button class="meio" title="Buscar com filtro atual"
+                    onclick="abrirBuscaOrigemCampo('cli','filtro-cliente',document.getElementById('filtro-cliente').value,true)">⋯</button>
+                <button class="btn-busca" title="Abrir busca de clientes"
+                    onclick="abrirBuscaOrigemCampo('cli','filtro-cliente',null,true)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -1611,8 +1613,10 @@
             <input type="text" id="filtro-tecnico" placeholder="Técnico" oninput="aplicarFiltros()">
             <div class="grupo-botoes">
                 <button onclick="limparFiltro('filtro-tecnico')">✖</button>
-                <button class="meio">⋯</button>
-                <button class="btn-busca" onclick="aplicarFiltros()">
+                <button class="meio" title="Buscar com filtro atual"
+                    onclick="abrirBuscaOrigemCampo('func','filtro-tecnico',document.getElementById('filtro-tecnico').value,true)">⋯</button>
+                <button class="btn-busca" title="Abrir busca de técnicos"
+                    onclick="abrirBuscaOrigemCampo('func','filtro-tecnico',null,true)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -2178,9 +2182,12 @@
                             <div class="bar-acoes ">
                                 <input type="text" id="cad-cliente">
                                 <div class="grupos">
-                                    <button class="btn-limpar">✖</button>
-                                    <button class="meio">⋯</button>
-                                    <button class="btn-busca">
+                                    <button class="btn-limpar" title="Limpar"
+                                        onclick="document.getElementById('cad-cliente').value=''">✖</button>
+                                    <button class="meio" title="Buscar com nome digitado"
+                                        onclick="abrirBuscaOrigemCampo('cli','cad-cliente',document.getElementById('cad-cliente').value,false)">⋯</button>
+                                    <button class="btn-busca" title="Abrir busca de clientes"
+                                        onclick="abrirBuscaOrigemCampo('cli','cad-cliente',null,false)">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round">
@@ -2196,9 +2203,12 @@
                             <div class="bar-acoes ">
                                 <input type="text" id="cad-tecnico">
                                 <div class="grupos">
-                                    <button class="btn-limpar">✖</button>
-                                    <button class="meio">⋯</button>
-                                    <button class="btn-busca">
+                                    <button class="btn-limpar" title="Limpar"
+                                        onclick="document.getElementById('cad-tecnico').value=''">✖</button>
+                                    <button class="meio" title="Buscar com nome digitado"
+                                        onclick="abrirBuscaOrigemCampo('func','cad-tecnico',document.getElementById('cad-tecnico').value,false)">⋯</button>
+                                    <button class="btn-busca" title="Abrir busca de técnicos"
+                                        onclick="abrirBuscaOrigemCampo('func','cad-tecnico',null,false)">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round">
@@ -2214,7 +2224,8 @@
                             <div class="bar-acoes ">
                                 <input type="text" id="cad-servico">
                                 <div class="grupos">
-                                    <button class="btn-limpar">✖</button>
+                                    <button class="btn-limpar" title="Limpar"
+                                        onclick="document.getElementById('cad-servico').value=''">✖</button>
                                     <button class="meio">⋯</button>
                                     <button class="btn-busca">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -5088,7 +5099,7 @@
 
             <div class="erp-footer">
                 <button class="btn-footer-novo" onclick="limparModal('modalClientes')">&#10010; Novo</button>
-                <button class="btn-footer-salvar">&#128190; Salvar</button>
+                <button class="btn-footer-salvar" onclick="salvarCliente()">&#128190; Salvar</button>
                 <button class="btn-footer-sair" onclick="fecharModal('modalClientes','overlayClientes')">&#10006;
                     Sair</button>
             </div>
@@ -5435,7 +5446,7 @@
 
             <div class="erp-footer">
                 <button class="btn-footer-novo" onclick="limparModal('modalFuncionarios')">&#10010; Novo</button>
-                <button class="btn-footer-salvar">&#128190; Salvar</button>
+                <button class="btn-footer-salvar" onclick="salvarFuncionario()">&#128190; Salvar</button>
                 <button class="btn-footer-sair"
                     onclick="fecharModal('modalFuncionarios','overlayFuncionarios')">&#10006; Sair</button>
             </div>
@@ -5752,7 +5763,7 @@
 
             <div class="erp-footer">
                 <button class="btn-footer-novo" onclick="limparModal('modalFornecedores')">&#10010; Novo</button>
-                <button class="btn-footer-salvar">&#128190; Salvar</button>
+                <button class="btn-footer-salvar" onclick="salvarFornecedor()">&#128190; Salvar</button>
                 <button class="btn-footer-sair"
                     onclick="fecharModal('modalFornecedores','overlayFornecedores')">&#10006; Sair</button>
             </div>
@@ -5778,6 +5789,7 @@
                 modal.style.transform = 'translateX(-50%)';
                 ativarDrag(modal, modal.querySelector('.erp-titlebar'));
             }
+            window.abrirModal = abrirModal; // expõe globalmente para outros IIFEs
 
             window.fecharModal = function (modalId, overlayId) {
                 const modal = document.getElementById(modalId);

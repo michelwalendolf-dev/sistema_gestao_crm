@@ -1,7 +1,7 @@
 <?php
 // ============================================================
 //  IluminusTech — Cliente Supabase (PostgREST + RPC)
-//  Usa a Service Role Key → ignora RLS (somente server-side)
+//  Usa file_get_contents (sem dependência de cURL)
 // ============================================================
 
 require_once __DIR__ . '/config.php';
@@ -25,35 +25,45 @@ class Supabase
         ?array $body = null,
         array $extraHeaders = []
     ): array {
-        $ch = curl_init($this->url . $endpoint);
-
         $headers = array_merge([
-            'apikey: '        . $this->key,
+            'apikey: '             . $this->key,
             'Authorization: Bearer ' . $this->key,
             'Content-Type: application/json',
             'Accept: application/json',
         ], $extraHeaders);
 
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST  => strtoupper($method),
-            CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_TIMEOUT        => 15,
-            CURLOPT_SSL_VERIFYPEER => false,  // desativado para desenvolvimento local
-            CURLOPT_SSL_VERIFYHOST => false,  // desativado para desenvolvimento local
-        ]);
+        // file_get_contents precisa de headers no formato HTTP
+        $httpHeaders = implode("\r\n", $headers);
+
+        $options = [
+            'http' => [
+                'method'        => strtoupper($method),
+                'header'        => $httpHeaders,
+                'ignore_errors' => true,   // retorna o body mesmo em erro HTTP
+                'timeout'       => 15,
+            ],
+        ];
 
         if ($body !== null) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+            $options['http']['content'] = json_encode($body);
         }
 
-        $response   = curl_exec($ch);
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error      = curl_error($ch);
-        curl_close($ch);
+        $ctx      = stream_context_create($options);
+        $fullUrl  = $this->url . $endpoint;
+        $response = @file_get_contents($fullUrl, false, $ctx);
 
-        if ($error) {
-            throw new RuntimeException("cURL error: $error");
+        if ($response === false) {
+            throw new RuntimeException("Falha na requisição para: $fullUrl");
+        }
+
+        // Extrai o status HTTP do cabeçalho de resposta
+        $statusCode = 0;
+        if (isset($http_response_header) && is_array($http_response_header)) {
+            foreach ($http_response_header as $h) {
+                if (preg_match('/HTTP\/\d\.\d\s+(\d{3})/', $h, $m)) {
+                    $statusCode = (int) $m[1];
+                }
+            }
         }
 
         $decoded = json_decode($response, true);
@@ -66,14 +76,9 @@ class Supabase
 
     // ── SELECT ───────────────────────────────────────────────
 
-    /**
-     * Busca registros de uma tabela.
-     * $filters = ['coluna' => 'eq.valor', ...]  (sintaxe PostgREST)
-     * $select  = colunas separadas por vírgula  (ex: 'id,nome,email')
-     */
     public function select(string $table, array $filters = [], string $select = '*'): array
     {
-        $query = http_build_query(array_merge(['select' => $select], $filters));
+        $query  = http_build_query(array_merge(['select' => $select], $filters));
         $result = $this->request('GET', "/rest/v1/$table?$query");
 
         if ($result['status'] !== 200) {
@@ -88,14 +93,10 @@ class Supabase
 
     // ── INSERT ───────────────────────────────────────────────
 
-    /**
-     * Insere um ou mais registros.
-     * Retorna o(s) registro(s) inserido(s).
-     */
     public function insert(string $table, array $data, bool $returnData = true): array
     {
-        $headers = $returnData ? ['Prefer: return=representation'] : [];
-        $result  = $this->request('POST', "/rest/v1/$table", $data, $headers);
+        $extraHeaders = $returnData ? ['Prefer: return=representation'] : [];
+        $result       = $this->request('POST', "/rest/v1/$table", $data, $extraHeaders);
 
         if (!in_array($result['status'], [200, 201], true)) {
             throw new RuntimeException(
@@ -109,14 +110,10 @@ class Supabase
 
     // ── UPDATE ───────────────────────────────────────────────
 
-    /**
-     * Atualiza registros que satisfazem $filters.
-     * $filters = ['coluna' => 'eq.valor', ...]
-     */
     public function update(string $table, array $data, array $filters): array
     {
-        $query   = http_build_query(array_merge($filters, ['select' => '*']));
-        $result  = $this->request(
+        $query  = http_build_query(array_merge($filters, ['select' => '*']));
+        $result = $this->request(
             'PATCH',
             "/rest/v1/$table?$query",
             $data,
@@ -148,11 +145,8 @@ class Supabase
         }
     }
 
-    // ── RPC (chamada de função PostgreSQL) ───────────────────
+    // ── RPC ──────────────────────────────────────────────────
 
-    /**
-     * Chama uma função definida no banco via PostgREST.
-     */
     public function rpc(string $functionName, array $params = []): mixed
     {
         $result = $this->request('POST', "/rest/v1/rpc/$functionName", $params);

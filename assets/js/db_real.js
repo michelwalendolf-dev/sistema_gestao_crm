@@ -531,7 +531,361 @@
     };
 
     // ════════════════════════════════════════════════════════════
-    //  8. INICIALIZAÇÃO — roda quando o DOM estiver pronto
+    //  8. CLIENTES — salvar / carregar
+    // ════════════════════════════════════════════════════════════
+
+    function _val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    }
+
+    window.salvarCliente = async function () {
+        const nome = _val('cli-nome');
+        if (!nome) {
+            Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe o Nome do cliente.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+
+        const params = {
+            acao:       'criar',
+            nome,
+            documento:  _val('cli-doc'),
+            fantasia:   _val('cli-fantasia'),
+            nascimento: _val('cli-nascimento'),
+            rg:         _val('cli-rg'),
+            tipo:       _val('cli-tipo'),
+            status:     _val('cli-status') || 'Ativo',
+            grupo:      _val('cli-grupo'),
+            profissao:  _val('cli-profissao'),
+            genero:     _val('cli-genero'),
+            nacionalidade: _val('cli-nacionalidade'),
+            vendedor:   _val('cli-vendedor'),
+            obs:        _val('cli-obs'),
+            tel:        _val('cli-tel'),
+            cel:        _val('cli-cel'),
+            whatsapp:   _val('cli-whatsapp'),
+            contato:    _val('cli-contato'),
+            email:      _val('cli-email'),
+            site:       _val('cli-site'),
+            cep:        _val('cli-cep'),
+            uf:         _val('cli-uf'),
+            rua:        _val('cli-rua'),
+            numero:     _val('cli-num'),
+            complemento: _val('cli-comp'),
+            bairro:     _val('cli-bairro'),
+            cidade:     _val('cli-cidade'),
+            limite:     _val('cli-limite'),
+            prazo:      _val('cli-prazo'),
+            forma_pag:  _val('cli-forma-pag'),
+            desconto:   _val('cli-desconto'),
+            banco:      _val('cli-banco'),
+            obs_fin:    _val('cli-obs-fin'),
+        };
+
+        try {
+            const res = await api('clientes.php', params);
+            if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar cliente.');
+            Swal.fire({ icon: 'success', title: 'Cliente salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
+                .then(() => { if (typeof limparModal === 'function') limparModal('modalClientes'); });
+        } catch (e) {
+            console.error('[salvarCliente]', e);
+            mostrarErro(e.message || 'Erro ao salvar cliente.');
+        }
+    };
+
+    // ════════════════════════════════════════════════════════════
+    //  9. FUNCIONÁRIOS — salvar
+    // ════════════════════════════════════════════════════════════
+
+    window.salvarFuncionario = async function () {
+        const nome = _val('func-nome');
+        if (!nome) {
+            Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe o Nome do funcionário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+
+        const tecnico = document.getElementById('func-tecnico');
+        const padrao  = document.getElementById('func-padrao');
+
+        const params = {
+            acao:        'criar',
+            nome,
+            cpf:         _val('func-cpf'),
+            rg:          _val('func-rg'),
+            nascimento:  _val('func-nascimento'),
+            cargo:       _val('func-cargo'),
+            setor:       _val('func-setor'),
+            departamento: _val('func-departamento'),
+            nivel:       _val('func-nivel'),
+            genero:      _val('func-genero'),
+            nacionalidade: _val('func-nacionalidade'),
+            status:      _val('func-status') || 'Ativo',
+            tecnico:     tecnico && tecnico.checked ? '1' : '0',
+            padrao:      padrao  && padrao.checked  ? '1' : '0',
+            obs:         _val('func-obs'),
+            tel:         _val('func-tel'),
+            cel:         _val('func-cel'),
+            whatsapp:    _val('func-whatsapp'),
+            emergencia:  _val('func-emergencia'),
+            email:       _val('func-email'),
+            cep:         _val('func-cep'),
+            uf:          _val('func-uf'),
+            rua:         _val('func-rua'),
+            numero:      _val('func-num'),
+            complemento: _val('func-comp'),
+            bairro:      _val('func-bairro'),
+            cidade:      _val('func-cidade'),
+        };
+
+        try {
+            const res = await api('funcionarios.php', params);
+            if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar funcionário.');
+            Swal.fire({ icon: 'success', title: 'Funcionário salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
+                .then(() => { if (typeof limparModal === 'function') limparModal('modalFuncionarios'); });
+        } catch (e) {
+            console.error('[salvarFuncionario]', e);
+            mostrarErro(e.message || 'Erro ao salvar funcionário.');
+        }
+    };
+
+    // ════════════════════════════════════════════════════════════
+    //  10. FORNECEDORES — salvar
+    // ════════════════════════════════════════════════════════════
+
+    window.salvarFornecedor = async function () {
+        const razao = _val('forn-razao');
+        if (!razao) {
+            Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe a Razão Social do fornecedor.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+
+        const params = {
+            acao:           'criar',
+            razao_social:   razao,
+            documento:      _val('forn-doc'),
+            fantasia:       _val('forn-fantasia'),
+            ie:             _val('forn-ie'),
+            im:             _val('forn-im'),
+            status:         _val('forn-status') || 'Ativo',
+            categoria:      _val('forn-categoria'),
+            tipo:           _val('forn-tipo'),
+            representante:  _val('forn-representante'),
+            origem:         _val('forn-origem'),
+            obs:            _val('forn-obs'),
+            tel:            _val('forn-tel'),
+            cel:            _val('forn-cel'),
+            whatsapp:       _val('forn-whatsapp'),
+            contato:        _val('forn-contato'),
+            email:          _val('forn-email'),
+            site:           _val('forn-site'),
+            cep:            _val('forn-cep'),
+            uf:             _val('forn-uf'),
+            rua:            _val('forn-rua'),
+            numero:         _val('forn-num'),
+            complemento:    _val('forn-comp'),
+            bairro:         _val('forn-bairro'),
+            cidade:         _val('forn-cidade'),
+            prazo:          _val('forn-prazo'),
+            limite:         _val('forn-limite'),
+            forma_pag:      _val('forn-forma-pag'),
+            desconto:       _val('forn-desconto'),
+            banco:          _val('forn-banco'),
+            obs_fin:        _val('forn-obs-fin'),
+        };
+
+        try {
+            const res = await api('fornecedores.php', params);
+            if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar fornecedor.');
+            Swal.fire({ icon: 'success', title: 'Fornecedor salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
+                .then(() => { if (typeof limparModal === 'function') limparModal('modalFornecedores'); });
+        } catch (e) {
+            console.error('[salvarFornecedor]', e);
+            mostrarErro(e.message || 'Erro ao salvar fornecedor.');
+        }
+    };
+
+    // ════════════════════════════════════════════════════════════
+    //  11. BUSCA ORIGEM — helper para campos de OS e filtros
+    //
+    //  abrirBuscaOrigemCampo(tipo, targetId, preFilter, aplicarFiltros)
+    //
+    //  tipo        : 'cli' | 'func' | 'forn'
+    //  targetId    : id do <input> que receberá o nome selecionado
+    //  preFilter   : string digitada no campo (⋯) ou null (🔍)
+    //  filtrarGrid : true → dispara aplicarFiltros() após selecionar
+    // ════════════════════════════════════════════════════════════
+
+    window.abrirBuscaOrigemCampo = function (tipo, targetId, preFilter, filtrarGrid) {
+
+        // Coluna de nome por tipo
+        var nomeColuna = { cli: 'Nome / Razão Social', func: 'Nome', forn: 'Razão Social' }[tipo] || 'Nome';
+
+        // Callback executado quando o usuário clica em "Selecionar" na busca
+        var callback = function (dados) {
+            var el = document.getElementById(targetId);
+            if (!el) return;
+            el.value = dados[nomeColuna] || dados['Nome'] || '';
+            // Dispara oninput para reativar filtros reativos (ex: aplicarFiltros)
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            // Se for um campo de filtro do painel esquerdo, re-aplica filtros da grade
+            if (filtrarGrid && typeof window.aplicarFiltros === 'function') {
+                window.aplicarFiltros();
+            }
+        };
+
+        // Abre o modal de busca com o callback registrado
+        if (typeof window.abrirBuscaOrigem !== 'function') return;
+        window.abrirBuscaOrigem(tipo, callback);
+
+        // Se há pré-filtro (botão ⋯), preenche o campo Nome e dispara busca automaticamente
+        if (preFilter && preFilter.trim()) {
+            setTimeout(function () {
+                var nomeInput = document.getElementById('bo-f-nome');
+                if (nomeInput) {
+                    nomeInput.value = preFilter.trim();
+                }
+                if (typeof window.filtrarBuscaOrigem === 'function') {
+                    window.filtrarBuscaOrigem();
+                }
+            }, 80); // aguarda o modal renderizar antes de preencher
+        }
+    };
+
+
+    //  Sobrescreve window.filtrarBuscaOrigem definido em sistema.html.
+    //  O tipo (cli/func/forn) é lido do título do modal porque _tipo
+    //  é uma variável privada dentro do IIFE do sistema.html.
+    // ════════════════════════════════════════════════════════════
+
+    // Endpoints por tipo de cadastro
+    var _BO_ENDPOINTS = {
+        cli:  'clientes.php',
+        func: 'funcionarios.php',
+        forn: 'fornecedores.php',
+    };
+
+    // Nomes dos parâmetros de filtro enviados à API
+    var _BO_PARAMS = {
+        cli:  ['codigo', 'nome', 'documento', 'telefone', 'email', 'cidade'],
+        func: ['codigo', 'nome', 'cpf',       'cargo',    'telefone', 'email'],
+        forn: ['codigo', 'razao_social', 'documento', 'contato', 'telefone', 'cidade'],
+    };
+
+    // Converte registro da API para array de colunas da tabela
+    function _boMapear(tipo, r) {
+        if (tipo === 'cli') return [
+            r.codigo   || r.id         || '',
+            r.nome     || r.razao_social || '',
+            r.documento|| r.cpf        || r.cnpj || '',
+            r.tel      || r.cel        || r.telefone || '',
+            r.email    || '',
+            r.cidade   || '',
+        ];
+        if (tipo === 'func') return [
+            r.codigo   || r.id   || '',
+            r.nome     || '',
+            r.cpf      || r.documento || '',
+            r.cargo    || r.setor || '',
+            r.tel      || r.cel  || r.telefone || '',
+            r.email    || '',
+        ];
+        if (tipo === 'forn') return [
+            r.codigo        || r.id  || '',
+            r.razao_social  || r.nome || '',
+            r.documento     || r.cnpj || '',
+            r.contato       || r.representante || '',
+            r.tel           || r.cel || r.telefone || '',
+            r.cidade        || '',
+        ];
+        return [];
+    }
+
+    // IDs dos filtros (mesma ordem das colunas acima)
+    var _BO_FILTROS = ['bo-f-codigo', 'bo-f-nome', 'bo-f-doc', 'bo-f-tel', 'bo-f-email', 'bo-f-cidade'];
+
+    function _boDesativarBotoes() {
+        ['bo-btn-editar', 'bo-btn-selecionar', 'bo-btn-ok'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.disabled = true;
+        });
+    }
+
+    // Sobrescreve filtrarBuscaOrigem com versão assíncrona real
+    window.filtrarBuscaOrigem = async function () {
+
+        // Descobre o tipo pelo título do modal (definido em abrirBuscaOrigem)
+        var titulo = (document.getElementById('buscaOrigemTitulo') || {}).textContent || '';
+        var tipo = titulo.toLowerCase().includes('funcionár') ? 'func'
+                 : titulo.toLowerCase().includes('fornecedor') ? 'forn'
+                 : 'cli';
+
+        // Lê os valores dos filtros da tela
+        var filtros = _BO_FILTROS.map(function (id) {
+            var el = document.getElementById(id);
+            return el ? el.value.trim().toLowerCase() : '';
+        });
+
+        var tbody   = document.getElementById('bo-tbody');
+        var countEl = document.getElementById('bo-count');
+
+        _boDesativarBotoes();
+
+        // Feedback visual enquanto carrega
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio" style="color:#7aa3e0;">' +
+                              '<span style="animation:none">⏳ Buscando...</span></td></tr>';
+        }
+
+        try {
+            // Monta parâmetros: só envia filtros preenchidos
+            var params = { acao: 'listar' };
+            var nomesParam = _BO_PARAMS[tipo] || [];
+            filtros.forEach(function (val, i) {
+                if (val && nomesParam[i]) params[nomesParam[i]] = val;
+            });
+
+            var endpoint = _BO_ENDPOINTS[tipo];
+            if (!endpoint) throw new Error('Endpoint não mapeado para tipo: ' + tipo);
+
+            var res = await api(endpoint, params);
+
+            if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao buscar dados.');
+
+            var registros = res.dados || [];
+
+            // Monta linhas e aplica filtragem local (garante consistência)
+            var linhas = registros.map(function (r) { return _boMapear(tipo, r); });
+            linhas = linhas.filter(function (cols) {
+                return filtros.every(function (f, i) {
+                    return !f || (cols[i] || '').toLowerCase().includes(f);
+                });
+            });
+
+            if (countEl) countEl.textContent = linhas.length + ' registro(s)';
+
+            if (!linhas.length) {
+                if (tbody) tbody.innerHTML =
+                    '<tr><td colspan="6" class="bo-vazio">Nenhum registro encontrado</td></tr>';
+                return;
+            }
+
+            if (tbody) tbody.innerHTML = linhas.map(function (cols, idx) {
+                return '<tr class="bo-row" data-idx="' + idx + '" onclick="selecionarLinhaBo(this)">' +
+                    cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
+                    '</tr>';
+            }).join('');
+
+        } catch (e) {
+            console.error('[filtrarBuscaOrigem real]', e);
+            if (tbody) tbody.innerHTML =
+                '<tr><td colspan="6" class="bo-vazio" style="color:#ff6b6b;">' +
+                '⚠ Erro ao buscar dados: ' + (e.message || 'falha de rede') + '</td></tr>';
+            if (countEl) countEl.textContent = '0 registro(s)';
+        }
+    };
+
+    // ════════════════════════════════════════════════════════════
+    //  12. INICIALIZAÇÃO — roda quando o DOM estiver pronto
     // ════════════════════════════════════════════════════════════
     function init() {
         console.info('[IluminusTech] db_real.js carregado — substituindo dados fictícios por API real.');

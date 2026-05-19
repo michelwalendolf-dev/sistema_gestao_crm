@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>Login - IluminusTech</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- hCaptcha DESATIVADO em desenvolvimento local (requer HTTPS)
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="assets/css/login.css">
     <link rel="icon" type="image/png" href="assets\icon.png">
@@ -32,12 +34,14 @@
                         onmouseup="esconderSenha()"
                         onmouseleave="esconderSenha()">👁</button>
             </div>
+            <!-- hCaptcha DESATIVADO em desenvolvimento local (requer HTTPS)
             <div class="captcha-container">
                 <div id="captchaBox"
                     class="h-captcha"
                     data-sitekey="1900febc-5eba-4cba-a6e2-f7644518c20e">
                 </div>
             </div>
+            -->
             <button type="submit" class="btn">Entrar</button>
         </form>
         <div class="forgot">

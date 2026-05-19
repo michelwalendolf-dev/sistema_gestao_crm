@@ -4,6 +4,10 @@
 //  Autentica o usuário contra a tabela "usuarios" no Supabase
 // ============================================================
 
+ini_set('display_errors', 0);   // impede HTML de erro na resposta JSON
+error_reporting(E_ALL);
+ini_set('log_errors', 1);       // loga erros no error_log do servidor
+
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
 require_once __DIR__ . '/session_check.php';
