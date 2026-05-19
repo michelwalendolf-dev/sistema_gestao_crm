@@ -94,8 +94,21 @@
         // Busca itens de uma OS específica
         async buscarItensPorOS(numeroOsOuId) {
             try {
-                // Suporta busca por numero_os (string) ou id (UUID)
-                const res = await api('os.php', { acao: 'buscar', id: numeroOsOuId });
+                // Se recebeu numero_os (ex: "OS-20260518-XXXX"), resolve para UUID via _dadosOS
+                // O os.php só aceita busca por UUID no campo id — numero_os não funciona.
+                let idBusca = numeroOsOuId;
+                if (typeof numeroOsOuId === 'string' && numeroOsOuId.startsWith('OS-')) {
+                    const osEncontrada = Array.isArray(window._dadosOS) &&
+                        window._dadosOS.find(o => o.codigo === numeroOsOuId);
+                    if (osEncontrada && osEncontrada.id) {
+                        idBusca = osEncontrada.id;
+                    } else {
+                        console.warn('[DB.buscarItensPorOS] UUID não encontrado para', numeroOsOuId,
+                            '— _dadosOS pode ainda não ter sido carregado.');
+                    }
+                }
+
+                const res = await api('os.php', { acao: 'buscar', id: idBusca });
 
                 if (!res.sucesso) {
                     // Tenta buscar pelo numero_os via listagem
@@ -216,11 +229,63 @@
     };
 
     // ════════════════════════════════════════════════════════════
+    //  OVERLAY DE CARREGAMENTO — fica dentro do .grid-principal
+    // ════════════════════════════════════════════════════════════
+    (function _criarOverlayOS() {
+        if (document.getElementById('osLoadingOverlay')) return;
+
+        const style = document.createElement('style');
+        style.textContent = [
+            '.grid-principal { position: relative; }',
+            '#osLoadingOverlay {',
+            '    position: absolute; inset: 0; z-index: 100;',
+            '    background: rgba(5, 15, 28, 0.82);',
+            '    display: none; flex-direction: column;',
+            '    align-items: center; justify-content: center;',
+            '    gap: 20px; backdrop-filter: blur(3px);',
+            '}',
+            '#osLoadingOverlay .spinner {',
+            '    width: 52px; height: 52px; border-radius: 50%;',
+            '    border: 4px solid rgba(255,255,255,0.08);',
+            '    border-top-color: #2d7dff;',
+            '    animation: spinOS 0.7s linear infinite;',
+            '    box-shadow: 0 0 18px rgba(45,125,255,0.35);',
+            '}',
+            '#osLoadingOverlay p {',
+            '    color: #7aa3cc; font-size: 13px; letter-spacing: 0.6px;',
+            '}',
+            '@keyframes spinOS { to { transform: rotate(360deg); } }',
+        ].join('\n');
+        document.head.appendChild(style);
+
+        const overlay = document.createElement('div');
+        overlay.id = 'osLoadingOverlay';
+        overlay.innerHTML = '<div class="spinner"></div><p>Carregando dados...</p>';
+
+        function _injetar() {
+            const container = document.querySelector('.grid-principal');
+            if (container) {
+                container.appendChild(overlay);
+            } else {
+                document.addEventListener('DOMContentLoaded', function () {
+                    const c = document.querySelector('.grid-principal');
+                    if (c) c.appendChild(overlay);
+                });
+            }
+        }
+        _injetar();
+    })();
+
+    function _mostrarOverlayOS()  { const o = document.getElementById('osLoadingOverlay'); if (o) o.style.display = 'flex'; }
+    function _esconderOverlayOS() { const o = document.getElementById('osLoadingOverlay'); if (o) o.style.display = 'none'; }
+
+    // ════════════════════════════════════════════════════════════
     //  2. CARREGAMENTO REAL das OS (substitui carregarOS fictício)
     // ════════════════════════════════════════════════════════════
     const _carregarOSOriginal = window.carregarOS;
 
     window.carregarOS = async function () {
+        _mostrarOverlayOS();
         try {
             const dados = await DB.buscarOS();
 
@@ -238,12 +303,40 @@
             }
         } catch (e) {
             console.error('[carregarOS real]', e);
+        } finally {
+            _esconderOverlayOS();
         }
     };
 
     // ════════════════════════════════════════════════════════════
     //  3. SALVAR OS — substitui a função original
     // ════════════════════════════════════════════════════════════
+    // Converte "R$ 1.500,00" ou "1500.00" para float
+    function _parsearValorItem(v) {
+        if (!v) return 0;
+        let s = v.toString().replace(/R\$\s*/g, '').trim();
+        // Formato BR: 1.500,00
+        if (/^\d{1,3}(\.\d{3})*(,\d+)?$/.test(s)) {
+            return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
+        }
+        s = s.replace(/[^\d,.]/g, '');
+        if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) {
+            return parseFloat(s.replace(',', '.')) || 0;
+        }
+        return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
+    }
+
+    // Coleta itens do _dadosItens (memória) e converte para o formato esperado pelo os.php
+    function _coletarItensParaSalvar(codigo) {
+        const itensUI = (window._dadosItens && window._dadosItens[codigo]) ? window._dadosItens[codigo] : [];
+        return itensUI.map(it => ({
+            descricao:   (it.descricao && it.descricao !== '—') ? it.descricao : '',
+            quantidade:  parseInt(it.quantidade) || 1,
+            valor_unit:  _parsearValorItem(it.vlrServico),
+            valor_total: _parsearValorItem(it.vlrTotal),
+        }));
+    }
+
     window.salvarOS = async function () {
         const codigoCampo = document.getElementById('cad-codigo');
         const codigo = codigoCampo ? codigoCampo.value.trim() : '';
@@ -264,6 +357,9 @@
             Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe o cliente.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
             return;
         }
+
+        // Inclui os itens da OS (lidos do _dadosItens em memória)
+        dados._itens = _coletarItensParaSalvar(codigo);
 
         // Verifica se é edição ou criação
         const osExistente = window._dadosOS && window._dadosOS.find(o => o.codigo === codigo || o.id === codigo);
@@ -885,6 +981,77 @@
     };
 
     // ════════════════════════════════════════════════════════════
+    //  OVERLAY DE ITENS — cobre a área da grade abaixo das abas
+    //  e da barra de ações; âncora no #painel-inferior
+    // ════════════════════════════════════════════════════════════
+    (function _criarOverlayItens() {
+        if (document.getElementById('itensLoadingOverlay')) return;
+
+        const style = document.createElement('style');
+        style.textContent = [
+            '#painel-inferior { position: relative; }',
+            '#itensLoadingOverlay {',
+            '    position: absolute; left: 0; right: 0; bottom: 0; z-index: 100;',
+            '    background: rgba(5, 15, 28, 0.82);',
+            '    display: none; flex-direction: column;',
+            '    align-items: center; justify-content: center;',
+            '    gap: 20px; backdrop-filter: blur(3px);',
+            '}',
+            '#itensLoadingOverlay .spinner {',
+            '    width: 52px; height: 52px; border-radius: 50%;',
+            '    border: 4px solid rgba(255,255,255,0.08);',
+            '    border-top-color: #2d7dff;',
+            '    animation: spinItens 0.7s linear infinite;',
+            '    box-shadow: 0 0 18px rgba(45,125,255,0.35);',
+            '}',
+            '#itensLoadingOverlay p {',
+            '    color: #7aa3cc; font-size: 13px; letter-spacing: 0.6px;',
+            '}',
+            '@keyframes spinItens { to { transform: rotate(360deg); } }',
+        ].join('\n');
+        document.head.appendChild(style);
+
+        const overlay = document.createElement('div');
+        overlay.id = 'itensLoadingOverlay';
+        overlay.innerHTML = '<div class="spinner"></div><p>Carregando itens...</p>';
+
+        function _injetar() {
+            const painel = document.getElementById('painel-inferior');
+            if (painel) {
+                painel.appendChild(overlay);
+            } else {
+                document.addEventListener('DOMContentLoaded', function () {
+                    const p = document.getElementById('painel-inferior');
+                    if (p) p.appendChild(overlay);
+                });
+            }
+        }
+        _injetar();
+    })();
+
+    // Recalcula o top do overlay para pular abas + barra de acoes
+    function _ajustarTopOverlayItens() {
+        const painel  = document.getElementById('painel-inferior');
+        const overlay = document.getElementById('itensLoadingOverlay');
+        if (!painel || !overlay) return;
+        const abas  = painel.querySelector('.abas');
+        const barra = painel.querySelector('.barra-inferior');
+        const top   = (abas  ? abas.offsetHeight  : 0)
+                    + (barra ? barra.offsetHeight : 0);
+        overlay.style.top = top + 'px';
+    }
+
+    function _mostrarOverlayItens() {
+        _ajustarTopOverlayItens();
+        const o = document.getElementById('itensLoadingOverlay');
+        if (o) o.style.display = 'flex';
+    }
+    function _esconderOverlayItens() {
+        const o = document.getElementById('itensLoadingOverlay');
+        if (o) o.style.display = 'none';
+    }
+
+    // ════════════════════════════════════════════════════════════
     //  12. INICIALIZAÇÃO — roda quando o DOM estiver pronto
     // ════════════════════════════════════════════════════════════
     function init() {
@@ -900,6 +1067,82 @@
 
         // Carrega OS (tela principal)
         carregarOS();
+
+        // Patch: selecionarOS — exibe overlay de itens durante o fetch e expõe osSelecionada globalmente
+        // IMPORTANTE: sistema.html usa variável local `let osSelecionada` (não window.osSelecionada).
+        // _sincronizarItens precisa do UUID via window.osSelecionada — por isso o patch sincroniza aqui.
+        const _selecionarOSOriginal = window.selecionarOS;
+        if (typeof _selecionarOSOriginal === 'function') {
+            window.selecionarOS = async function (tr, osObj) {
+                // Expõe no window ANTES do original rodar, para que qualquer código
+                // assíncrono disparado durante/após já enxergue o objeto correto.
+                window.osSelecionada = osObj;
+                _mostrarOverlayItens();
+                try {
+                    await _selecionarOSOriginal(tr, osObj);
+                } finally {
+                    _esconderOverlayItens();
+                }
+            };
+        }
+
+        // ── Helpers: sincroniza lista de itens da OS com o banco ──
+        // O os.php só aceita itens via "atualizar" (substitui todos).
+        // _sincronizarItens é chamado após qualquer add/edição/exclusão de item.
+        async function _sincronizarItens() {
+            const os = window.osSelecionada;
+            if (!os || !os.id) {
+                console.warn('[_sincronizarItens] Nenhuma OS selecionada ou sem ID de banco.');
+                return;
+            }
+
+            const lista = (window._dadosItens && window._dadosItens[os.codigo]) || [];
+
+            const itensParaEnviar = lista.map(it => ({
+                descricao:   (it.descricao   && it.descricao   !== '—') ? it.descricao   : '',
+                quantidade:  parseInt(it.quantidade) || 1,
+                valor_unit:  _parsearValorItem(it.vlrServico),
+                valor_total: _parsearValorItem(it.vlrTotal),
+            }));
+
+            try {
+                const res = await api('os.php', {
+                    acao:   'atualizar_itens',
+                    id:     os.id,
+                    itens:  JSON.stringify(itensParaEnviar),
+                });
+
+                if (!res || !res.sucesso) {
+                    console.error('[_sincronizarItens] Falha:', res && res.mensagem);
+                    mostrarErro((res && res.mensagem) || 'Erro ao salvar itens no banco.');
+                }
+            } catch (e) {
+                console.error('[_sincronizarItens]', e);
+                mostrarErro('Falha de rede ao sincronizar itens.');
+            }
+        }
+
+        // ── Patch: salvarItem — após salvar em memória, sincroniza com o banco ──
+        const _salvarItemOriginal = window.salvarItem;
+        window.salvarItem = async function () {
+            // 1. Executa o original: valida, atualiza _dadosItens e re-renderiza DOM
+            if (typeof _salvarItemOriginal === 'function') {
+                _salvarItemOriginal();
+            }
+            // 2. Persiste toda a lista atualizada no banco
+            await _sincronizarItens();
+        };
+
+        // ── Patch: excluirItem — após remover da memória, sincroniza com o banco ──
+        const _excluirItemOriginal = window.excluirItem;
+        window.excluirItem = async function () {
+            // 1. Executa o original: confirmação SweetAlert, remove de _dadosItens e do DOM
+            if (typeof _excluirItemOriginal === 'function') {
+                await _excluirItemOriginal();
+            }
+            // 2. Persiste a lista sem o item removido
+            await _sincronizarItens();
+        };
 
         // Patches para quando os modais forem abertos
         const _abrirModalUsuariosOriginal = window.usr_abrir || (() => {});

@@ -361,6 +361,52 @@ if ($acao === 'dashboard') {
 }
 
 // ════════════════════════════════════════════════════════════
+//  ATUALIZAR ITENS — substitui todos os itens de uma OS
+//  sem exigir campos da OS (cliente, equipamento, etc.)
+// ════════════════════════════════════════════════════════════
+if ($acao === 'atualizar_itens') {
+
+    $id = trim($_POST['id'] ?? '');
+    if (!$id) {
+        echo json_encode(['sucesso' => false, 'mensagem' => 'ID não informado.']);
+        exit;
+    }
+
+    try {
+        $exists = $db->select('ordens_servico', ['id' => "eq.$id"], 'id,numero_os');
+        if (empty($exists)) {
+            echo json_encode(['sucesso' => false, 'mensagem' => 'OS não encontrada.']);
+            exit;
+        }
+
+        $itensJson = $_POST['itens'] ?? '[]';
+        $itens = json_decode($itensJson, true) ?: [];
+
+        $db->delete('os_itens', ['os_id' => "eq.$id"]);
+
+        foreach ($itens as $item) {
+            $db->insert('os_itens', [
+                'os_id'       => $id,
+                'descricao'   => trim($item['descricao'] ?? ''),
+                'quantidade'  => (int)   ($item['quantidade']  ?? 1),
+                'valor_unit'  => (float) ($item['valor_unit']  ?? 0),
+                'valor_total' => (float) ($item['valor_total'] ?? 0),
+            ]);
+        }
+
+        $numeroOs = $exists[0]['numero_os'];
+        registrarLog($db, $user['id'], 'Itens atualizados', "Itens da OS $numeroOs atualizados.");
+
+        echo json_encode(['sucesso' => true]);
+
+    } catch (RuntimeException $e) {
+        error_log('[OS:atualizar_itens] ' . $e->getMessage());
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar itens.']);
+    }
+    exit;
+}
+
+// ════════════════════════════════════════════════════════════
 //  Ação desconhecida
 // ════════════════════════════════════════════════════════════
 echo json_encode(['sucesso' => false, 'mensagem' => "Ação desconhecida: $acao"]);

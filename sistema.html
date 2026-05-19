@@ -4032,6 +4032,25 @@
     </div>
 
     <script>
+        // Normaliza status do banco (feminino/variações) para as 4 categorias do financeiro
+        function finNormalizarStatus(st) {
+            const map = {
+                // valores do banco (os.php)
+                "Aberta":           "Aberto",
+                "Em andamento":     "Aberto",
+                "Aguardando peça":  "Aberto",
+                "Concluída":        "Fechado",
+                "Entregue":         "Fechado",
+                "Cancelada":        "Cancelado",
+                // valores do frontend (já normalizados)
+                "Pré-Ordem":  "Pré-Ordem",
+                "Aberto":     "Aberto",
+                "Fechado":    "Fechado",
+                "Cancelado":  "Cancelado",
+            };
+            return map[st] || "Pré-Ordem";
+        }
+
         function finParsearValor(v) {
             let s = (v || "0").toString().replace(/R\$\s*/g, '').trim();
             if (/^\d{1,3}(\.\d{3})*(,\d+)?$/.test(s)) return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
@@ -4050,17 +4069,63 @@
         let _finSeriesAtivas = [true, true, true, true];
         let _finGruposCache = null;
 
-        const _finDadosMensais = {
-            labels: ["Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez", "Jan", "Fev", "Mar", "Abr"],
-            preOrdem: [3, 5, 4, 6, 3, 7, 4, 6, 3, 8, 5, 0],
-            aberto: [6, 7, 8, 5, 9, 6, 8, 5, 9, 6, 7, 0],
-            fechado: [10, 9, 12, 10, 8, 14, 12, 10, 8, 14, 11, 0],
-            cancelado: [1, 2, 2, 1, 3, 2, 2, 1, 3, 2, 1, 0],
-        };
+        // _finDadosMensais é recalculado dinamicamente em finCalcDadosMensais()
+        let _finDadosMensais = { labels: [], preOrdem: [], aberto: [], fechado: [], cancelado: [] };
 
-        function abrirFinanceiro() {
+        // Calcula os últimos N meses de labels e dados reais a partir de _dadosOS
+        function finCalcDadosMensais(dados, n) {
+            const mesesPT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+            const hoje = new Date();
+            const buckets = [];
+            for (let i = n - 1; i >= 0; i--) {
+                const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+                buckets.push({
+                    ano: d.getFullYear(),
+                    mes: d.getMonth(),           // 0-based
+                    label: mesesPT[d.getMonth()],
+                    preOrdem: 0, aberto: 0, fechado: 0, cancelado: 0,
+                });
+            }
+
+            dados.forEach(os => {
+                // dtCriacao vem como "DD/MM/AAAA" (fmtData do db_real.js)
+                const raw = os.dtCriacao || "";
+                let ano, mes;
+                if (raw.includes("/")) {
+                    const p = raw.split("/");
+                    ano = parseInt(p[2]); mes = parseInt(p[1]) - 1;
+                } else if (raw.includes("-")) {
+                    // fallback ISO
+                    const p = raw.substring(0, 7).split("-");
+                    ano = parseInt(p[0]); mes = parseInt(p[1]) - 1;
+                } else { return; }
+
+                const bucket = buckets.find(b => b.ano === ano && b.mes === mes);
+                if (!bucket) return;
+
+                const st = finNormalizarStatus(os.status || "Pré-Ordem");
+                if      (st === "Pré-Ordem")  bucket.preOrdem++;
+                else if (st === "Aberto")     bucket.aberto++;
+                else if (st === "Fechado")    bucket.fechado++;
+                else if (st === "Cancelado")  bucket.cancelado++;
+            });
+
+            return {
+                labels:    buckets.map(b => b.label),
+                preOrdem:  buckets.map(b => b.preOrdem),
+                aberto:    buckets.map(b => b.aberto),
+                fechado:   buckets.map(b => b.fechado),
+                cancelado: buckets.map(b => b.cancelado),
+            };
+        }
+
+        async function abrirFinanceiro() {
             document.getElementById("overlayFinanceiro").style.display = "block";
             document.getElementById("modalFinanceiro").style.display = "flex";
+            // Garante dados frescos antes de renderizar
+            if (typeof carregarOS === "function") {
+                await carregarOS();
+            }
             finAtualizarDados();
         }
 
@@ -4127,7 +4192,7 @@
             const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
             const grupos = { "Pré-Ordem": { qtd: 0, total: 0 }, "Aberto": { qtd: 0, total: 0 }, "Fechado": { qtd: 0, total: 0 }, "Cancelado": { qtd: 0, total: 0 } };
             dados.forEach(os => {
-                const st = os.status || "Pré-Ordem";
+                const st = finNormalizarStatus(os.status || "Pré-Ordem");
                 const vl = finParsearValor(os.valor);
                 if (grupos[st]) { grupos[st].qtd++; grupos[st].total += vl; }
             });
@@ -4143,10 +4208,8 @@
             document.getElementById("kpi-cancelado").innerText = grupos["Cancelado"].qtd;
             document.getElementById("kpi-cancelado-val").innerText = fmt(grupos["Cancelado"].total);
 
-            _finDadosMensais.preOrdem[11] = grupos["Pré-Ordem"].qtd;
-            _finDadosMensais.aberto[11] = grupos["Aberto"].qtd;
-            _finDadosMensais.fechado[11] = grupos["Fechado"].qtd;
-            _finDadosMensais.cancelado[11] = grupos["Cancelado"].qtd;
+            // Recalcula dados históricos reais a partir das OS (substitui os valores hardcoded)
+            _finDadosMensais = finCalcDadosMensais(dados, 12);
 
             finRenderizarLista(dados);
             finRenderizarBars(grupos);
@@ -4187,11 +4250,11 @@
             const lista = document.getElementById("finListaOS");
             const busca = (document.getElementById("finBuscaOS").value || "").toLowerCase();
             const filtBusca = dados.filter(os => !busca || (os.cliente || "").toLowerCase().includes(busca) || (os.codigo || "").toLowerCase().includes(busca));
-            const filtrado = (_finFiltroAtivo && _finFiltroAtivo !== "Todos") ? filtBusca.filter(os => (os.status || "Pré-Ordem") === _finFiltroAtivo) : filtBusca;
+            const filtrado = (_finFiltroAtivo && _finFiltroAtivo !== "Todos") ? filtBusca.filter(os => finNormalizarStatus(os.status || "Pré-Ordem") === _finFiltroAtivo) : filtBusca;
             if (!filtrado.length) { lista.innerHTML = '<div style="padding:20px;text-align:center;color:#4a5e7a;font-size:12px;">Nenhuma OS encontrada</div>'; return; }
             const bc = { "Pré-Ordem": "badge-pre", "Aberto": "badge-aberto", "Fechado": "badge-fechado", "Cancelado": "badge-cancelado" };
             lista.innerHTML = filtrado.map((os, i) => {
-                const st = os.status || "Pré-Ordem", vl = finParsearValor(os.valor);
+                const st = finNormalizarStatus(os.status || "Pré-Ordem"), vl = finParsearValor(os.valor);
                 const vlFmt = "R$ " + vl.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 return `<div class="fin-os-item" onclick="finSelecionarOS(this)" data-idx="${i}">
             <div class="fin-os-nome" title="${os.cliente || '—'}">${os.cliente || '—'}</div>
