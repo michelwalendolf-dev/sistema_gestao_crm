@@ -93,12 +93,12 @@ if ($acao === 'criar') {
     $grupo = trim($_POST['grupo'] ?? 'Técnico');
     $setor = trim($_POST['setor'] ?? '');
 
-    if (!$nome || !$login || !$email || !$senha) {
+    if (!$nome || !$login || !$senha) {
         echo json_encode(['sucesso' => false, 'mensagem' => 'Preencha todos os campos obrigatórios.']);
         exit;
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(['sucesso' => false, 'mensagem' => 'E-mail inválido.']);
         exit;
     }

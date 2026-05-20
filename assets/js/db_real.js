@@ -453,57 +453,95 @@
 
     // Sobrescreve usr_salvar para usar API real
     window.usr_salvar = async function () {
-        const _g = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+        const _gv  = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+        const _gcb = id => { const el = document.getElementById(id); return el ? el.checked : false; };
 
-        const nome  = _g('usr-f-nome');
-        if (!nome) { alert('Informe o nome do usuário.'); return; }
+        // Lê o modo — tenta window._usrModo; se null, infere pelo título do formulário
+        let modo = window._usrModo;
+        if (!modo) {
+            const titulo = (document.getElementById('usr-form-titulo') || {}).textContent || '';
+            if (titulo.toLowerCase().startsWith('novo')) modo = 'novo';
+            else if (titulo.toLowerCase().startsWith('editar')) modo = 'editar';
+        }
+        const sel = window._usrSel;
 
-        const s1 = _g('usr-f-senha');
-        const s2 = _g('usr-f-senha-conf');
-        if (s1 && s1 !== s2) { alert('As senhas não conferem.'); return; }
+        // ── Validações de campos obrigatórios ──
+        const nome  = _gv('usr-f-nome');
+        const login = _gv('usr-f-login');
+        const email = _gv('usr-f-email');
+        const grupo = _gv('usr-f-grupo');
+        const s1    = _gv('usr-f-senha');
+        const s2    = _gv('usr-f-senha-conf');
 
-        const modo = window._usrModo;
-        const sel  = window._usrSel;
+        if (!nome) {
+            Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe o nome do usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+        if (modo === 'novo') {
+            if (!login) {
+                Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe o login do usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                return;
+            }
+            if (!s1) {
+                Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe a senha do usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                return;
+            }
+        }
+        if (s1 && s1 !== s2) {
+            Swal.fire({ icon: 'warning', title: 'Senhas não conferem', text: 'A senha e a confirmação devem ser iguais.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+
+        // Status: checkbox "Suspenso" ou Ativo
+        const status = _gcb('usr-f-suspenso') ? 'Suspenso' : 'Ativo';
 
         const params = {
-            nome:       nome,
-            setor:      _g('usr-f-setor'),
-            grupo:      _g('usr-f-grupo'),
-            email:      _g('usr-f-email'),
-            login:      _g('usr-f-login'),
-            status:     _g('usr-f-suspenso') === 'true' || document.getElementById('usr-f-suspenso')?.checked ? 'Suspenso' : 'Ativo',
+            nome,
+            email,
+            setor:  _gv('usr-f-setor'),
+            grupo:  grupo || 'Técnico',
+            status,
         };
 
-        if (s1) params.nova_senha = s1;
+        // Botão de loading
+        const btnSalvar = document.querySelector('.usr-btn-salvar');
+        if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.textContent = '⏳ Salvando...'; }
 
-        let res;
         try {
+            let res;
             if (modo === 'novo') {
-                if (!_g('usr-f-login') || !s1) {
-                    alert('Para novos usuários, informe login e senha.');
-                    return;
-                }
                 params.acao  = 'criar';
+                params.login = login;
                 params.senha = s1;
                 res = await api('usuarios.php', params);
             } else if (modo === 'editar' && sel) {
                 params.acao = 'atualizar';
                 params.id   = sel.id;
+                if (s1) params.nova_senha = s1;
                 res = await api('usuarios.php', params);
             } else {
+                mostrarErro('Modo de edição indefinido. Feche o formulário, clique em "Novo" ou selecione um usuário para editar e tente novamente.');
                 return;
             }
 
-            if (!res.sucesso) throw new Error(res.mensagem);
+            if (!res || !res.sucesso) throw new Error((res && res.mensagem) || 'Erro desconhecido ao salvar.');
 
             await usrCarregarDoServidor();
             if (typeof window.usr_cancelar === 'function') window.usr_cancelar();
 
-            Swal.fire({ icon: 'success', title: modo === 'novo' ? 'Usuário criado' : 'Usuário atualizado', timer: 1500, showConfirmButton: false, scrollbarPadding: false });
+            Swal.fire({
+                icon: 'success',
+                title: modo === 'novo' ? 'Usuário criado com sucesso!' : 'Usuário atualizado!',
+                timer: 1600,
+                showConfirmButton: false,
+                scrollbarPadding: false,
+            });
 
         } catch (e) {
-            console.error('[usr_salvar real]', e);
+            console.error('[usr_salvar]', e);
             mostrarErro(e.message || 'Erro ao salvar usuário.');
+        } finally {
+            if (btnSalvar) { btnSalvar.disabled = false; btnSalvar.textContent = '💾 Salvar'; }
         }
     };
 
@@ -682,7 +720,10 @@
             const res = await api('clientes.php', params);
             if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar cliente.');
             Swal.fire({ icon: 'success', title: 'Cliente salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
-                .then(() => { if (typeof limparModal === 'function') limparModal('modalClientes'); });
+                .then(() => {
+                    if (typeof window.limparModal === 'function') window.limparModal('modalClientes');
+                    if (typeof window.fecharModal === 'function') window.fecharModal('modalClientes', 'overlayClientes');
+                });
         } catch (e) {
             console.error('[salvarCliente]', e);
             mostrarErro(e.message || 'Erro ao salvar cliente.');
@@ -737,7 +778,10 @@
             const res = await api('funcionarios.php', params);
             if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar funcionário.');
             Swal.fire({ icon: 'success', title: 'Funcionário salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
-                .then(() => { if (typeof limparModal === 'function') limparModal('modalFuncionarios'); });
+                .then(() => {
+                    if (typeof window.limparModal === 'function') window.limparModal('modalFuncionarios');
+                    if (typeof window.fecharModal === 'function') window.fecharModal('modalFuncionarios', 'overlayFuncionarios');
+                });
         } catch (e) {
             console.error('[salvarFuncionario]', e);
             mostrarErro(e.message || 'Erro ao salvar funcionário.');
@@ -793,7 +837,10 @@
             const res = await api('fornecedores.php', params);
             if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar fornecedor.');
             Swal.fire({ icon: 'success', title: 'Fornecedor salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
-                .then(() => { if (typeof limparModal === 'function') limparModal('modalFornecedores'); });
+                .then(() => {
+                    if (typeof window.limparModal === 'function') window.limparModal('modalFornecedores');
+                    if (typeof window.fecharModal === 'function') window.fecharModal('modalFornecedores', 'overlayFornecedores');
+                });
         } catch (e) {
             console.error('[salvarFornecedor]', e);
             mostrarErro(e.message || 'Erro ao salvar fornecedor.');
@@ -1170,5 +1217,215 @@
         // DOM já carregado (script deferido ou inline no final do body)
         setTimeout(init, 0);
     }
+
+    // ════════════════════════════════════════════════════════════
+    //  13. CONTROLE DE PERMISSÕES POR GRUPO
+    //
+    //  Admin      → acesso total
+    //  Funcionario → acesso total exceto: excluir OS, financeiro e auditoria
+    //  Tecnico    → apenas visualizar/editar itens de OS (sem excluir OS,
+    //               sem financeiro, sem auditoria, sem cadastros, sem usuários)
+    // ════════════════════════════════════════════════════════════
+    (function _controlePermissoes() {
+
+        // Carrega o grupo do usuário logado via usuarios.php?acao=perfil
+        async function _obterGrupo() {
+            try {
+                const res = await api('usuarios.php', { acao: 'perfil' });
+                return (res && res.sucesso && res.usuario) ? (res.usuario.grupo || '') : '';
+            } catch (e) {
+                console.error('[permissoes] Falha ao obter grupo:', e);
+                return '';
+            }
+        }
+
+        function _aplicarPermissoes(grupo) {
+            // Normaliza para comparação case-insensitive
+            const g = (grupo || '').toLowerCase();
+            const isAdmin     = g === 'admin';
+            const isFuncionario = g === 'funcionario' || g === 'funcionário';
+            const isTecnico   = g === 'tecnico' || g === 'técnico';
+
+            // Armazena globalmente para uso em outros lugares
+            window._grupoAtual = grupo;
+
+            // ── Atualiza nome/grupo exibido no topo ──
+            try {
+                const spanGrupo = document.querySelector('.user-info');
+                if (spanGrupo) {
+                    const nomeSpan = spanGrupo.querySelector('.user-name');
+                    if (nomeSpan && !spanGrupo.querySelector('.user-grupo')) {
+                        const badgeGrupo = document.createElement('span');
+                        badgeGrupo.className = 'user-grupo';
+                        badgeGrupo.textContent = ' [' + grupo + ']';
+                        badgeGrupo.style.cssText = 'font-size:10px;color:#7aa3e0;opacity:0.8;';
+                        nomeSpan.after(badgeGrupo);
+                    }
+                }
+            } catch (_) {}
+
+            // ── Helpers de visibilidade ──
+            function _ocultar(seletor) {
+                document.querySelectorAll(seletor).forEach(el => {
+                    el.style.display = 'none';
+                    el.dataset.ocultoPorPermissao = '1';
+                });
+            }
+            function _bloquearClique(seletor, mensagem) {
+                document.querySelectorAll(seletor).forEach(el => {
+                    if (el.dataset.permBloqueado) return;
+                    el.dataset.permBloqueado = '1';
+                    el.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Acesso restrito',
+                            text: mensagem || 'Você não tem permissão para esta ação.',
+                            confirmButtonColor: '#2d7dff',
+                            scrollbarPadding: false,
+                        });
+                    }, true);
+                });
+            }
+
+            if (isAdmin) {
+                // Admin: sem restrições
+                return;
+            }
+
+            if (isFuncionario) {
+                // ── Funcionário: bloqueia apenas excluir OS, financeiro e auditoria ──
+
+                // Botão Excluir OS da barra de ações
+                _bloquearClique('button[onclick="excluirOS()"]',
+                    'Somente administradores podem excluir Ordens de Serviço.');
+
+                // Financeiro (link no menu sistema e função direta)
+                _bloquearClique('#dropdownSistema a[onclick*="abrirFinanceiro"], #dropdownSistema a:not([onclick])',
+                    'Somente administradores têm acesso ao módulo Financeiro.');
+
+                // Auditoria
+                _bloquearClique('a[onclick*="abrirAuditoria"]',
+                    'Somente administradores têm acesso à Auditoria.');
+
+                // Sobrescreve funções para garantia adicional
+                const _auditOrig = window.abrirAuditoria;
+                window.abrirAuditoria = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Somente administradores têm acesso à Auditoria.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+                const _finOrig = window.abrirFinanceiro;
+                window.abrirFinanceiro = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Somente administradores têm acesso ao Financeiro.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+                const _excluirOSOrig = window.excluirOS;
+                window.excluirOS = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Somente administradores podem excluir Ordens de Serviço.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+
+                return;
+            }
+
+            if (isTecnico) {
+                // ── Técnico: acesso somente a itens de OS (visualizar e editar) ──
+
+                // Bloqueia criação/edição de OS (só pode ver itens)
+                _bloquearClique('button[onclick="abrirTelaCad()"]',
+                    'Técnicos não podem criar novas Ordens de Serviço.');
+                _bloquearClique('button[onclick="abrirTelaEdicao()"]',
+                    'Técnicos não podem editar Ordens de Serviço.');
+                _bloquearClique('button[onclick="excluirOS()"]',
+                    'Técnicos não podem excluir Ordens de Serviço.');
+
+                // Bloqueia Mais Opções / Auditoria / Relatórios / Financeiro
+                _bloquearClique('a[onclick*="abrirAuditoria"]',
+                    'Técnicos não têm acesso à Auditoria.');
+                _bloquearClique('a[onclick*="abrirRelatorios"]',
+                    'Técnicos não têm acesso a Relatórios.');
+
+                // Menu sistema (Financeiro, Relatórios, Origens)
+                _ocultar('#dropdownSistema');
+                _ocultar('.menu-sistema');
+
+                // Modal de usuários: oculta botão Novo e Excluir
+                _ocultar('#usr-painel-header, .usr-painel-header');
+                const btnNovo = document.getElementById('btnNovoUsr');
+                if (btnNovo) btnNovo.style.display = 'none';
+                const btnExcl = document.getElementById('btnExcluirUsr');
+                if (btnExcl) btnExcl.style.display = 'none';
+
+                // Bloqueia acesso aos modais de clientes, funcionários, fornecedores
+                _bloquearClique('a[onclick*="modalClientes"], a[onclick*="modalFuncionarios"], a[onclick*="modalFornecedores"]',
+                    'Técnicos não têm acesso a cadastros.');
+
+                // Sobrescreve funções JS para garantia
+                window.abrirFinanceiro = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso ao Financeiro.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+                window.abrirAuditoria = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso à Auditoria.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+                window.abrirRelatorios = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso a Relatórios.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+                window.excluirOS = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não podem excluir Ordens de Serviço.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+                window.abrirTelaCad = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não podem criar Ordens de Serviço.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+                window.abrirTelaEdicao = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não podem editar os dados da Ordem de Serviço.\nApenas a edição de itens é permitida.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+                window.salvarOS = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não podem salvar Ordens de Serviço.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+
+                // usr_abrir — bloqueia abertura do modal de usuários
+                window.usr_abrir = function () {
+                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso ao gerenciamento de usuários.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                };
+
+                // Bloqueia abertura dos modais de cadastro via abrirModal
+                const _abrirModalOrig = window.abrirModal;
+                window.abrirModal = function (modalId, overlayId) {
+                    const bloqueados = ['modalClientes', 'modalFuncionarios', 'modalFornecedores'];
+                    if (bloqueados.includes(modalId)) {
+                        Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso a cadastros.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                        return;
+                    }
+                    if (typeof _abrirModalOrig === 'function') _abrirModalOrig(modalId, overlayId);
+                };
+
+                return;
+            }
+
+            // Grupo desconhecido → tratado como técnico (acesso mínimo)
+            console.warn('[permissoes] Grupo desconhecido:', grupo, '— aplicando restrições de Técnico.');
+            _aplicarPermissoes('Tecnico');
+        }
+
+        // Aguarda DOM e aplica assim que tiver o grupo
+        function _init() {
+            _obterGrupo().then(function (grupo) {
+                if (grupo) {
+                    _aplicarPermissoes(grupo);
+                } else {
+                    // Sem grupo → acesso mínimo por segurança
+                    console.warn('[permissoes] Grupo não obtido — aguardando 1s e tentando novamente.');
+                    setTimeout(function () {
+                        _obterGrupo().then(function (g) { _aplicarPermissoes(g || 'Tecnico'); });
+                    }, 1000);
+                }
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', _init);
+        } else {
+            setTimeout(_init, 200); // pequeno delay para garantir que fecharModal etc. já foram definidos
+        }
+
+    })();
 
 })();

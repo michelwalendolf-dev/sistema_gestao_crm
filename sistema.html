@@ -2039,20 +2039,12 @@
                                 <div class="usr-campo">
                                     <label>Grupo de Acesso</label>
                                     <div class="bar-acoes">
-                                        <input type="text" id="usr-f-grupo" placeholder="Grupo de permissões" disabled>
-                                        <div class="grupos">
-                                            <button class="btn-limpar" title="Limpar"
-                                                onclick="usr_limparCampo('usr-f-grupo')">✖</button>
-                                            <button class="meio" title="Mais opções">⋯</button>
-                                            <button class="btn-busca" title="Buscar grupo">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <circle cx="11" cy="11" r="8" />
-                                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                                </svg>
-                                            </button>
-                                        </div>
+                                        <select id="usr-f-grupo" disabled style="flex:1;background:#0d1f35;color:#cfd8e3;border:1px solid #2a3a5c;border-radius:4px;padding:0 8px;height:26px;font-size:12px;font-family:inherit;">
+                                            <option value="">— Selecione —</option>
+                                            <option value="Admin">Admin</option>
+                                            <option value="Funcionário">Funcionário</option>
+                                            <option value="Técnico">Técnico</option>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -7793,6 +7785,9 @@
 
             var _usrSel = null;
             var _usrModo = null;
+            // Expõe no window para que db_real.js possa ler/escrever
+            Object.defineProperty(window, '_usrSel',  { get: function(){ return _usrSel;  }, set: function(v){ _usrSel  = v; }, configurable: true });
+            Object.defineProperty(window, '_usrModo', { get: function(){ return _usrModo; }, set: function(v){ _usrModo = v; }, configurable: true });
 
             var BADGE = {
                 'Ativo': 'usr-badge-ativo',
@@ -7898,6 +7893,9 @@
                 _g('usr-f-suspenso').checked = u.suspensao;
                 _g('usr-f-data-saida').value = u.dataSaida || '';
                 usr_habilitar();
+                // Login não pode ser alterado após criação
+                var elLogin = _g('usr-f-login');
+                if (elLogin) { elLogin.disabled = true; elLogin.title = 'O login não pode ser alterado.'; }
             };
 
             window.usr_cancelar = function () {
