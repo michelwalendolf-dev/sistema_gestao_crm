@@ -4,6 +4,10 @@
 //  CRUD de Ordens de Serviço (tabela "ordens_servico" + "os_itens")
 //  Todas as ações chegam via POST com campo "acao"
 // ============================================================
+//  ⚠️  MIGRAÇÃO NECESSÁRIA NO SUPABASE (executar uma vez):
+//  ALTER TABLE ordens_servico
+//    ADD COLUMN IF NOT EXISTS cod_unitario TEXT DEFAULT '';
+// ============================================================
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
@@ -40,7 +44,8 @@ if ($acao === 'listar') {
         $rows = $db->select(
             'ordens_servico',
             $filtros,
-            'id,numero_os,cliente,telefone,equipamento,defeito,status,tecnico,valor_total,created_at,updated_at'
+            'id,numero_os,cod_unitario,cliente,telefone,equipamento,defeito,status,tecnico,' .
+            'valor_total,data_prevista,total_horas,resp_execucao,observacoes,created_at,updated_at'
         );
 
         // Filtro de busca em memória (nome do cliente ou número da OS)
@@ -119,13 +124,33 @@ if ($acao === 'criar') {
     $senha_equipamento = trim($_POST['senha_equipamento'] ?? '');
     $acessorios   = trim($_POST['acessorios']   ?? '');
     $valor_total  = (float) ($_POST['valor_total'] ?? 0);
+    $data_prevista = trim($_POST['data_prevista'] ?? '');
+    $total_horas   = trim($_POST['total_horas']   ?? '');
+    $resp_execucao = trim($_POST['resp_execucao']  ?? '');
+    $cod_unitario  = trim($_POST['cod_unitario']   ?? '');
 
-    // Gera número da OS: OS-YYYYMMDD-RAND
-    $numero_os = 'OS-' . date('Ymd') . '-' . strtoupper(substr(bin2hex(random_bytes(3)), 0, 5));
+    // ── Número sequencial da OS ──────────────────────────────
+    // Busca o maior numero_os já cadastrado (padrão: inteiro puro)
+    try {
+        $ultimaOS = $db->select('ordens_servico', ['order' => 'numero_os_seq.desc', 'limit' => '1'], 'numero_os_seq');
+        if (!empty($ultimaOS) && isset($ultimaOS[0]['numero_os_seq'])) {
+            $proximoNum = (int)$ultimaOS[0]['numero_os_seq'] + 1;
+        } else {
+            // fallback: conta registros existentes
+            $todos = $db->select('ordens_servico', [], 'id');
+            $proximoNum = count($todos) + 1;
+        }
+    } catch (\Throwable $e) {
+        $todos = $db->select('ordens_servico', [], 'id');
+        $proximoNum = count($todos) + 1;
+    }
+    $numero_os = str_pad($proximoNum, 6, '0', STR_PAD_LEFT);
 
     try {
         $osData = [
             'numero_os'         => $numero_os,
+            'numero_os_seq'     => $proximoNum,
+            'cod_unitario'      => $cod_unitario,
             'cliente'           => $cliente,
             'telefone'          => $telefone,
             'email_cliente'     => $email_cliente,
@@ -143,6 +168,9 @@ if ($acao === 'criar') {
             'tecnico'           => $tecnico,
             'tecnico_id'        => $user['id'],
             'valor_total'       => $valor_total,
+            'data_prevista'     => $data_prevista ?: null,
+            'total_horas'       => $total_horas ?: null,
+            'resp_execucao'     => $resp_execucao,
         ];
 
         $inserted = $db->insert('ordens_servico', $osData);
@@ -154,11 +182,25 @@ if ($acao === 'criar') {
 
         foreach ($itens as $item) {
             $db->insert('os_itens', [
-                'os_id'       => $osId,
-                'descricao'   => trim($item['descricao'] ?? ''),
-                'quantidade'  => (int)   ($item['quantidade']  ?? 1),
-                'valor_unit'  => (float) ($item['valor_unit']  ?? 0),
-                'valor_total' => (float) ($item['valor_total'] ?? 0),
+                'os_id'          => $osId,
+                'cod_item'       => trim($item['codItem']    ?? ''),
+                'tipo'           => trim($item['tipo']       ?? ''),
+                'descricao'      => trim($item['descricao']  ?? ''),
+                'maquina'        => trim($item['maquina']    ?? ''),
+                'dt_criacao'     => trim($item['dtCriacao']  ?? ''),
+                'dt_solucao'     => trim($item['dtSolucao']  ?? ''),
+                'tecnico'        => trim($item['tecnico']    ?? ''),
+                'cod_barras'     => trim($item['codBarras']  ?? ''),
+                'produto'        => trim($item['produto']    ?? ''),
+                'resp_execucao'  => trim($item['respExec']   ?? ''),
+                'cadastrado_por' => trim($item['cadastrado'] ?? ''),
+                'hrs_estimadas'  => (float)($item['hrsEst']  ?? 0),
+                'hrs_realizadas' => (float)($item['hrsReal'] ?? 0),
+                'vlr_servico'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrServico'] ?? '0')) ?: 0),
+                'vlr_total'      => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
+                'quantidade'     => (int)   ($item['quantidade']  ?? 1),
+                'valor_unit'     => (float) ($item['valor_unit']  ?? 0),
+                'valor_total'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
             ]);
         }
 
@@ -203,6 +245,7 @@ if ($acao === 'atualizar') {
         'cliente', 'telefone', 'email_cliente', 'cpf_cnpj', 'endereco',
         'equipamento', 'marca', 'modelo', 'numero_serie', 'senha_equipamento',
         'acessorios', 'defeito', 'observacoes', 'status', 'tecnico', 'valor_total',
+        'data_prevista', 'total_horas', 'resp_execucao', 'cod_unitario',
     ];
 
     $data = [];
@@ -235,11 +278,25 @@ if ($acao === 'atualizar') {
             // Insere os novos
             foreach ($itens as $item) {
                 $db->insert('os_itens', [
-                    'os_id'       => $id,
-                    'descricao'   => trim($item['descricao'] ?? ''),
-                    'quantidade'  => (int)   ($item['quantidade']  ?? 1),
-                    'valor_unit'  => (float) ($item['valor_unit']  ?? 0),
-                    'valor_total' => (float) ($item['valor_total'] ?? 0),
+                    'os_id'          => $id,
+                    'cod_item'       => trim($item['codItem']    ?? ''),
+                    'tipo'           => trim($item['tipo']       ?? ''),
+                    'descricao'      => trim($item['descricao']  ?? ''),
+                    'maquina'        => trim($item['maquina']    ?? ''),
+                    'dt_criacao'     => trim($item['dtCriacao']  ?? ''),
+                    'dt_solucao'     => trim($item['dtSolucao']  ?? ''),
+                    'tecnico'        => trim($item['tecnico']    ?? ''),
+                    'cod_barras'     => trim($item['codBarras']  ?? ''),
+                    'produto'        => trim($item['produto']    ?? ''),
+                    'resp_execucao'  => trim($item['respExec']   ?? ''),
+                    'cadastrado_por' => trim($item['cadastrado'] ?? ''),
+                    'hrs_estimadas'  => (float)($item['hrsEst']  ?? 0),
+                    'hrs_realizadas' => (float)($item['hrsReal'] ?? 0),
+                    'vlr_servico'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrServico'] ?? '0')) ?: 0),
+                    'vlr_total'      => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
+                    'quantidade'     => (int)   ($item['quantidade']  ?? 1),
+                    'valor_unit'     => (float) ($item['valor_unit']  ?? 0),
+                    'valor_total'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
                 ]);
             }
         }
@@ -386,11 +443,25 @@ if ($acao === 'atualizar_itens') {
 
         foreach ($itens as $item) {
             $db->insert('os_itens', [
-                'os_id'       => $id,
-                'descricao'   => trim($item['descricao'] ?? ''),
-                'quantidade'  => (int)   ($item['quantidade']  ?? 1),
-                'valor_unit'  => (float) ($item['valor_unit']  ?? 0),
-                'valor_total' => (float) ($item['valor_total'] ?? 0),
+                'os_id'          => $id,
+                'cod_item'       => trim($item['codItem']    ?? ''),
+                'tipo'           => trim($item['tipo']       ?? ''),
+                'descricao'      => trim($item['descricao']  ?? ''),
+                'maquina'        => trim($item['maquina']    ?? ''),
+                'dt_criacao'     => trim($item['dtCriacao']  ?? ''),
+                'dt_solucao'     => trim($item['dtSolucao']  ?? ''),
+                'tecnico'        => trim($item['tecnico']    ?? ''),
+                'cod_barras'     => trim($item['codBarras']  ?? ''),
+                'produto'        => trim($item['produto']    ?? ''),
+                'resp_execucao'  => trim($item['respExec']   ?? ''),
+                'cadastrado_por' => trim($item['cadastrado'] ?? ''),
+                'hrs_estimadas'  => (float)($item['hrsEst']  ?? 0),
+                'hrs_realizadas' => (float)($item['hrsReal'] ?? 0),
+                'vlr_servico'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrServico'] ?? '0')) ?: 0),
+                'vlr_total'      => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
+                'quantidade'     => (int)   ($item['quantidade']  ?? 1),
+                'valor_unit'     => (float) ($item['valor_unit']  ?? 0),
+                'valor_total'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
             ]);
         }
 
@@ -402,6 +473,25 @@ if ($acao === 'atualizar_itens') {
     } catch (RuntimeException $e) {
         error_log('[OS:atualizar_itens] ' . $e->getMessage());
         echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar itens.']);
+    }
+    exit;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PRÓXIMO NÚMERO DA OS — retorna o próximo número sequencial
+// ════════════════════════════════════════════════════════════
+if ($acao === 'proximo_numero') {
+    try {
+        $ultimaOS = $db->select('ordens_servico', ['order' => 'numero_os_seq.desc', 'limit' => '1'], 'numero_os_seq');
+        if (!empty($ultimaOS) && isset($ultimaOS[0]['numero_os_seq'])) {
+            $proximo = (int)$ultimaOS[0]['numero_os_seq'] + 1;
+        } else {
+            $todos = $db->select('ordens_servico', [], 'id');
+            $proximo = count($todos) + 1;
+        }
+        echo json_encode(['sucesso' => true, 'numero' => str_pad($proximo, 6, '0', STR_PAD_LEFT)]);
+    } catch (RuntimeException $e) {
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao buscar próximo número.']);
     }
     exit;
 }

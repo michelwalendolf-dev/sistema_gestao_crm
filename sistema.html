@@ -8,6 +8,17 @@
     <link rel="icon" type="image/png" href="assets\icon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
+        /* Fix: impede fundo branco em inputs preenchidos por autocomplete */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #253150 inset !important;
+            box-shadow: 0 0 0 1000px #253150 inset !important;
+            -webkit-text-fill-color: #fff !important;
+            caret-color: #fff !important;
+        }
+
         .usr-filtro {
             width: 200px;
             min-width: 160px;
@@ -1597,8 +1608,6 @@
             <input type="text" id="filtro-cliente" placeholder="Cliente" oninput="aplicarFiltros()">
             <div class="grupo-botoes">
                 <button onclick="limparFiltro('filtro-cliente')">✖</button>
-                <button class="meio" title="Buscar com filtro atual"
-                    onclick="abrirBuscaOrigemCampo('cli','filtro-cliente',document.getElementById('filtro-cliente').value,true)">⋯</button>
                 <button class="btn-busca" title="Abrir busca de clientes"
                     onclick="abrirBuscaOrigemCampo('cli','filtro-cliente',null,true)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1613,8 +1622,6 @@
             <input type="text" id="filtro-tecnico" placeholder="Técnico" oninput="aplicarFiltros()">
             <div class="grupo-botoes">
                 <button onclick="limparFiltro('filtro-tecnico')">✖</button>
-                <button class="meio" title="Buscar com filtro atual"
-                    onclick="abrirBuscaOrigemCampo('func','filtro-tecnico',document.getElementById('filtro-tecnico').value,true)">⋯</button>
                 <button class="btn-busca" title="Abrir busca de técnicos"
                     onclick="abrirBuscaOrigemCampo('func','filtro-tecnico',null,true)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1629,7 +1636,6 @@
             <input type="text" id="filtro-servico" placeholder="Serviços" oninput="aplicarFiltros()">
             <div class="grupo-botoes">
                 <button onclick="limparFiltro('filtro-servico')">✖</button>
-                <button class="meio">⋯</button>
                 <button class="btn-busca" onclick="aplicarFiltros()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2003,7 +2009,6 @@
                                         <div class="grupos">
                                             <button class="btn-limpar" title="Limpar"
                                                 onclick="usr_limparCampo('usr-f-funcionario')">✖</button>
-                                            <button class="meio" title="Mais opções">⋯</button>
                                             <button class="btn-busca" title="Buscar funcionário">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -2023,7 +2028,6 @@
                                         <div class="grupos">
                                             <button class="btn-limpar" title="Limpar"
                                                 onclick="usr_limparCampo('usr-f-setor')">✖</button>
-                                            <button class="meio" title="Mais opções">⋯</button>
                                             <button class="btn-busca" title="Buscar setor">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -2154,9 +2158,11 @@
                 <div class="erp-panel" id="panel-os">
                     <div class="erp-grid">
                         <div class="campo-completo">
-                            <label>Código</label>
+                            <label>Nº da OS <span style="color:#6b7280;font-size:10px;">(automático)</span></label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-codigo">
+                                <input type="text" id="cad-codigo" readonly
+                                    style="cursor:not-allowed;color:#a6c8ff;background:#1a2a40;"
+                                    title="O número da OS é gerado automaticamente e não pode ser alterado">
                                 <div class="grupos">
                                 </div>
                             </div>
@@ -2176,8 +2182,6 @@
                                 <div class="grupos">
                                     <button class="btn-limpar" title="Limpar"
                                         onclick="document.getElementById('cad-cliente').value=''">✖</button>
-                                    <button class="meio" title="Buscar com nome digitado"
-                                        onclick="abrirBuscaOrigemCampo('cli','cad-cliente',document.getElementById('cad-cliente').value,false)">⋯</button>
                                     <button class="btn-busca" title="Abrir busca de clientes"
                                         onclick="abrirBuscaOrigemCampo('cli','cad-cliente',null,false)">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -2197,8 +2201,6 @@
                                 <div class="grupos">
                                     <button class="btn-limpar" title="Limpar"
                                         onclick="document.getElementById('cad-tecnico').value=''">✖</button>
-                                    <button class="meio" title="Buscar com nome digitado"
-                                        onclick="abrirBuscaOrigemCampo('func','cad-tecnico',document.getElementById('cad-tecnico').value,false)">⋯</button>
                                     <button class="btn-busca" title="Abrir busca de técnicos"
                                         onclick="abrirBuscaOrigemCampo('func','cad-tecnico',null,false)">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -2211,25 +2213,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="campo-completo">
-                            <label>Serviço</label>
-                            <div class="bar-acoes ">
-                                <input type="text" id="cad-servico">
-                                <div class="grupos">
-                                    <button class="btn-limpar" title="Limpar"
-                                        onclick="document.getElementById('cad-servico').value=''">✖</button>
-                                    <button class="meio">⋯</button>
-                                    <button class="btn-busca">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <circle cx="11" cy="11" r="8"></circle>
-                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+
                         <div class="campo-completo">
                             <label>Descrição</label>
                             <div class="bar-acoes ">
@@ -2272,8 +2256,9 @@
                         </div>
                         <div class="campo-completo">
                             <label>Valor Total</label>
-                            <div class="bar-acoes ">
-                                <input type="text" id="cad-valor">
+                            <div class="bar-acoes " style="position:relative;">
+                                <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                                <input type="text" id="cad-valor" style="padding-left:28px;">
                                 <div class="grupos">
                                 </div>
                             </div>
@@ -2392,9 +2377,10 @@
                         <div class="bar-acoes">
                             <input type="text" id="item-tecnico">
                             <div class="grupos">
-                                <button class="btn-limpar">✖</button>
-                                <button class="meio">⋯</button>
-                                <button class="btn-busca">
+                                <button class="btn-limpar" title="Limpar"
+                                    onclick="document.getElementById('item-tecnico').value=''">✖</button>
+                                <button class="btn-busca" title="Abrir busca de técnicos"
+                                    onclick="abrirBuscaOrigemCampo('func','item-tecnico',null,false)">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
@@ -2437,13 +2423,17 @@
                     </div>
                     <div class="campo-completo">
                         <label>Valor de Serviço</label>
-                        <div class="bar-acoes"><input type="text" id="item-vlrServico">
+                        <div class="bar-acoes" style="position:relative;">
+                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                            <input type="text" id="item-vlrServico" style="padding-left:28px;">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>Valor Total</label>
-                        <div class="bar-acoes"><input type="text" id="item-vlrTotal">
+                        <div class="bar-acoes" style="position:relative;">
+                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                            <input type="text" id="item-vlrTotal" style="padding-left:28px;">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -2529,7 +2519,6 @@
                         <input type="text">
                         <div class="grupos">
                             <button class="btn-limpar">✖</button>
-                            <button class="meio">⋯</button>
                             <button class="btn-busca">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2">
@@ -2547,7 +2536,6 @@
                         <input type="text">
                         <div class="grupos">
                             <button class="btn-limpar">✖</button>
-                            <button class="meio">⋯</button>
                             <button class="btn-busca">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2">
@@ -3316,10 +3304,29 @@
             maximizado = false;
         }
 
-        function abrirTelaCad() {
+        async function abrirTelaCad() {
             document.getElementById("erpTitulo").textContent = "Cadastro de Ordem de Serviço";
             document.querySelectorAll("#erpModal input").forEach(i => i.value = "");
+            // Preenche data de criação com a data atual
+            const hoje = new Date();
+            const dd = String(hoje.getDate()).padStart(2, "0");
+            const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+            const yyyy = hoje.getFullYear();
+            document.getElementById("cad-dtCriacao").value = `${dd}/${mm}/${yyyy}`;
+            // Busca e exibe próximo número de OS (somente leitura)
+            const cadCodigo = document.getElementById("cad-codigo");
+            cadCodigo.value = "";
+            cadCodigo.readOnly = true;
+            cadCodigo.title = "O número da OS é gerado automaticamente e não pode ser alterado";
+            cadCodigo.style.color = "#a6c8ff";
             _abrirModal();
+            try {
+                const resp = await fetch("os.php", { method: "POST", body: new URLSearchParams({ acao: "proximo_numero" }) });
+                const data = await resp.json();
+                cadCodigo.value = data.sucesso ? data.numero : "";
+            } catch (e) {
+                cadCodigo.value = "";
+            }
         }
 
         function abrirTelaEdicao() {
@@ -3335,10 +3342,11 @@
             }
             document.getElementById("erpTitulo").textContent = "Edição de Ordem de Serviço";
             document.getElementById("cad-codigo").value = osSelecionada.codigo || "";
+            document.getElementById("cad-codigo").readOnly = true;
+            document.getElementById("cad-codigo").title = "O número da OS não pode ser alterado";
             document.getElementById("cad-codUnit").value = osSelecionada.codUnit || "";
             document.getElementById("cad-cliente").value = osSelecionada.cliente || "";
             document.getElementById("cad-tecnico").value = osSelecionada.tecnico || "";
-            document.getElementById("cad-servico").value = osSelecionada.servico || "";
             document.getElementById("cad-descricao").value = osSelecionada.descricao || "";
             document.getElementById("cad-dtCriacao").value = osSelecionada.dtCriacao || "";
             document.getElementById("cad-dtPrevista").value = osSelecionada.dtPrevista || "";
@@ -3602,8 +3610,8 @@
         };
 
         const _abrirTelaCadOrig = abrirTelaCad;
-        abrirTelaCad = function () {
-            _abrirTelaCadOrig();
+        abrirTelaCad = async function () {
+            await _abrirTelaCadOrig();
             document.querySelectorAll(".erp-tab")[0].click();
         };
     </script>
@@ -3673,6 +3681,12 @@
             modoItemEdicao = false;
             document.getElementById("itemTitulo").textContent = "Cadastro de Item";
             document.querySelectorAll("#modalItem input, #modalItem textarea").forEach(i => i.value = "");
+            // Preenche data de criação do item com a data atual
+            const _hojeItem = new Date();
+            const _ddItem = String(_hojeItem.getDate()).padStart(2, "0");
+            const _mmItem = String(_hojeItem.getMonth() + 1).padStart(2, "0");
+            const _yyyyItem = _hojeItem.getFullYear();
+            document.getElementById("item-dtCriacao").value = `${_ddItem}/${_mmItem}/${_yyyyItem}`;
             _abrirModalItem();
         }
 
@@ -3796,25 +3810,41 @@
                 Swal.fire({ icon: "warning", title: "Atenção", text: "Informe o código do item.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
                 return;
             }
+            // Data de criação: usa a preenchida ou coloca hoje
+            let dtCriacaoItem = document.getElementById("item-dtCriacao").value.trim();
+            if (!dtCriacaoItem) {
+                const hoje = new Date();
+                const dd = String(hoje.getDate()).padStart(2, "0");
+                const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+                const yyyy = hoje.getFullYear();
+                dtCriacaoItem = `${dd}/${mm}/${yyyy}`;
+                document.getElementById("item-dtCriacao").value = dtCriacaoItem;
+            }
+            // Pega o nome do usuário logado (exposto pelo db_real.js ou session)
+            const usuarioLogado = (typeof window._usuarioLogado !== "undefined" && window._usuarioLogado)
+                ? window._usuarioLogado
+                : (document.getElementById("usuario-nome")?.textContent?.trim() || "admin");
             const novoItem = {
                 codItem: codItem,
                 tipo: document.getElementById("item-tipo").value.trim() || "—",
                 descricao: document.getElementById("item-descricao").value.trim() || "—",
                 maquina: document.getElementById("item-maquina").value.trim() || "—",
-                dtCriacao: document.getElementById("item-dtCriacao").value.trim() || "—",
+                dtCriacao: dtCriacaoItem,
                 dtSolucao: document.getElementById("item-dtSolucao").value.trim() || "—",
                 tecnico: document.getElementById("item-tecnico").value.trim() || "—",
                 codBarras: document.getElementById("item-codBarras").value.trim() || "—",
                 produto: document.getElementById("item-produto").value.trim() || "—",
                 respExec: document.getElementById("item-respExec").value.trim() || "—",
-                cadastrado: "admin",
+                cadastrado: usuarioLogado,
                 hrsEst: document.getElementById("item-hrsEst").value || "0",
                 hrsReal: document.getElementById("item-hrsReal").value || "0",
-                vlrServico: document.getElementById("item-vlrServico").value.trim() || "R$ 0,00",
-                vlrTotal: document.getElementById("item-vlrTotal").value.trim() || "R$ 0,00",
+                vlrServico: document.getElementById("item-vlrServico").value.trim() || "0,00",
+                vlrTotal: document.getElementById("item-vlrTotal").value.trim() || "0,00",
             };
 
-            const lista = _dadosItens[osSelecionada.codigo] || (_dadosItens[osSelecionada.codigo] = []);
+            // Usa o código da OS selecionada ou "__novo__" para OS ainda não salva
+            const _chaveOS = osSelecionada.codigo || "__novo__";
+            const lista = _dadosItens[_chaveOS] || (_dadosItens[_chaveOS] = []);
 
             if (modoItemEdicao) {
                 const idx = lista.findIndex(i => i.codItem === codItem);
@@ -3824,7 +3854,7 @@
                 lista.push(novoItem);
             }
 
-            renderizarItens(lista, osSelecionada.codigo);
+            renderizarItens(lista, _chaveOS);
             fecharModalItem();
 
             Swal.fire({ icon: "success", title: modoItemEdicao ? "Item atualizado" : "Item salvo", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
@@ -6432,6 +6462,31 @@
                 }
 
                 fecharModal('modalBuscaOrigem', 'overlayBuscaOrigem');
+            };
+
+
+            // abrirBuscaOrigemCampo — abre o modal de busca e ao confirmar,
+            // coloca o nome selecionado no campo alvo
+            window.abrirBuscaOrigemCampo = function (tipo, campoAlvoId, valorInicial, isFiltroPrincipal) {
+                window._buscaOrigemCampoAlvo = campoAlvoId;
+                window._buscaOrigemIsFiltroPrincipal = isFiltroPrincipal;
+                window._buscaOrigemTipoAtual = tipo;
+
+                abrirBuscaOrigem(tipo, function (dados) {
+                    var nome = dados['Nome'] || dados['Nome / Razão Social'] || dados['Razão Social'] || '';
+                    var campo = document.getElementById(campoAlvoId);
+                    if (campo) campo.value = nome;
+                    if (isFiltroPrincipal && typeof aplicarFiltros === 'function') aplicarFiltros();
+                });
+
+                // Preenche filtro inicial se houver valor
+                if (valorInicial) {
+                    setTimeout(function () {
+                        var inp = document.getElementById('bo-f-nome');
+                        if (inp) { inp.value = valorInicial; }
+                        if (typeof filtrarBuscaOrigem === 'function') filtrarBuscaOrigem();
+                    }, 100);
+                }
             };
 
             window.abrirNovoDeOrigem = function () {

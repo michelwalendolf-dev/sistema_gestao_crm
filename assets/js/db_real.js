@@ -1,1431 +1,400 @@
-// ================================================================
-//  IluminusTech — db_real.js
-//  Substitui os arrays/objetos fictícios (_dadosOS, _dadosItens,
-//  _usrDados, _dadosAuditoria, DB) por chamadas reais aos PHPs.
-//
-//  COMO USAR:
-//  Adicione esta tag ANTES do fechamento de </body> em sistema.html:
-//  <script src="assets/js/db_real.js"></script>
-//
-//  O script aguarda o DOM estar pronto e então:
-//  1. Redefine o objeto DB (OS) com fetch real → os.php
-//  2. Redefine as funções de usuários com fetch real → usuarios.php
-//  3. Redefine as funções de auditoria com fetch real → logs.php
-//  4. Limpa os arrays fictícios e carrega dados do banco
-// ================================================================
+// ============================================================
+//  db_real.js — Integração real com os.php (Supabase via PHP)
+//  Substitui os placeholders definidos em sistema.html
+// ============================================================
 
 (function () {
     'use strict';
 
-    // ─────────────────────────────────────────────────────────────
-    //  Utilitário: POST form-data
-    // ─────────────────────────────────────────────────────────────
-    async function api(endpoint, params = {}) {
-        const fd = new FormData();
-        for (const [k, v] of Object.entries(params)) {
-            fd.append(k, v);
-        }
-        const res = await fetch(endpoint, { method: 'POST', body: fd, credentials: 'same-origin' });
-        if (!res.ok) throw new Error(`HTTP ${res.status} em ${endpoint}`);
-        return res.json();
+    // ── Helpers ──────────────────────────────────────────────
+
+    function hoje() {
+        const d = new Date();
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${dd}/${mm}/${yyyy}`;
     }
 
-    function mostrarErro(msg) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({ icon: 'error', title: 'Erro', text: msg, confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-        } else {
-            alert('Erro: ' + msg);
-        }
+    function fmtData(isoStr) {
+        if (!isoStr) return '—';
+        if (isoStr.includes('/')) return isoStr;
+        const [y, m, dRaw] = isoStr.split('T')[0].split('-');
+        return `${dRaw}/${m}/${y}`;
     }
 
-    // ─────────────────────────────────────────────────────────────
-    //  Formata valor monetário → "R$ 1.250,00"
-    // ─────────────────────────────────────────────────────────────
-    function fmtBRL(v) {
-        return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    function fmtMoeda(v) {
+        const n = parseFloat(v) || 0;
+        return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    // ─────────────────────────────────────────────────────────────
-    //  Formata data ISO → "DD/MM/AAAA"
-    // ─────────────────────────────────────────────────────────────
-    function fmtData(iso) {
-        if (!iso) return '';
-        const d = iso.substring(0, 10).split('-');
-        return d[2] + '/' + d[1] + '/' + d[0];
+    async function postOS(params) {
+        const resp = await fetch('os.php', {
+            method: 'POST',
+            body: new URLSearchParams(params),
+        });
+        return resp.json();
     }
 
-    // ════════════════════════════════════════════════════════════
-    //  1. OBJETO DB — Ordens de Serviço (substitui o DB fictício)
-    // ════════════════════════════════════════════════════════════
+    async function postFuncionarios(params) {
+        const resp = await fetch('funcionarios.php', {
+            method: 'POST',
+            body: new URLSearchParams(params),
+        });
+        return resp.json();
+    }
+
+    // ── Converte linha do banco → objeto da tela ──────────────
+    function dbRowParaOS(r) {
+        return {
+            id:         r.id          || '',
+            codigo:     r.numero_os   || '',
+            codUnit:    r.cod_unitario || '',   // campo próprio, independente do numero_os
+            descricao:  r.equipamento || r.defeito || '',
+            cliente:    r.cliente     || '',
+            tecnico:    r.tecnico     || '',
+            contato:    r.telefone    || '',
+            dtCriacao:  fmtData(r.created_at    || ''),
+            dtPrevista: fmtData(r.data_prevista  || ''),
+            horas:      r.total_horas  || '0',
+            respExec:   r.resp_execucao || '',
+            valor:      fmtMoeda(r.valor_total || 0),
+            status:     r.status      || '',
+            observacao: r.observacoes || '',
+            // Campos extras do form
+            equipamento:       r.equipamento       || '',
+            marca:             r.marca             || '',
+            modelo:            r.modelo            || '',
+            numero_serie:      r.numero_serie      || '',
+            senha_equipamento: r.senha_equipamento || '',
+            acessorios:        r.acessorios        || '',
+            defeito:           r.defeito           || '',
+            email_cliente:     r.email_cliente     || '',
+            cpf_cnpj:          r.cpf_cnpj          || '',
+            endereco:          r.endereco          || '',
+            tecnico_id:        r.tecnico_id        || '',
+        };
+    }
+
+    // Converte item do banco → objeto da tela
+    function dbItemParaTela(it) {
+        return {
+            codItem:    it.cod_item        || '',
+            tipo:       it.tipo            || '—',
+            descricao:  it.descricao       || '—',
+            maquina:    it.maquina         || '—',
+            dtCriacao:  fmtData(it.dt_criacao  || ''),
+            dtSolucao:  fmtData(it.dt_solucao  || ''),
+            tecnico:    it.tecnico         || '—',
+            codBarras:  it.cod_barras      || '—',
+            produto:    it.produto         || '—',
+            respExec:   it.resp_execucao   || '—',
+            cadastrado: it.cadastrado_por  || '—',
+            hrsEst:     it.hrs_estimadas   || '0',
+            hrsReal:    it.hrs_realizadas  || '0',
+            vlrServico: fmtMoeda(it.vlr_servico || 0),
+            vlrTotal:   fmtMoeda(it.vlr_total   || 0),
+            quantidade: it.quantidade     || 1,
+            valor_unit: it.valor_unit     || 0,
+        };
+    }
+
+    // ── DB — objeto global com métodos de acesso ─────────────
     window.DB = {
 
-        // Busca lista de OS (com filtros opcionais)
-        async buscarOS(filtros = {}) {
+        async buscarOS(filtros) {
             try {
                 const params = { acao: 'listar', ...filtros };
-                const res = await api('os.php', params);
-                if (!res.sucesso) throw new Error(res.mensagem);
-
-                // Adapta campos do banco ao formato esperado pelo sistema.html
-                return res.dados.map(os => ({
-                    codigo:     os.numero_os,
-                    id:         os.id,
-                    cliente:    os.cliente,
-                    contato:    os.telefone,
-                    descricao:  os.defeito,
-                    equipamento: os.equipamento,
-                    tecnico:    os.tecnico,
-                    status:     os.status,
-                    valor:      fmtBRL(os.valor_total),
-                    valor_raw:  os.valor_total,
-                    dtCriacao:  fmtData(os.created_at),
-                    dtPrevista: '',
-                    horas:      '',
-                    respExec:   os.tecnico,
-                    codUnit:    '',
-                }));
+                const data = await postOS(params);
+                if (!data.sucesso) return [];
+                return (data.dados || []).map(dbRowParaOS);
             } catch (e) {
                 console.error('[DB.buscarOS]', e);
-                mostrarErro('Falha ao carregar Ordens de Serviço.');
                 return [];
             }
         },
 
-        // Busca itens de uma OS específica
-        async buscarItensPorOS(numeroOsOuId) {
+        // osId = numero_os (ex: "000005")
+        // O cache _dadosOS já tem o .id (UUID) de cada OS — não precisamos
+        // de uma segunda chamada ao listar. Usamos direto o buscar por UUID.
+        async buscarItensPorOS(osId) {
             try {
-                // Se recebeu numero_os (ex: "OS-20260518-XXXX"), resolve para UUID via _dadosOS
-                // O os.php só aceita busca por UUID no campo id — numero_os não funciona.
-                let idBusca = numeroOsOuId;
-                if (typeof numeroOsOuId === 'string' && numeroOsOuId.startsWith('OS-')) {
-                    const osEncontrada = Array.isArray(window._dadosOS) &&
-                        window._dadosOS.find(o => o.codigo === numeroOsOuId);
-                    if (osEncontrada && osEncontrada.id) {
-                        idBusca = osEncontrada.id;
-                    } else {
-                        console.warn('[DB.buscarItensPorOS] UUID não encontrado para', numeroOsOuId,
-                            '— _dadosOS pode ainda não ter sido carregado.');
-                    }
+                // Cache em memória
+                if (window._dadosItens && window._dadosItens[osId] !== undefined) {
+                    return window._dadosItens[osId] || [];
                 }
 
-                const res = await api('os.php', { acao: 'buscar', id: idBusca });
+                // Encontra o UUID na lista em memória (_dadosOS já populado por carregarOS)
+                const osObj = (window._dadosOS || []).find(o => o.codigo === osId);
+                if (!osObj || !osObj.id) return [];
 
-                if (!res.sucesso) {
-                    // Tenta buscar pelo numero_os via listagem
-                    return [];
-                }
-                return (res.itens || []).map((item, i) => ({
-                    codItem:    'IT-' + String(i + 1).padStart(3, '0'),
-                    tipo:       'Serviço',
-                    descricao:  item.descricao,
-                    quantidade: item.quantidade,
-                    vlrServico: fmtBRL(item.valor_unit),
-                    vlrTotal:   fmtBRL(item.valor_total),
-                    dtCriacao:  fmtData(item.created_at),
-                    dtSolucao:  '',
-                    tecnico:    '',
-                    maquina:    '',
-                    produto:    '',
-                    respExec:   '',
-                    cadastrado: '',
-                    hrsEst:     '',
-                    hrsReal:    '',
-                    codBarras:  '',
-                    _id:        item.id,
-                }));
+                const data = await postOS({ acao: 'buscar', id: osObj.id });
+                if (!data.sucesso) return [];
+
+                const itens = (data.itens || []).map(dbItemParaTela);
+
+                // Guarda no cache
+                window._dadosItens = window._dadosItens || {};
+                window._dadosItens[osId] = itens;
+                return itens;
             } catch (e) {
                 console.error('[DB.buscarItensPorOS]', e);
                 return [];
             }
         },
 
-        // Salva uma OS nova
         async salvarOS(os) {
             try {
                 const params = {
-                    acao:        'criar',
-                    cliente:     os.cliente     || '',
-                    telefone:    os.contato     || '',
-                    equipamento: os.equipamento || os.descricao || '',
-                    defeito:     os.descricao   || '',
-                    tecnico:     os.tecnico     || '',
-                    status:      os.status      || 'Aberta',
-                    valor_total: os.valor_raw   || 0,
-                    itens:       JSON.stringify(os._itens || []),
+                    acao:          'criar',
+                    cliente:       os.cliente    || '',
+                    telefone:      os.contato    || '',
+                    equipamento:   os.descricao  || '',
+                    defeito:       os.observacao || os.descricao || '',
+                    tecnico:       os.tecnico    || '',
+                    status:        os.status     || 'Aberta',
+                    observacoes:   os.observacao || '',
+                    valor_total:   os.valorRaw   || 0,
+                    data_prevista: os.dtPrevista || '',
+                    total_horas:   os.horas      || '',
+                    resp_execucao: os.respExec   || '',
+                    cod_unitario:  os.codUnit    || '',
+                    itens:         JSON.stringify(os.itens || []),
                 };
-                const res = await api('os.php', params);
-                if (!res.sucesso) throw new Error(res.mensagem);
-                return res;
+                return await postOS(params);
             } catch (e) {
                 console.error('[DB.salvarOS]', e);
-                mostrarErro(e.message || 'Erro ao salvar OS.');
-                return { sucesso: false };
+                return { sucesso: false, mensagem: 'Erro de conexão.' };
             }
         },
 
-        // Atualiza uma OS existente
-        async atualizarOS(idOuNumero, dados) {
+        async atualizarOS(id, dados) {
             try {
-                const params = {
-                    acao:        'atualizar',
-                    id:          idOuNumero,
-                    cliente:     dados.cliente     || '',
-                    telefone:    dados.contato     || '',
-                    equipamento: dados.equipamento || dados.descricao || '',
-                    defeito:     dados.descricao   || '',
-                    tecnico:     dados.tecnico     || '',
-                    status:      dados.status      || '',
-                    valor_total: dados.valor_raw   || 0,
-                };
-                if (dados._itens !== undefined) {
-                    params.itens = JSON.stringify(dados._itens);
-                }
-                const res = await api('os.php', params);
-                if (!res.sucesso) throw new Error(res.mensagem);
-                return res;
+                return await postOS({ acao: 'atualizar', id, ...dados });
             } catch (e) {
                 console.error('[DB.atualizarOS]', e);
-                mostrarErro(e.message || 'Erro ao atualizar OS.');
                 return { sucesso: false };
             }
         },
 
-        // Exclui uma OS
-        async excluirOS(idOuNumero) {
+        async excluirOS(codigo) {
             try {
-                const res = await api('os.php', { acao: 'excluir', id: idOuNumero });
-                if (!res.sucesso) throw new Error(res.mensagem);
-                return res;
+                // Usa o UUID do cache em memória — sem roundtrip extra ao banco
+                const osObj = (window._dadosOS || []).find(o => o.codigo === codigo);
+                if (!osObj || !osObj.id) return { sucesso: false, mensagem: 'OS não encontrada.' };
+                return await postOS({ acao: 'excluir', id: osObj.id });
             } catch (e) {
                 console.error('[DB.excluirOS]', e);
-                mostrarErro(e.message || 'Erro ao excluir OS.');
                 return { sucesso: false };
             }
         },
 
-        // Altera apenas o status de uma OS
-        async alterarStatus(id, status) {
+        async buscarFuncionarios(busca) {
             try {
-                const res = await api('os.php', { acao: 'alterar_status', id, status });
-                if (!res.sucesso) throw new Error(res.mensagem);
-                return res;
+                const params = { acao: 'listar' };
+                if (busca) params.busca = busca;
+                const data = await postFuncionarios(params);
+                return data.sucesso ? (data.dados || []) : [];
             } catch (e) {
-                console.error('[DB.alterarStatus]', e);
-                mostrarErro(e.message || 'Erro ao alterar status.');
-                return { sucesso: false };
-            }
-        },
-
-        // Dashboard de contadores
-        async dashboard() {
-            try {
-                const res = await api('os.php', { acao: 'dashboard' });
-                return res.sucesso ? res.dados : {};
-            } catch (e) {
-                console.error('[DB.dashboard]', e);
-                return {};
+                console.error('[DB.buscarFuncionarios]', e);
+                return [];
             }
         },
     };
 
-    // ════════════════════════════════════════════════════════════
-    //  OVERLAY DE CARREGAMENTO — fica dentro do .grid-principal
-    // ════════════════════════════════════════════════════════════
-    (function _criarOverlayOS() {
-        if (document.getElementById('osLoadingOverlay')) return;
-
-        const style = document.createElement('style');
-        style.textContent = [
-            '.grid-principal { position: relative; }',
-            '#osLoadingOverlay {',
-            '    position: absolute; inset: 0; z-index: 100;',
-            '    background: rgba(5, 15, 28, 0.82);',
-            '    display: none; flex-direction: column;',
-            '    align-items: center; justify-content: center;',
-            '    gap: 20px; backdrop-filter: blur(3px);',
-            '}',
-            '#osLoadingOverlay .spinner {',
-            '    width: 52px; height: 52px; border-radius: 50%;',
-            '    border: 4px solid rgba(255,255,255,0.08);',
-            '    border-top-color: #2d7dff;',
-            '    animation: spinOS 0.7s linear infinite;',
-            '    box-shadow: 0 0 18px rgba(45,125,255,0.35);',
-            '}',
-            '#osLoadingOverlay p {',
-            '    color: #7aa3cc; font-size: 13px; letter-spacing: 0.6px;',
-            '}',
-            '@keyframes spinOS { to { transform: rotate(360deg); } }',
-        ].join('\n');
-        document.head.appendChild(style);
-
-        const overlay = document.createElement('div');
-        overlay.id = 'osLoadingOverlay';
-        overlay.innerHTML = '<div class="spinner"></div><p>Carregando dados...</p>';
-
-        function _injetar() {
-            const container = document.querySelector('.grid-principal');
-            if (container) {
-                container.appendChild(overlay);
-            } else {
-                document.addEventListener('DOMContentLoaded', function () {
-                    const c = document.querySelector('.grid-principal');
-                    if (c) c.appendChild(overlay);
-                });
-            }
-        }
-        _injetar();
-    })();
-
-    function _mostrarOverlayOS()  { const o = document.getElementById('osLoadingOverlay'); if (o) o.style.display = 'flex'; }
-    function _esconderOverlayOS() { const o = document.getElementById('osLoadingOverlay'); if (o) o.style.display = 'none'; }
-
-    // ════════════════════════════════════════════════════════════
-    //  2. CARREGAMENTO REAL das OS (substitui carregarOS fictício)
-    // ════════════════════════════════════════════════════════════
-    const _carregarOSOriginal = window.carregarOS;
-
+    // ── carregarOS — substitui o placeholder de sistema.html ─
     window.carregarOS = async function () {
-        _mostrarOverlayOS();
         try {
-            const dados = await DB.buscarOS();
+            const rows = await window.DB.buscarOS({});
+            window._dadosOS = rows;
+            window._dadosItens = window._dadosItens || {};
 
-            // Limpa e repopula o array global que o sistema.html usa internamente
-            if (Array.isArray(window._dadosOS)) {
-                window._dadosOS.length = 0;
-                dados.forEach(os => window._dadosOS.push(os));
-            } else {
-                window._dadosOS = dados;
-            }
-
-            // Chama renderização original (já definida no sistema.html)
-            if (typeof window.renderizarGrid === 'function') {
-                window.renderizarGrid(dados);
+            if (typeof renderizarGrid === 'function') {
+                renderizarGrid(rows);
             }
         } catch (e) {
-            console.error('[carregarOS real]', e);
-        } finally {
-            _esconderOverlayOS();
+            console.error('[carregarOS]', e);
         }
     };
 
-    // ════════════════════════════════════════════════════════════
-    //  3. SALVAR OS — substitui a função original
-    // ════════════════════════════════════════════════════════════
-    // Converte "R$ 1.500,00" ou "1500.00" para float
-    function _parsearValorItem(v) {
-        if (!v) return 0;
-        let s = v.toString().replace(/R\$\s*/g, '').trim();
-        // Formato BR: 1.500,00
-        if (/^\d{1,3}(\.\d{3})*(,\d+)?$/.test(s)) {
-            return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
-        }
-        s = s.replace(/[^\d,.]/g, '');
-        if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) {
-            return parseFloat(s.replace(',', '.')) || 0;
-        }
-        return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
-    }
-
-    // Coleta itens do _dadosItens (memória) e converte para o formato esperado pelo os.php
-    function _coletarItensParaSalvar(codigo) {
-        const itensUI = (window._dadosItens && window._dadosItens[codigo]) ? window._dadosItens[codigo] : [];
-        return itensUI.map(it => ({
-            descricao:   (it.descricao && it.descricao !== '—') ? it.descricao : '',
-            quantidade:  parseInt(it.quantidade) || 1,
-            valor_unit:  _parsearValorItem(it.vlrServico),
-            valor_total: _parsearValorItem(it.vlrTotal),
-        }));
-    }
-
+    // ── salvarOS — substitui o placeholder de sistema.html ───
     window.salvarOS = async function () {
-        const codigoCampo = document.getElementById('cad-codigo');
-        const codigo = codigoCampo ? codigoCampo.value.trim() : '';
+        const codigo  = (document.getElementById('cad-codigo')?.value  || '').trim();
+        const codUnit = (document.getElementById('cad-codUnit')?.value  || '').trim();
 
-        const g = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+        // ─────────────────────────────────────────────────────
+        // DETECÇÃO DE MODO: é edição SOMENTE se osSelecionada
+        // existir e tiver um id (UUID) real no banco.
+        // Não depende do valor do campo cad-codigo para decidir,
+        // porque ao abrir "Novo" o campo também é preenchido
+        // com o próximo número — o que causava falso isEdicao.
+        // ─────────────────────────────────────────────────────
+        const isEdicao = !!(window.osSelecionada && window.osSelecionada.id);
 
-        const dados = {
-            cliente:     g('cad-cliente'),
-            contato:     g('cad-contato'),
-            equipamento: g('cad-equipamento') || g('cad-descricao'),
-            descricao:   g('cad-descricao'),
-            tecnico:     g('cad-tecnico'),
-            status:      g('cad-status') || 'Aberta',
-            valor_raw:   parseFloat(g('cad-valor').replace(/[^\d,]/g, '').replace(',', '.')) || 0,
-        };
+        // Coleta campos do formulário
+        const cliente    = (document.getElementById('cad-cliente')?.value    || '').trim();
+        const tecnico    = (document.getElementById('cad-tecnico')?.value    || '').trim();
+        const descricao  = (document.getElementById('cad-descricao')?.value  || '').trim();
+        const dtCriacao  = (document.getElementById('cad-dtCriacao')?.value  || '').trim();
+        const dtPrevista = (document.getElementById('cad-dtPrevista')?.value || '').trim();
+        const horas      = (document.getElementById('cad-horas')?.value      || '').trim();
+        const respExec   = (document.getElementById('cad-respExec')?.value   || '').trim();
+        const valorStr   = (document.getElementById('cad-valor')?.value      || '').trim();
+        const contato    = (document.getElementById('cad-contato')?.value    || '').trim();
+        const status     = (document.getElementById('cad-status')?.value     || '').trim();
+        const observacao = (document.getElementById('cad-observacao')?.value || '').trim();
 
-        if (!dados.cliente) {
+        if (!cliente) {
             Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe o cliente.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
             return;
         }
 
-        // Inclui os itens da OS (lidos do _dadosItens em memória)
-        dados._itens = _coletarItensParaSalvar(codigo);
-
-        // Verifica se é edição ou criação
-        const osExistente = window._dadosOS && window._dadosOS.find(o => o.codigo === codigo || o.id === codigo);
-
-        let res;
-        if (osExistente && osExistente.id) {
-            res = await DB.atualizarOS(osExistente.id, dados);
-        } else {
-            res = await DB.salvarOS(dados);
-        }
-
-        if (res && res.sucesso) {
-            await carregarOS();
-            if (typeof window.fecharTelaCad === 'function') window.fecharTelaCad();
-            Swal.fire({ icon: 'success', title: osExistente ? 'OS atualizada' : 'OS salva', timer: 1500, showConfirmButton: false, scrollbarPadding: false });
-        }
-    };
-
-    // ════════════════════════════════════════════════════════════
-    //  4. EXCLUIR OS — substitui a função original
-    // ════════════════════════════════════════════════════════════
-    window.excluirOS = async function () {
-        if (!window.osSelecionada) return;
-
-        const confirmacao = await Swal.fire({
-            icon: 'warning',
-            title: 'Excluir OS?',
-            text: `A OS ${window.osSelecionada.codigo} será excluída permanentemente.`,
-            showCancelButton: true,
-            confirmButtonColor: '#e53935',
-            cancelButtonColor: '#2d7dff',
-            confirmButtonText: 'Excluir',
-            cancelButtonText: 'Cancelar',
-            scrollbarPadding: false,
-        });
-
-        if (!confirmacao.isConfirmed) return;
-
-        const id = window.osSelecionada.id || window.osSelecionada.codigo;
-        const res = await DB.excluirOS(id);
-
-        if (res && res.sucesso) {
-            window.osSelecionada = null;
-            await carregarOS();
-            Swal.fire({ icon: 'success', title: 'OS excluída', timer: 1400, showConfirmButton: false, scrollbarPadding: false });
-        }
-    };
-
-    // ════════════════════════════════════════════════════════════
-    //  5. USUÁRIOS — substitui _usrDados e as funções de CRUD
-    // ════════════════════════════════════════════════════════════
-
-    // Cache em memória (substitui o array _usrDados fixo)
-    let _usrCache = [];
-
-    async function usrCarregarDoServidor() {
-        try {
-            const res = await api('usuarios.php', { acao: 'listar' });
-            if (!res.sucesso) throw new Error(res.mensagem);
-
-            _usrCache = res.dados.map(u => ({
-                id:         u.id,
-                nome:       u.nome,
-                login:      u.login,
-                email:      u.email,
-                setor:      u.setor    || '',
-                grupo:      u.grupo    || '',
-                status:     u.status   || 'Ativo',
-                suspensao:  u.status === 'Suspenso',
-                dataSaida:  '',
-                obs:        '',
-                funcionario: '',
-            }));
-
-            // Atualiza o array global (usado pelo sistema.html para renderização)
-            if (Array.isArray(window._usrDados)) {
-                window._usrDados.length = 0;
-                _usrCache.forEach(u => window._usrDados.push(u));
-            } else {
-                window._usrDados = _usrCache;
-            }
-
-            if (typeof window.usr_renderizar === 'function') {
-                window.usr_renderizar(_usrCache);
-            }
-        } catch (e) {
-            console.error('[usrCarregarDoServidor]', e);
-            mostrarErro('Erro ao carregar usuários.');
-        }
-    }
-
-    // Sobrescreve usr_salvar para usar API real
-    window.usr_salvar = async function () {
-        const _gv  = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-        const _gcb = id => { const el = document.getElementById(id); return el ? el.checked : false; };
-
-        // Lê o modo — tenta window._usrModo; se null, infere pelo título do formulário
-        let modo = window._usrModo;
-        if (!modo) {
-            const titulo = (document.getElementById('usr-form-titulo') || {}).textContent || '';
-            if (titulo.toLowerCase().startsWith('novo')) modo = 'novo';
-            else if (titulo.toLowerCase().startsWith('editar')) modo = 'editar';
-        }
-        const sel = window._usrSel;
-
-        // ── Validações de campos obrigatórios ──
-        const nome  = _gv('usr-f-nome');
-        const login = _gv('usr-f-login');
-        const email = _gv('usr-f-email');
-        const grupo = _gv('usr-f-grupo');
-        const s1    = _gv('usr-f-senha');
-        const s2    = _gv('usr-f-senha-conf');
-
-        if (!nome) {
-            Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe o nome do usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-            return;
-        }
-        if (modo === 'novo') {
-            if (!login) {
-                Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe o login do usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                return;
-            }
-            if (!s1) {
-                Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe a senha do usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                return;
-            }
-        }
-        if (s1 && s1 !== s2) {
-            Swal.fire({ icon: 'warning', title: 'Senhas não conferem', text: 'A senha e a confirmação devem ser iguais.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-            return;
-        }
-
-        // Status: checkbox "Suspenso" ou Ativo
-        const status = _gcb('usr-f-suspenso') ? 'Suspenso' : 'Ativo';
-
-        const params = {
-            nome,
-            email,
-            setor:  _gv('usr-f-setor'),
-            grupo:  grupo || 'Técnico',
-            status,
-        };
-
-        // Botão de loading
-        const btnSalvar = document.querySelector('.usr-btn-salvar');
-        if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.textContent = '⏳ Salvando...'; }
-
-        try {
-            let res;
-            if (modo === 'novo') {
-                params.acao  = 'criar';
-                params.login = login;
-                params.senha = s1;
-                res = await api('usuarios.php', params);
-            } else if (modo === 'editar' && sel) {
-                params.acao = 'atualizar';
-                params.id   = sel.id;
-                if (s1) params.nova_senha = s1;
-                res = await api('usuarios.php', params);
-            } else {
-                mostrarErro('Modo de edição indefinido. Feche o formulário, clique em "Novo" ou selecione um usuário para editar e tente novamente.');
-                return;
-            }
-
-            if (!res || !res.sucesso) throw new Error((res && res.mensagem) || 'Erro desconhecido ao salvar.');
-
-            await usrCarregarDoServidor();
-            if (typeof window.usr_cancelar === 'function') window.usr_cancelar();
-
-            Swal.fire({
-                icon: 'success',
-                title: modo === 'novo' ? 'Usuário criado com sucesso!' : 'Usuário atualizado!',
-                timer: 1600,
-                showConfirmButton: false,
-                scrollbarPadding: false,
-            });
-
-        } catch (e) {
-            console.error('[usr_salvar]', e);
-            mostrarErro(e.message || 'Erro ao salvar usuário.');
-        } finally {
-            if (btnSalvar) { btnSalvar.disabled = false; btnSalvar.textContent = '💾 Salvar'; }
-        }
-    };
-
-    // Sobrescreve usr_excluir para usar API real
-    window.usr_excluir = async function () {
-        const sel = window._usrSel;
-        if (!sel) return;
-
-        const confirmacao = await Swal.fire({
-            icon: 'warning',
-            title: 'Inativar usuário?',
-            text: `O usuário "${sel.nome}" será inativado.`,
-            showCancelButton: true,
-            confirmButtonColor: '#e53935',
-            cancelButtonColor: '#2d7dff',
-            confirmButtonText: 'Inativar',
-            cancelButtonText: 'Cancelar',
-            scrollbarPadding: false,
-        });
-
-        if (!confirmacao.isConfirmed) return;
-
-        try {
-            const res = await api('usuarios.php', { acao: 'excluir', id: sel.id });
-            if (!res.sucesso) throw new Error(res.mensagem);
-
-            window._usrSel = null;
-            ['btnEditarUsr', 'btnExcluirUsr'].forEach(id => {
-                const b = document.getElementById(id);
-                if (b) { b.disabled = true; b.classList.remove('habilitado'); }
-            });
-            const sb = document.getElementById('usr-status-bar');
-            if (sb) sb.textContent = 'Nenhum usuário selecionado';
-
-            await usrCarregarDoServidor();
-            if (typeof window.usr_cancelar === 'function') window.usr_cancelar();
-
-            Swal.fire({ icon: 'success', title: 'Usuário inativado', timer: 1400, showConfirmButton: false, scrollbarPadding: false });
-
-        } catch (e) {
-            console.error('[usr_excluir real]', e);
-            mostrarErro(e.message || 'Erro ao inativar usuário.');
-        }
-    };
-
-    // ════════════════════════════════════════════════════════════
-    //  6. AUDITORIA / LOGS — substitui _dadosAuditoria fictícios
-    // ════════════════════════════════════════════════════════════
-
-    async function audCarregarDoServidor() {
-        try {
-            const res = await api('logs.php', { acao: 'listar' });
-            if (!res.sucesso) {
-                console.warn('[audCarregarDoServidor] Sem permissão ou erro:', res.mensagem);
-                return;
-            }
-
-            const dados = res.dados.map(log => ({
-                estacao:   log.ip        || '',
-                evento:    log.acao      || '',
-                data:      fmtData(log.created_at) + ' ' + (log.created_at || '').substring(11, 16),
-                usuario:   log.usuario_nome || log.usuario_id || 'sistema',
-                descricao: log.descricao  || '',
-            }));
-
-            // Atualiza array global
-            if (Array.isArray(window._dadosAuditoria)) {
-                window._dadosAuditoria.length = 0;
-                dados.forEach(d => window._dadosAuditoria.push(d));
-            } else {
-                window._dadosAuditoria = dados;
-            }
-
-            // Atualiza filtrados
-            window.audDadosFiltrados = [...dados];
-
-            // Re-renderiza se a função existir
-            if (typeof window.renderizarAuditoria === 'function') {
-                window.renderizarAuditoria(dados);
-            }
-
-        } catch (e) {
-            console.error('[audCarregarDoServidor]', e);
-        }
-    }
-
-    // ════════════════════════════════════════════════════════════
-    //  7. FINANCEIRO — carrega OS para o painel financeiro
-    // ════════════════════════════════════════════════════════════
-
-    window.finCarregarOSReal = async function (filtroStatus) {
-        try {
-            const params = { acao: 'listar' };
-            if (filtroStatus && filtroStatus !== 'Todos') params.status = filtroStatus;
-
-            const res = await api('os.php', params);
-            if (!res.sucesso) throw new Error(res.mensagem);
-
-            const dados = res.dados;
-
-            if (typeof window.finRenderizarLista === 'function') {
-                window.finRenderizarLista(dados);
-            }
-
-            // Atualiza o array global usado pelo financeiro
-            if (typeof window._dadosOS !== 'undefined') {
-                window._dadosOS.length = 0;
-                dados.forEach(os => window._dadosOS.push({
-                    codigo:    os.numero_os,
-                    id:        os.id,
-                    cliente:   os.cliente,
-                    valor:     fmtBRL(os.valor_total),
-                    valor_raw: os.valor_total,
-                    status:    os.status,
-                }));
-            }
-
-        } catch (e) {
-            console.error('[finCarregarOSReal]', e);
-        }
-    };
-
-    // ════════════════════════════════════════════════════════════
-    //  8. CLIENTES — salvar / carregar
-    // ════════════════════════════════════════════════════════════
-
-    function _val(id) {
-        const el = document.getElementById(id);
-        return el ? el.value.trim() : '';
-    }
-
-    window.salvarCliente = async function () {
-        const nome = _val('cli-nome');
-        if (!nome) {
-            Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe o Nome do cliente.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-            return;
-        }
-
-        const params = {
-            acao:       'criar',
-            nome,
-            documento:  _val('cli-doc'),
-            fantasia:   _val('cli-fantasia'),
-            nascimento: _val('cli-nascimento'),
-            rg:         _val('cli-rg'),
-            tipo:       _val('cli-tipo'),
-            status:     _val('cli-status') || 'Ativo',
-            grupo:      _val('cli-grupo'),
-            profissao:  _val('cli-profissao'),
-            genero:     _val('cli-genero'),
-            nacionalidade: _val('cli-nacionalidade'),
-            vendedor:   _val('cli-vendedor'),
-            obs:        _val('cli-obs'),
-            tel:        _val('cli-tel'),
-            cel:        _val('cli-cel'),
-            whatsapp:   _val('cli-whatsapp'),
-            contato:    _val('cli-contato'),
-            email:      _val('cli-email'),
-            site:       _val('cli-site'),
-            cep:        _val('cli-cep'),
-            uf:         _val('cli-uf'),
-            rua:        _val('cli-rua'),
-            numero:     _val('cli-num'),
-            complemento: _val('cli-comp'),
-            bairro:     _val('cli-bairro'),
-            cidade:     _val('cli-cidade'),
-            limite:     _val('cli-limite'),
-            prazo:      _val('cli-prazo'),
-            forma_pag:  _val('cli-forma-pag'),
-            desconto:   _val('cli-desconto'),
-            banco:      _val('cli-banco'),
-            obs_fin:    _val('cli-obs-fin'),
-        };
-
-        try {
-            const res = await api('clientes.php', params);
-            if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar cliente.');
-            Swal.fire({ icon: 'success', title: 'Cliente salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
-                .then(() => {
-                    if (typeof window.limparModal === 'function') window.limparModal('modalClientes');
-                    if (typeof window.fecharModal === 'function') window.fecharModal('modalClientes', 'overlayClientes');
-                });
-        } catch (e) {
-            console.error('[salvarCliente]', e);
-            mostrarErro(e.message || 'Erro ao salvar cliente.');
-        }
-    };
-
-    // ════════════════════════════════════════════════════════════
-    //  9. FUNCIONÁRIOS — salvar
-    // ════════════════════════════════════════════════════════════
-
-    window.salvarFuncionario = async function () {
-        const nome = _val('func-nome');
-        if (!nome) {
-            Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe o Nome do funcionário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-            return;
-        }
-
-        const tecnico = document.getElementById('func-tecnico');
-        const padrao  = document.getElementById('func-padrao');
-
-        const params = {
-            acao:        'criar',
-            nome,
-            cpf:         _val('func-cpf'),
-            rg:          _val('func-rg'),
-            nascimento:  _val('func-nascimento'),
-            cargo:       _val('func-cargo'),
-            setor:       _val('func-setor'),
-            departamento: _val('func-departamento'),
-            nivel:       _val('func-nivel'),
-            genero:      _val('func-genero'),
-            nacionalidade: _val('func-nacionalidade'),
-            status:      _val('func-status') || 'Ativo',
-            tecnico:     tecnico && tecnico.checked ? '1' : '0',
-            padrao:      padrao  && padrao.checked  ? '1' : '0',
-            obs:         _val('func-obs'),
-            tel:         _val('func-tel'),
-            cel:         _val('func-cel'),
-            whatsapp:    _val('func-whatsapp'),
-            emergencia:  _val('func-emergencia'),
-            email:       _val('func-email'),
-            cep:         _val('func-cep'),
-            uf:          _val('func-uf'),
-            rua:         _val('func-rua'),
-            numero:      _val('func-num'),
-            complemento: _val('func-comp'),
-            bairro:      _val('func-bairro'),
-            cidade:      _val('func-cidade'),
-        };
-
-        try {
-            const res = await api('funcionarios.php', params);
-            if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar funcionário.');
-            Swal.fire({ icon: 'success', title: 'Funcionário salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
-                .then(() => {
-                    if (typeof window.limparModal === 'function') window.limparModal('modalFuncionarios');
-                    if (typeof window.fecharModal === 'function') window.fecharModal('modalFuncionarios', 'overlayFuncionarios');
-                });
-        } catch (e) {
-            console.error('[salvarFuncionario]', e);
-            mostrarErro(e.message || 'Erro ao salvar funcionário.');
-        }
-    };
-
-    // ════════════════════════════════════════════════════════════
-    //  10. FORNECEDORES — salvar
-    // ════════════════════════════════════════════════════════════
-
-    window.salvarFornecedor = async function () {
-        const razao = _val('forn-razao');
-        if (!razao) {
-            Swal.fire({ icon: 'warning', title: 'Campo obrigatório', text: 'Informe a Razão Social do fornecedor.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-            return;
-        }
-
-        const params = {
-            acao:           'criar',
-            razao_social:   razao,
-            documento:      _val('forn-doc'),
-            fantasia:       _val('forn-fantasia'),
-            ie:             _val('forn-ie'),
-            im:             _val('forn-im'),
-            status:         _val('forn-status') || 'Ativo',
-            categoria:      _val('forn-categoria'),
-            tipo:           _val('forn-tipo'),
-            representante:  _val('forn-representante'),
-            origem:         _val('forn-origem'),
-            obs:            _val('forn-obs'),
-            tel:            _val('forn-tel'),
-            cel:            _val('forn-cel'),
-            whatsapp:       _val('forn-whatsapp'),
-            contato:        _val('forn-contato'),
-            email:          _val('forn-email'),
-            site:           _val('forn-site'),
-            cep:            _val('forn-cep'),
-            uf:             _val('forn-uf'),
-            rua:            _val('forn-rua'),
-            numero:         _val('forn-num'),
-            complemento:    _val('forn-comp'),
-            bairro:         _val('forn-bairro'),
-            cidade:         _val('forn-cidade'),
-            prazo:          _val('forn-prazo'),
-            limite:         _val('forn-limite'),
-            forma_pag:      _val('forn-forma-pag'),
-            desconto:       _val('forn-desconto'),
-            banco:          _val('forn-banco'),
-            obs_fin:        _val('forn-obs-fin'),
-        };
-
-        try {
-            const res = await api('fornecedores.php', params);
-            if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao salvar fornecedor.');
-            Swal.fire({ icon: 'success', title: 'Fornecedor salvo!', timer: 1500, showConfirmButton: false, scrollbarPadding: false })
-                .then(() => {
-                    if (typeof window.limparModal === 'function') window.limparModal('modalFornecedores');
-                    if (typeof window.fecharModal === 'function') window.fecharModal('modalFornecedores', 'overlayFornecedores');
-                });
-        } catch (e) {
-            console.error('[salvarFornecedor]', e);
-            mostrarErro(e.message || 'Erro ao salvar fornecedor.');
-        }
-    };
-
-    // ════════════════════════════════════════════════════════════
-    //  11. BUSCA ORIGEM — helper para campos de OS e filtros
-    //
-    //  abrirBuscaOrigemCampo(tipo, targetId, preFilter, aplicarFiltros)
-    //
-    //  tipo        : 'cli' | 'func' | 'forn'
-    //  targetId    : id do <input> que receberá o nome selecionado
-    //  preFilter   : string digitada no campo (⋯) ou null (🔍)
-    //  filtrarGrid : true → dispara aplicarFiltros() após selecionar
-    // ════════════════════════════════════════════════════════════
-
-    window.abrirBuscaOrigemCampo = function (tipo, targetId, preFilter, filtrarGrid) {
-
-        // Coluna de nome por tipo
-        var nomeColuna = { cli: 'Nome / Razão Social', func: 'Nome', forn: 'Razão Social' }[tipo] || 'Nome';
-
-        // Callback executado quando o usuário clica em "Selecionar" na busca
-        var callback = function (dados) {
-            var el = document.getElementById(targetId);
-            if (!el) return;
-            el.value = dados[nomeColuna] || dados['Nome'] || '';
-            // Dispara oninput para reativar filtros reativos (ex: aplicarFiltros)
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            // Se for um campo de filtro do painel esquerdo, re-aplica filtros da grade
-            if (filtrarGrid && typeof window.aplicarFiltros === 'function') {
-                window.aplicarFiltros();
-            }
-        };
-
-        // Abre o modal de busca com o callback registrado
-        if (typeof window.abrirBuscaOrigem !== 'function') return;
-        window.abrirBuscaOrigem(tipo, callback);
-
-        // Se há pré-filtro (botão ⋯), preenche o campo Nome e dispara busca automaticamente
-        if (preFilter && preFilter.trim()) {
-            setTimeout(function () {
-                var nomeInput = document.getElementById('bo-f-nome');
-                if (nomeInput) {
-                    nomeInput.value = preFilter.trim();
-                }
-                if (typeof window.filtrarBuscaOrigem === 'function') {
-                    window.filtrarBuscaOrigem();
-                }
-            }, 80); // aguarda o modal renderizar antes de preencher
-        }
-    };
-
-
-    //  Sobrescreve window.filtrarBuscaOrigem definido em sistema.html.
-    //  O tipo (cli/func/forn) é lido do título do modal porque _tipo
-    //  é uma variável privada dentro do IIFE do sistema.html.
-    // ════════════════════════════════════════════════════════════
-
-    // Endpoints por tipo de cadastro
-    var _BO_ENDPOINTS = {
-        cli:  'clientes.php',
-        func: 'funcionarios.php',
-        forn: 'fornecedores.php',
-    };
-
-    // Nomes dos parâmetros de filtro enviados à API
-    var _BO_PARAMS = {
-        cli:  ['codigo', 'nome', 'documento', 'telefone', 'email', 'cidade'],
-        func: ['codigo', 'nome', 'cpf',       'cargo',    'telefone', 'email'],
-        forn: ['codigo', 'razao_social', 'documento', 'contato', 'telefone', 'cidade'],
-    };
-
-    // Converte registro da API para array de colunas da tabela
-    function _boMapear(tipo, r) {
-        if (tipo === 'cli') return [
-            r.codigo   || r.id         || '',
-            r.nome     || r.razao_social || '',
-            r.documento|| r.cpf        || r.cnpj || '',
-            r.tel      || r.cel        || r.telefone || '',
-            r.email    || '',
-            r.cidade   || '',
-        ];
-        if (tipo === 'func') return [
-            r.codigo   || r.id   || '',
-            r.nome     || '',
-            r.cpf      || r.documento || '',
-            r.cargo    || r.setor || '',
-            r.tel      || r.cel  || r.telefone || '',
-            r.email    || '',
-        ];
-        if (tipo === 'forn') return [
-            r.codigo        || r.id  || '',
-            r.razao_social  || r.nome || '',
-            r.documento     || r.cnpj || '',
-            r.contato       || r.representante || '',
-            r.tel           || r.cel || r.telefone || '',
-            r.cidade        || '',
-        ];
-        return [];
-    }
-
-    // IDs dos filtros (mesma ordem das colunas acima)
-    var _BO_FILTROS = ['bo-f-codigo', 'bo-f-nome', 'bo-f-doc', 'bo-f-tel', 'bo-f-email', 'bo-f-cidade'];
-
-    function _boDesativarBotoes() {
-        ['bo-btn-editar', 'bo-btn-selecionar', 'bo-btn-ok'].forEach(function (id) {
-            var el = document.getElementById(id);
-            if (el) el.disabled = true;
-        });
-    }
-
-    // Sobrescreve filtrarBuscaOrigem com versão assíncrona real
-    window.filtrarBuscaOrigem = async function () {
-
-        // Descobre o tipo pelo título do modal (definido em abrirBuscaOrigem)
-        var titulo = (document.getElementById('buscaOrigemTitulo') || {}).textContent || '';
-        var tipo = titulo.toLowerCase().includes('funcionár') ? 'func'
-                 : titulo.toLowerCase().includes('fornecedor') ? 'forn'
-                 : 'cli';
-
-        // Lê os valores dos filtros da tela
-        var filtros = _BO_FILTROS.map(function (id) {
-            var el = document.getElementById(id);
-            return el ? el.value.trim().toLowerCase() : '';
-        });
-
-        var tbody   = document.getElementById('bo-tbody');
-        var countEl = document.getElementById('bo-count');
-
-        _boDesativarBotoes();
-
-        // Feedback visual enquanto carrega
-        if (tbody) {
-            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio" style="color:#7aa3e0;">' +
-                              '<span style="animation:none">⏳ Buscando...</span></td></tr>';
-        }
-
-        try {
-            // Monta parâmetros: só envia filtros preenchidos
-            var params = { acao: 'listar' };
-            var nomesParam = _BO_PARAMS[tipo] || [];
-            filtros.forEach(function (val, i) {
-                if (val && nomesParam[i]) params[nomesParam[i]] = val;
-            });
-
-            var endpoint = _BO_ENDPOINTS[tipo];
-            if (!endpoint) throw new Error('Endpoint não mapeado para tipo: ' + tipo);
-
-            var res = await api(endpoint, params);
-
-            if (!res.sucesso) throw new Error(res.mensagem || 'Erro ao buscar dados.');
-
-            var registros = res.dados || [];
-
-            // Monta linhas e aplica filtragem local (garante consistência)
-            var linhas = registros.map(function (r) { return _boMapear(tipo, r); });
-            linhas = linhas.filter(function (cols) {
-                return filtros.every(function (f, i) {
-                    return !f || (cols[i] || '').toLowerCase().includes(f);
-                });
-            });
-
-            if (countEl) countEl.textContent = linhas.length + ' registro(s)';
-
-            if (!linhas.length) {
-                if (tbody) tbody.innerHTML =
-                    '<tr><td colspan="6" class="bo-vazio">Nenhum registro encontrado</td></tr>';
-                return;
-            }
-
-            if (tbody) tbody.innerHTML = linhas.map(function (cols, idx) {
-                return '<tr class="bo-row" data-idx="' + idx + '" onclick="selecionarLinhaBo(this)">' +
-                    cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
-                    '</tr>';
-            }).join('');
-
-        } catch (e) {
-            console.error('[filtrarBuscaOrigem real]', e);
-            if (tbody) tbody.innerHTML =
-                '<tr><td colspan="6" class="bo-vazio" style="color:#ff6b6b;">' +
-                '⚠ Erro ao buscar dados: ' + (e.message || 'falha de rede') + '</td></tr>';
-            if (countEl) countEl.textContent = '0 registro(s)';
-        }
-    };
-
-    // ════════════════════════════════════════════════════════════
-    //  OVERLAY DE ITENS — cobre a área da grade abaixo das abas
-    //  e da barra de ações; âncora no #painel-inferior
-    // ════════════════════════════════════════════════════════════
-    (function _criarOverlayItens() {
-        if (document.getElementById('itensLoadingOverlay')) return;
-
-        const style = document.createElement('style');
-        style.textContent = [
-            '#painel-inferior { position: relative; }',
-            '#itensLoadingOverlay {',
-            '    position: absolute; left: 0; right: 0; bottom: 0; z-index: 100;',
-            '    background: rgba(5, 15, 28, 0.82);',
-            '    display: none; flex-direction: column;',
-            '    align-items: center; justify-content: center;',
-            '    gap: 20px; backdrop-filter: blur(3px);',
-            '}',
-            '#itensLoadingOverlay .spinner {',
-            '    width: 52px; height: 52px; border-radius: 50%;',
-            '    border: 4px solid rgba(255,255,255,0.08);',
-            '    border-top-color: #2d7dff;',
-            '    animation: spinItens 0.7s linear infinite;',
-            '    box-shadow: 0 0 18px rgba(45,125,255,0.35);',
-            '}',
-            '#itensLoadingOverlay p {',
-            '    color: #7aa3cc; font-size: 13px; letter-spacing: 0.6px;',
-            '}',
-            '@keyframes spinItens { to { transform: rotate(360deg); } }',
-        ].join('\n');
-        document.head.appendChild(style);
-
-        const overlay = document.createElement('div');
-        overlay.id = 'itensLoadingOverlay';
-        overlay.innerHTML = '<div class="spinner"></div><p>Carregando itens...</p>';
-
-        function _injetar() {
-            const painel = document.getElementById('painel-inferior');
-            if (painel) {
-                painel.appendChild(overlay);
-            } else {
-                document.addEventListener('DOMContentLoaded', function () {
-                    const p = document.getElementById('painel-inferior');
-                    if (p) p.appendChild(overlay);
-                });
-            }
-        }
-        _injetar();
-    })();
-
-    // Recalcula o top do overlay para pular abas + barra de acoes
-    function _ajustarTopOverlayItens() {
-        const painel  = document.getElementById('painel-inferior');
-        const overlay = document.getElementById('itensLoadingOverlay');
-        if (!painel || !overlay) return;
-        const abas  = painel.querySelector('.abas');
-        const barra = painel.querySelector('.barra-inferior');
-        const top   = (abas  ? abas.offsetHeight  : 0)
-                    + (barra ? barra.offsetHeight : 0);
-        overlay.style.top = top + 'px';
-    }
-
-    function _mostrarOverlayItens() {
-        _ajustarTopOverlayItens();
-        const o = document.getElementById('itensLoadingOverlay');
-        if (o) o.style.display = 'flex';
-    }
-    function _esconderOverlayItens() {
-        const o = document.getElementById('itensLoadingOverlay');
-        if (o) o.style.display = 'none';
-    }
-
-    // ════════════════════════════════════════════════════════════
-    //  12. INICIALIZAÇÃO — roda quando o DOM estiver pronto
-    // ════════════════════════════════════════════════════════════
-    function init() {
-        console.info('[IluminusTech] db_real.js carregado — substituindo dados fictícios por API real.');
-
-        // Zera arrays fictícios
-        if (Array.isArray(window._dadosOS))        window._dadosOS.length = 0;
-        if (Array.isArray(window._dadosAuditoria)) window._dadosAuditoria.length = 0;
-        if (Array.isArray(window._usrDados))       window._usrDados.length = 0;
-        if (typeof window._dadosItens === 'object' && window._dadosItens !== null) {
-            for (const k in window._dadosItens) delete window._dadosItens[k];
-        }
-
-        // Carrega OS (tela principal)
-        carregarOS();
-
-        // Patch: selecionarOS — exibe overlay de itens durante o fetch e expõe osSelecionada globalmente
-        // IMPORTANTE: sistema.html usa variável local `let osSelecionada` (não window.osSelecionada).
-        // _sincronizarItens precisa do UUID via window.osSelecionada — por isso o patch sincroniza aqui.
-        const _selecionarOSOriginal = window.selecionarOS;
-        if (typeof _selecionarOSOriginal === 'function') {
-            window.selecionarOS = async function (tr, osObj) {
-                // Expõe no window ANTES do original rodar, para que qualquer código
-                // assíncrono disparado durante/após já enxergue o objeto correto.
-                window.osSelecionada = osObj;
-                _mostrarOverlayItens();
-                try {
-                    await _selecionarOSOriginal(tr, osObj);
-                } finally {
-                    _esconderOverlayItens();
-                }
+        // Converte valor monetário para número
+        const valorRaw = parseFloat(valorStr.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
+
+        // Coleta itens: em edição usa o código da OS, em criação usa '__novo__'
+        const chaveItens = isEdicao ? (window.osSelecionada.codigo || '__novo__') : '__novo__';
+        const itens = (window._dadosItens && window._dadosItens[chaveItens]) || [];
+
+        if (isEdicao) {
+            // ── ATUALIZAR ──────────────────────────────────────
+            const params = {
+                cliente,
+                telefone:      contato,
+                equipamento:   descricao,
+                defeito:       descricao,
+                tecnico,
+                status:        status || 'Aberta',
+                observacoes:   observacao,
+                valor_total:   valorRaw,
+                data_prevista: dtPrevista,
+                total_horas:   horas,
+                resp_execucao: respExec,
+                cod_unitario:  codUnit,
+                itens:         JSON.stringify(itens),
             };
-        }
-
-        // ── Helpers: sincroniza lista de itens da OS com o banco ──
-        // O os.php só aceita itens via "atualizar" (substitui todos).
-        // _sincronizarItens é chamado após qualquer add/edição/exclusão de item.
-        async function _sincronizarItens() {
-            const os = window.osSelecionada;
-            if (!os || !os.id) {
-                console.warn('[_sincronizarItens] Nenhuma OS selecionada ou sem ID de banco.');
-                return;
-            }
-
-            const lista = (window._dadosItens && window._dadosItens[os.codigo]) || [];
-
-            const itensParaEnviar = lista.map(it => ({
-                descricao:   (it.descricao   && it.descricao   !== '—') ? it.descricao   : '',
-                quantidade:  parseInt(it.quantidade) || 1,
-                valor_unit:  _parsearValorItem(it.vlrServico),
-                valor_total: _parsearValorItem(it.vlrTotal),
-            }));
 
             try {
-                const res = await api('os.php', {
-                    acao:   'atualizar_itens',
-                    id:     os.id,
-                    itens:  JSON.stringify(itensParaEnviar),
-                });
-
-                if (!res || !res.sucesso) {
-                    console.error('[_sincronizarItens] Falha:', res && res.mensagem);
-                    mostrarErro((res && res.mensagem) || 'Erro ao salvar itens no banco.');
+                const r = await window.DB.atualizarOS(window.osSelecionada.id, params);
+                if (!r.sucesso) {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: r.mensagem || 'Erro ao atualizar OS.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
                 }
+
+                // Invalida cache de itens para forçar releitura do banco
+                const codigoOS = window.osSelecionada.codigo;
+                if (window._dadosItens) delete window._dadosItens[codigoOS];
+
+                await window.carregarOS();
+                if (typeof fecharTelaCad === 'function') fecharTelaCad();
+                Swal.fire({ icon: 'success', title: 'OS atualizada!', timer: 1800, showConfirmButton: false, scrollbarPadding: false });
+
             } catch (e) {
-                console.error('[_sincronizarItens]', e);
-                mostrarErro('Falha de rede ao sincronizar itens.');
-            }
-        }
-
-        // ── Patch: salvarItem — após salvar em memória, sincroniza com o banco ──
-        const _salvarItemOriginal = window.salvarItem;
-        window.salvarItem = async function () {
-            // 1. Executa o original: valida, atualiza _dadosItens e re-renderiza DOM
-            if (typeof _salvarItemOriginal === 'function') {
-                _salvarItemOriginal();
-            }
-            // 2. Persiste toda a lista atualizada no banco
-            await _sincronizarItens();
-        };
-
-        // ── Patch: excluirItem — após remover da memória, sincroniza com o banco ──
-        const _excluirItemOriginal = window.excluirItem;
-        window.excluirItem = async function () {
-            // 1. Executa o original: confirmação SweetAlert, remove de _dadosItens e do DOM
-            if (typeof _excluirItemOriginal === 'function') {
-                await _excluirItemOriginal();
-            }
-            // 2. Persiste a lista sem o item removido
-            await _sincronizarItens();
-        };
-
-        // Patches para quando os modais forem abertos
-        const _abrirModalUsuariosOriginal = window.usr_abrir || (() => {});
-        window.usr_abrir = function (...args) {
-            _abrirModalUsuariosOriginal(...args);
-            usrCarregarDoServidor();
-        };
-
-        const _abrirModalAuditoriaOriginal = window.abrirAuditoria || (() => {});
-        window.abrirAuditoria = function (...args) {
-            _abrirModalAuditoriaOriginal(...args);
-            audCarregarDoServidor();
-        };
-
-        // Se já há modal de usuários aberto na inicialização, carrega imediatamente
-        const modalUsr = document.getElementById('modalUsuarios');
-        if (modalUsr && modalUsr.style.display !== 'none') {
-            usrCarregarDoServidor();
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        // DOM já carregado (script deferido ou inline no final do body)
-        setTimeout(init, 0);
-    }
-
-    // ════════════════════════════════════════════════════════════
-    //  13. CONTROLE DE PERMISSÕES POR GRUPO
-    //
-    //  Admin      → acesso total
-    //  Funcionario → acesso total exceto: excluir OS, financeiro e auditoria
-    //  Tecnico    → apenas visualizar/editar itens de OS (sem excluir OS,
-    //               sem financeiro, sem auditoria, sem cadastros, sem usuários)
-    // ════════════════════════════════════════════════════════════
-    (function _controlePermissoes() {
-
-        // Carrega o grupo do usuário logado via usuarios.php?acao=perfil
-        async function _obterGrupo() {
-            try {
-                const res = await api('usuarios.php', { acao: 'perfil' });
-                return (res && res.sucesso && res.usuario) ? (res.usuario.grupo || '') : '';
-            } catch (e) {
-                console.error('[permissoes] Falha ao obter grupo:', e);
-                return '';
-            }
-        }
-
-        function _aplicarPermissoes(grupo) {
-            // Normaliza para comparação case-insensitive
-            const g = (grupo || '').toLowerCase();
-            const isAdmin     = g === 'admin';
-            const isFuncionario = g === 'funcionario' || g === 'funcionário';
-            const isTecnico   = g === 'tecnico' || g === 'técnico';
-
-            // Armazena globalmente para uso em outros lugares
-            window._grupoAtual = grupo;
-
-            // ── Atualiza nome/grupo exibido no topo ──
-            try {
-                const spanGrupo = document.querySelector('.user-info');
-                if (spanGrupo) {
-                    const nomeSpan = spanGrupo.querySelector('.user-name');
-                    if (nomeSpan && !spanGrupo.querySelector('.user-grupo')) {
-                        const badgeGrupo = document.createElement('span');
-                        badgeGrupo.className = 'user-grupo';
-                        badgeGrupo.textContent = ' [' + grupo + ']';
-                        badgeGrupo.style.cssText = 'font-size:10px;color:#7aa3e0;opacity:0.8;';
-                        nomeSpan.after(badgeGrupo);
-                    }
-                }
-            } catch (_) {}
-
-            // ── Helpers de visibilidade ──
-            function _ocultar(seletor) {
-                document.querySelectorAll(seletor).forEach(el => {
-                    el.style.display = 'none';
-                    el.dataset.ocultoPorPermissao = '1';
-                });
-            }
-            function _bloquearClique(seletor, mensagem) {
-                document.querySelectorAll(seletor).forEach(el => {
-                    if (el.dataset.permBloqueado) return;
-                    el.dataset.permBloqueado = '1';
-                    el.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Acesso restrito',
-                            text: mensagem || 'Você não tem permissão para esta ação.',
-                            confirmButtonColor: '#2d7dff',
-                            scrollbarPadding: false,
-                        });
-                    }, true);
-                });
+                console.error('[salvarOS:atualizar]', e);
+                Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha de conexão.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
             }
 
-            if (isAdmin) {
-                // Admin: sem restrições
-                return;
-            }
-
-            if (isFuncionario) {
-                // ── Funcionário: bloqueia apenas excluir OS, financeiro e auditoria ──
-
-                // Botão Excluir OS da barra de ações
-                _bloquearClique('button[onclick="excluirOS()"]',
-                    'Somente administradores podem excluir Ordens de Serviço.');
-
-                // Financeiro (link no menu sistema e função direta)
-                _bloquearClique('#dropdownSistema a[onclick*="abrirFinanceiro"], #dropdownSistema a:not([onclick])',
-                    'Somente administradores têm acesso ao módulo Financeiro.');
-
-                // Auditoria
-                _bloquearClique('a[onclick*="abrirAuditoria"]',
-                    'Somente administradores têm acesso à Auditoria.');
-
-                // Sobrescreve funções para garantia adicional
-                const _auditOrig = window.abrirAuditoria;
-                window.abrirAuditoria = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Somente administradores têm acesso à Auditoria.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-                const _finOrig = window.abrirFinanceiro;
-                window.abrirFinanceiro = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Somente administradores têm acesso ao Financeiro.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-                const _excluirOSOrig = window.excluirOS;
-                window.excluirOS = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Somente administradores podem excluir Ordens de Serviço.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-
-                return;
-            }
-
-            if (isTecnico) {
-                // ── Técnico: acesso somente a itens de OS (visualizar e editar) ──
-
-                // Bloqueia criação/edição de OS (só pode ver itens)
-                _bloquearClique('button[onclick="abrirTelaCad()"]',
-                    'Técnicos não podem criar novas Ordens de Serviço.');
-                _bloquearClique('button[onclick="abrirTelaEdicao()"]',
-                    'Técnicos não podem editar Ordens de Serviço.');
-                _bloquearClique('button[onclick="excluirOS()"]',
-                    'Técnicos não podem excluir Ordens de Serviço.');
-
-                // Bloqueia Mais Opções / Auditoria / Relatórios / Financeiro
-                _bloquearClique('a[onclick*="abrirAuditoria"]',
-                    'Técnicos não têm acesso à Auditoria.');
-                _bloquearClique('a[onclick*="abrirRelatorios"]',
-                    'Técnicos não têm acesso a Relatórios.');
-
-                // Menu sistema (Financeiro, Relatórios, Origens)
-                _ocultar('#dropdownSistema');
-                _ocultar('.menu-sistema');
-
-                // Modal de usuários: oculta botão Novo e Excluir
-                _ocultar('#usr-painel-header, .usr-painel-header');
-                const btnNovo = document.getElementById('btnNovoUsr');
-                if (btnNovo) btnNovo.style.display = 'none';
-                const btnExcl = document.getElementById('btnExcluirUsr');
-                if (btnExcl) btnExcl.style.display = 'none';
-
-                // Bloqueia acesso aos modais de clientes, funcionários, fornecedores
-                _bloquearClique('a[onclick*="modalClientes"], a[onclick*="modalFuncionarios"], a[onclick*="modalFornecedores"]',
-                    'Técnicos não têm acesso a cadastros.');
-
-                // Sobrescreve funções JS para garantia
-                window.abrirFinanceiro = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso ao Financeiro.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-                window.abrirAuditoria = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso à Auditoria.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-                window.abrirRelatorios = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso a Relatórios.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-                window.excluirOS = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não podem excluir Ordens de Serviço.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-                window.abrirTelaCad = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não podem criar Ordens de Serviço.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-                window.abrirTelaEdicao = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não podem editar os dados da Ordem de Serviço.\nApenas a edição de itens é permitida.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-                window.salvarOS = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não podem salvar Ordens de Serviço.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-
-                // usr_abrir — bloqueia abertura do modal de usuários
-                window.usr_abrir = function () {
-                    Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso ao gerenciamento de usuários.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                };
-
-                // Bloqueia abertura dos modais de cadastro via abrirModal
-                const _abrirModalOrig = window.abrirModal;
-                window.abrirModal = function (modalId, overlayId) {
-                    const bloqueados = ['modalClientes', 'modalFuncionarios', 'modalFornecedores'];
-                    if (bloqueados.includes(modalId)) {
-                        Swal.fire({ icon: 'warning', title: 'Acesso restrito', text: 'Técnicos não têm acesso a cadastros.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                        return;
-                    }
-                    if (typeof _abrirModalOrig === 'function') _abrirModalOrig(modalId, overlayId);
-                };
-
-                return;
-            }
-
-            // Grupo desconhecido → tratado como técnico (acesso mínimo)
-            console.warn('[permissoes] Grupo desconhecido:', grupo, '— aplicando restrições de Técnico.');
-            _aplicarPermissoes('Tecnico');
-        }
-
-        // Aguarda DOM e aplica assim que tiver o grupo
-        function _init() {
-            _obterGrupo().then(function (grupo) {
-                if (grupo) {
-                    _aplicarPermissoes(grupo);
-                } else {
-                    // Sem grupo → acesso mínimo por segurança
-                    console.warn('[permissoes] Grupo não obtido — aguardando 1s e tentando novamente.');
-                    setTimeout(function () {
-                        _obterGrupo().then(function (g) { _aplicarPermissoes(g || 'Tecnico'); });
-                    }, 1000);
-                }
-            });
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', _init);
         } else {
-            setTimeout(_init, 200); // pequeno delay para garantir que fecharModal etc. já foram definidos
-        }
+            // ── CRIAR ──────────────────────────────────────────
+            const params = {
+                acao:          'criar',
+                cliente,
+                telefone:      contato,
+                equipamento:   descricao,
+                defeito:       descricao,
+                tecnico,
+                status:        status || 'Aberta',
+                observacoes:   observacao,
+                valor_total:   valorRaw,
+                data_prevista: dtPrevista,
+                total_horas:   horas,
+                resp_execucao: respExec,
+                cod_unitario:  codUnit,
+                itens:         JSON.stringify(itens),
+            };
 
+            try {
+                const r = await (await fetch('os.php', { method: 'POST', body: new URLSearchParams(params) })).json();
+                if (!r.sucesso) {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: r.mensagem || 'Erro ao criar OS.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+
+                // Limpa itens temporários da nova OS
+                if (window._dadosItens) delete window._dadosItens['__novo__'];
+
+                await window.carregarOS();
+                if (typeof fecharTelaCad === 'function') fecharTelaCad();
+                Swal.fire({ icon: 'success', title: `OS ${r.numero_os} criada!`, timer: 1800, showConfirmButton: false, scrollbarPadding: false });
+
+            } catch (e) {
+                console.error('[salvarOS:criar]', e);
+                Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha de conexão.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            }
+        }
+    };
+
+    // ── Busca real de funcionários no modal buscaOrigem ──────
+    (function patchBuscaFuncionarios() {
+        var _origFiltrar = window.filtrarBuscaOrigem;
+
+        window.filtrarBuscaOrigem = async function () {
+            var tipo = (typeof _tipo !== 'undefined' ? _tipo : null)
+                    || window._buscaOrigemTipoAtual
+                    || 'cli';
+
+            if (tipo !== 'func') {
+                if (typeof _origFiltrar === 'function') _origFiltrar();
+                return;
+            }
+
+            var filtroNome  = (document.getElementById('bo-f-nome')?.value || '').trim().toLowerCase();
+            var filtroCpf   = (document.getElementById('bo-f-doc')?.value  || '').trim().toLowerCase();
+            var filtroCargo = (document.getElementById('bo-f-tel')?.value  || '').trim().toLowerCase();
+
+            var tbody = document.getElementById('bo-tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Buscando...</td></tr>';
+
+            try {
+                const funcs = await window.DB.buscarFuncionarios(filtroNome || filtroCpf || filtroCargo || '');
+
+                var filtrados = funcs.filter(function (f) {
+                    var nome  = (f.nome  || '').toLowerCase();
+                    var cpf   = (f.cpf   || '').toLowerCase();
+                    var cargo = (f.cargo || '').toLowerCase();
+                    if (filtroNome  && !nome.includes(filtroNome))   return false;
+                    if (filtroCpf   && !cpf.includes(filtroCpf))     return false;
+                    if (filtroCargo && !cargo.includes(filtroCargo))  return false;
+                    return true;
+                });
+
+                document.getElementById('bo-count').textContent = filtrados.length + ' registro(s)';
+
+                if (!filtrados.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Nenhum funcionário encontrado</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = filtrados.map(function (f, idx) {
+                    var cols = [
+                        f.id   ? f.id.substring(0, 6) : String(idx + 1).padStart(3, '0'),
+                        f.nome  || '—',
+                        f.cpf   || '—',
+                        f.cargo || '—',
+                        f.cel   || f.tel || '—',
+                        f.email || '—',
+                    ];
+                    return '<tr class="bo-row" data-idx="' + idx + '" data-id="' + (f.id || '') + '" onclick="selecionarLinhaBo(this)">' +
+                        cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
+                        '</tr>';
+                }).join('');
+
+            } catch (e) {
+                console.error('[filtrarBuscaOrigem:func]', e);
+                tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Erro ao buscar funcionários.</td></tr>';
+            }
+        };
     })();
 
+    console.log('[db_real.js] Carregado com sucesso.');
 })();
