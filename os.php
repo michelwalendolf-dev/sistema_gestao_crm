@@ -183,24 +183,24 @@ if ($acao === 'criar') {
         foreach ($itens as $item) {
             $db->insert('os_itens', [
                 'os_id'          => $osId,
-                'cod_item'       => trim($item['codItem']    ?? ''),
-                'tipo'           => trim($item['tipo']       ?? ''),
-                'descricao'      => trim($item['descricao']  ?? ''),
-                'maquina'        => trim($item['maquina']    ?? ''),
-                'dt_criacao'     => trim($item['dtCriacao']  ?? ''),
-                'dt_solucao'     => trim($item['dtSolucao']  ?? ''),
-                'tecnico'        => trim($item['tecnico']    ?? ''),
-                'cod_barras'     => trim($item['codBarras']  ?? ''),
-                'produto'        => trim($item['produto']    ?? ''),
-                'resp_execucao'  => trim($item['respExec']   ?? ''),
-                'cadastrado_por' => trim($item['cadastrado'] ?? ''),
-                'hrs_estimadas'  => (float)($item['hrsEst']  ?? 0),
-                'hrs_realizadas' => (float)($item['hrsReal'] ?? 0),
-                'vlr_servico'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrServico'] ?? '0')) ?: 0),
-                'vlr_total'      => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
-                'quantidade'     => (int)   ($item['quantidade']  ?? 1),
-                'valor_unit'     => (float) ($item['valor_unit']  ?? 0),
-                'valor_total'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
+                'cod_item'       => trim($item['cod_item']       ?? ''),
+                'tipo'           => trim($item['tipo']           ?? ''),
+                'descricao'      => trim($item['descricao']      ?? ''),
+                'maquina'        => trim($item['maquina']        ?? ''),
+                'dt_criacao'     => trim($item['dt_criacao']     ?? ''),
+                'dt_solucao'     => trim($item['dt_solucao']     ?? ''),
+                'tecnico'        => trim($item['tecnico']        ?? ''),
+                'cod_barras'     => trim($item['cod_barras']     ?? ''),
+                'produto'        => trim($item['produto']        ?? ''),
+                'resp_execucao'  => trim($item['resp_execucao']  ?? ''),
+                'cadastrado_por' => trim($item['cadastrado_por'] ?? ''),
+                'hrs_estimadas'  => (float)($item['hrs_estimadas'] ?? 0),
+                'hrs_realizadas' => (float)($item['hrs_realizadas'] ?? 0),
+                'vlr_servico'    => (float)($item['vlr_servico']   ?? 0),
+                'vlr_total'      => (float)($item['vlr_total']     ?? 0),
+                'quantidade'     => (int)  ($item['quantidade']    ?? 1),
+                'valor_unit'     => (float)($item['valor_unit']    ?? 0),
+                'valor_total'    => (float)($item['vlr_total']     ?? 0),
             ]);
         }
 
@@ -257,7 +257,11 @@ if ($acao === 'atualizar') {
         }
     }
 
-    if (empty($data)) {
+    // Lê o JSON de itens ANTES do check empty($data),
+    // pois uma chamada pode enviar apenas os itens (sem outros campos).
+    $itensJson = $_POST['itens'] ?? null;
+
+    if (empty($data) && $itensJson === null) {
         echo json_encode(['sucesso' => false, 'mensagem' => 'Nenhum campo para atualizar.']);
         exit;
     }
@@ -265,10 +269,11 @@ if ($acao === 'atualizar') {
     $data['updated_at'] = date('c');
 
     try {
-        $db->update('ordens_servico', $data, ['id' => "eq.$id"]);
+        if (!empty($data)) {
+            $db->update('ordens_servico', $data, ['id' => "eq.$id"]);
+        }
 
         // ── Atualiza itens (substitui todos) ──────────────────
-        $itensJson = $_POST['itens'] ?? null;
         if ($itensJson !== null) {
             $itens = json_decode($itensJson, true) ?: [];
 
@@ -279,24 +284,24 @@ if ($acao === 'atualizar') {
             foreach ($itens as $item) {
                 $db->insert('os_itens', [
                     'os_id'          => $id,
-                    'cod_item'       => trim($item['codItem']    ?? ''),
-                    'tipo'           => trim($item['tipo']       ?? ''),
-                    'descricao'      => trim($item['descricao']  ?? ''),
-                    'maquina'        => trim($item['maquina']    ?? ''),
-                    'dt_criacao'     => trim($item['dtCriacao']  ?? ''),
-                    'dt_solucao'     => trim($item['dtSolucao']  ?? ''),
-                    'tecnico'        => trim($item['tecnico']    ?? ''),
-                    'cod_barras'     => trim($item['codBarras']  ?? ''),
-                    'produto'        => trim($item['produto']    ?? ''),
-                    'resp_execucao'  => trim($item['respExec']   ?? ''),
-                    'cadastrado_por' => trim($item['cadastrado'] ?? ''),
-                    'hrs_estimadas'  => (float)($item['hrsEst']  ?? 0),
-                    'hrs_realizadas' => (float)($item['hrsReal'] ?? 0),
-                    'vlr_servico'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrServico'] ?? '0')) ?: 0),
-                    'vlr_total'      => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
-                    'quantidade'     => (int)   ($item['quantidade']  ?? 1),
-                    'valor_unit'     => (float) ($item['valor_unit']  ?? 0),
-                    'valor_total'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
+                    'cod_item'       => trim($item['cod_item']       ?? ''),
+                    'tipo'           => trim($item['tipo']           ?? ''),
+                    'descricao'      => trim($item['descricao']      ?? ''),
+                    'maquina'        => trim($item['maquina']        ?? ''),
+                    'dt_criacao'     => trim($item['dt_criacao']     ?? ''),
+                    'dt_solucao'     => trim($item['dt_solucao']     ?? ''),
+                    'tecnico'        => trim($item['tecnico']        ?? ''),
+                    'cod_barras'     => trim($item['cod_barras']     ?? ''),
+                    'produto'        => trim($item['produto']        ?? ''),
+                    'resp_execucao'  => trim($item['resp_execucao']  ?? ''),
+                    'cadastrado_por' => trim($item['cadastrado_por'] ?? ''),
+                    'hrs_estimadas'  => (float)($item['hrs_estimadas'] ?? 0),
+                    'hrs_realizadas' => (float)($item['hrs_realizadas'] ?? 0),
+                    'vlr_servico'    => (float)($item['vlr_servico']   ?? 0),
+                    'vlr_total'      => (float)($item['vlr_total']     ?? 0),
+                    'quantidade'     => (int)  ($item['quantidade']    ?? 1),
+                    'valor_unit'     => (float)($item['valor_unit']    ?? 0),
+                    'valor_total'    => (float)($item['vlr_total']     ?? 0),
                 ]);
             }
         }
@@ -444,24 +449,24 @@ if ($acao === 'atualizar_itens') {
         foreach ($itens as $item) {
             $db->insert('os_itens', [
                 'os_id'          => $id,
-                'cod_item'       => trim($item['codItem']    ?? ''),
-                'tipo'           => trim($item['tipo']       ?? ''),
-                'descricao'      => trim($item['descricao']  ?? ''),
-                'maquina'        => trim($item['maquina']    ?? ''),
-                'dt_criacao'     => trim($item['dtCriacao']  ?? ''),
-                'dt_solucao'     => trim($item['dtSolucao']  ?? ''),
-                'tecnico'        => trim($item['tecnico']    ?? ''),
-                'cod_barras'     => trim($item['codBarras']  ?? ''),
-                'produto'        => trim($item['produto']    ?? ''),
-                'resp_execucao'  => trim($item['respExec']   ?? ''),
-                'cadastrado_por' => trim($item['cadastrado'] ?? ''),
-                'hrs_estimadas'  => (float)($item['hrsEst']  ?? 0),
-                'hrs_realizadas' => (float)($item['hrsReal'] ?? 0),
-                'vlr_servico'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrServico'] ?? '0')) ?: 0),
-                'vlr_total'      => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
-                'quantidade'     => (int)   ($item['quantidade']  ?? 1),
-                'valor_unit'     => (float) ($item['valor_unit']  ?? 0),
-                'valor_total'    => (float)(str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $item['vlrTotal']   ?? '0')) ?: 0),
+                'cod_item'       => trim($item['cod_item']       ?? ''),
+                'tipo'           => trim($item['tipo']           ?? ''),
+                'descricao'      => trim($item['descricao']      ?? ''),
+                'maquina'        => trim($item['maquina']        ?? ''),
+                'dt_criacao'     => trim($item['dt_criacao']     ?? ''),
+                'dt_solucao'     => trim($item['dt_solucao']     ?? ''),
+                'tecnico'        => trim($item['tecnico']        ?? ''),
+                'cod_barras'     => trim($item['cod_barras']     ?? ''),
+                'produto'        => trim($item['produto']        ?? ''),
+                'resp_execucao'  => trim($item['resp_execucao']  ?? ''),
+                'cadastrado_por' => trim($item['cadastrado_por'] ?? ''),
+                'hrs_estimadas'  => (float)($item['hrs_estimadas'] ?? 0),
+                'hrs_realizadas' => (float)($item['hrs_realizadas'] ?? 0),
+                'vlr_servico'    => (float)($item['vlr_servico']   ?? 0),
+                'vlr_total'      => (float)($item['vlr_total']     ?? 0),
+                'quantidade'     => (int)  ($item['quantidade']    ?? 1),
+                'valor_unit'     => (float)($item['valor_unit']    ?? 0),
+                'valor_total'    => (float)($item['vlr_total']     ?? 0),
             ]);
         }
 

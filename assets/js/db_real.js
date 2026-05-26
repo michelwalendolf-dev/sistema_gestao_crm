@@ -99,6 +99,36 @@
         };
     }
 
+    // Converte item da tela → formato do banco (snake_case)
+    function itemTelaParaDb(it) {
+        function parseMoeda(v) {
+            if (!v || v === '—') return 0;
+            return parseFloat(String(v).replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
+        }
+        return {
+            cod_item:        it.codItem    || '',
+            tipo:            it.tipo       !== '—' ? it.tipo    : '',
+            descricao:       it.descricao  !== '—' ? it.descricao : '',
+            maquina:         it.maquina    !== '—' ? it.maquina : '',
+            dt_criacao:      it.dtCriacao  !== '—' ? it.dtCriacao : '',
+            dt_solucao:      it.dtSolucao  !== '—' ? it.dtSolucao : '',
+            tecnico:         it.tecnico    !== '—' ? it.tecnico : '',
+            cod_barras:      it.codBarras  !== '—' ? it.codBarras : '',
+            produto:         it.produto    !== '—' ? it.produto : '',
+            resp_execucao:   it.respExec   !== '—' ? it.respExec : '',
+            cadastrado_por:  it.cadastrado !== '—' ? it.cadastrado : '',
+            hrs_estimadas:   it.hrsEst     || '0',
+            hrs_realizadas:  it.hrsReal    || '0',
+            vlr_servico:     parseMoeda(it.vlrServico),
+            vlr_total:       parseMoeda(it.vlrTotal),
+            quantidade:      it.quantidade || 1,
+            valor_unit:      it.valor_unit || 0,
+        };
+    }
+
+    // Expõe para uso em sistema.html
+    window.itemTelaParaDb = itemTelaParaDb;
+
     // ── DB — objeto global com métodos de acesso ─────────────
     window.DB = {
 
@@ -117,10 +147,10 @@
         // osId = numero_os (ex: "000005")
         // O cache _dadosOS já tem o .id (UUID) de cada OS — não precisamos
         // de uma segunda chamada ao listar. Usamos direto o buscar por UUID.
-        async buscarItensPorOS(osId) {
+        async buscarItensPorOS(osId, forcarBanco = false) {
             try {
-                // Cache em memória
-                if (window._dadosItens && window._dadosItens[osId] !== undefined) {
+                // Cache em memória — ignorado quando forcarBanco=true
+                if (!forcarBanco && window._dadosItens && window._dadosItens[osId] !== undefined) {
                     return window._dadosItens[osId] || [];
                 }
 
@@ -207,7 +237,8 @@
         try {
             const rows = await window.DB.buscarOS({});
             window._dadosOS = rows;
-            window._dadosItens = window._dadosItens || {};
+            // Preserva o cache de itens já carregados; apenas garante que o objeto existe
+            if (!window._dadosItens) window._dadosItens = {};
 
             if (typeof renderizarGrid === 'function') {
                 renderizarGrid(rows);
@@ -271,7 +302,7 @@
                 total_horas:   horas,
                 resp_execucao: respExec,
                 cod_unitario:  codUnit,
-                itens:         JSON.stringify(itens),
+                itens:         JSON.stringify(itens.map(itemTelaParaDb)),
             };
 
             try {
@@ -310,7 +341,7 @@
                 total_horas:   horas,
                 resp_execucao: respExec,
                 cod_unitario:  codUnit,
-                itens:         JSON.stringify(itens),
+                itens:         JSON.stringify(itens.map(itemTelaParaDb)),
             };
 
             try {

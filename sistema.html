@@ -2949,8 +2949,13 @@
             document.querySelectorAll(".os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
             tr.classList.add("row-selecionada");
             osSelecionada = osObj;
+            window.osSelecionada = osObj; // Sincroniza com db_real.js que usa window.osSelecionada
 
-            const itens = await DB.buscarItensPorOS(osObj.codigo);
+            // forcarBanco=true: ignora cache para sempre mostrar itens atualizados do banco
+            const itens = await DB.buscarItensPorOS(osObj.codigo, true);
+            // Garante que o cache de itens também fica sincronizado
+            window._dadosItens = window._dadosItens || {};
+            window._dadosItens[osObj.codigo] = itens;
             renderizarItens(itens, osObj.codigo);
         }
 
@@ -3042,6 +3047,7 @@
             if (_dadosItens[osSelecionada.codigo]) delete _dadosItens[osSelecionada.codigo];
 
             osSelecionada = null;
+            window.osSelecionada = null;
             document.querySelector(".grid-inferior tbody").innerHTML = "";
 
             await carregarOS();
@@ -3105,6 +3111,24 @@
             if (trItemSelecionado) trItemSelecionado.remove();
             itemSelecionado = null;
             trItemSelecionado = null;
+
+            // ── Persiste exclusão no banco imediatamente ──
+            if (osSelecionada && osSelecionada.id) {
+                try {
+                    const listaAtual = _dadosItens[osSelecionada.codigo] || [];
+                    const listaDb = listaAtual.map(it => typeof window.itemTelaParaDb === 'function' ? window.itemTelaParaDb(it) : it);
+                    await window.DB.atualizarOS(osSelecionada.id, {
+                        itens: JSON.stringify(listaDb)
+                    });
+                    // Invalida e recarrega cache do banco
+                    if (window._dadosItens) delete window._dadosItens[osSelecionada.codigo];
+                    const itensAtualizados = await window.DB.buscarItensPorOS(osSelecionada.codigo, true);
+                    window._dadosItens[osSelecionada.codigo] = itensAtualizados;
+                    renderizarItens(itensAtualizados, osSelecionada.codigo);
+                } catch (e) {
+                    console.error('[excluirItem] Erro ao persistir exclusão no banco:', e);
+                }
+            }
 
             Swal.fire({
                 icon: "success",
@@ -3305,6 +3329,10 @@
         }
 
         async function abrirTelaCad() {
+            // ── Limpa a OS selecionada para garantir modo CRIAÇÃO ──
+            osSelecionada = null;
+            window.osSelecionada = null;
+
             document.getElementById("erpTitulo").textContent = "Cadastro de Ordem de Serviço";
             document.querySelectorAll("#erpModal input").forEach(i => i.value = "");
             // Preenche data de criação com a data atual
@@ -3340,6 +3368,8 @@
                 });
                 return;
             }
+            // Sincroniza com window para que db_real.js detecte modo edição corretamente
+            window.osSelecionada = osSelecionada;
             document.getElementById("erpTitulo").textContent = "Edição de Ordem de Serviço";
             document.getElementById("cad-codigo").value = osSelecionada.codigo || "";
             document.getElementById("cad-codigo").readOnly = true;
@@ -3601,12 +3631,23 @@
 
 
         const _abrirTelaEdicaoOrig = abrirTelaEdicao;
-        abrirTelaEdicao = function () {
+        abrirTelaEdicao = async function () {
             _abrirTelaEdicaoOrig();
             document.querySelectorAll(".erp-tab")[0].click();
 
             const chave = document.getElementById("cad-codigo").value.trim();
             if (chave) document.getElementById("cad-observacao").value = _observacoes[chave] || "";
+
+            // Recarrega itens do banco ao abrir edição para garantir dados atualizados
+            if (osSelecionada && osSelecionada.codigo) {
+                try {
+                    const itens = await DB.buscarItensPorOS(osSelecionada.codigo, true);
+                    window._dadosItens = window._dadosItens || {};
+                    window._dadosItens[osSelecionada.codigo] = itens;
+                } catch (e) {
+                    console.error('[abrirTelaEdicao] Erro ao recarregar itens:', e);
+                }
+            }
         };
 
         const _abrirTelaCadOrig = abrirTelaCad;
@@ -3804,7 +3845,7 @@
             Swal.fire({ icon: "success", title: "Observação salva", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
         }
 
-        function salvarItem() {
+        async function salvarItem() {
             const codItem = document.getElementById("item-codItem").value.trim();
             if (!codItem) {
                 Swal.fire({ icon: "warning", title: "Atenção", text: "Informe o código do item.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
@@ -3845,6 +3886,8 @@
             // Usa o código da OS selecionada ou "__novo__" para OS ainda não salva
             const _chaveOS = osSelecionada.codigo || "__novo__";
             const lista = _dadosItens[_chaveOS] || (_dadosItens[_chaveOS] = []);
+            // Sincroniza com window._dadosItens para que db_real.js leia os itens corretos
+            window._dadosItens = _dadosItens;
 
             if (modoItemEdicao) {
                 const idx = lista.findIndex(i => i.codItem === codItem);
@@ -3856,6 +3899,24 @@
 
             renderizarItens(lista, _chaveOS);
             fecharModalItem();
+
+            // ── Persiste itens no banco imediatamente se for OS já existente ──
+            if (osSelecionada && osSelecionada.id) {
+                try {
+                    const listaDb = lista.map(it => typeof window.itemTelaParaDb === 'function' ? window.itemTelaParaDb(it) : it);
+                    await window.DB.atualizarOS(osSelecionada.id, {
+                        itens: JSON.stringify(listaDb)
+                    });
+                    // Invalida cache para forçar releitura do banco na próxima seleção
+                    if (window._dadosItens) delete window._dadosItens[_chaveOS];
+                    // Recarrega do banco e atualiza cache e tela
+                    const itensAtualizados = await window.DB.buscarItensPorOS(_chaveOS, true);
+                    window._dadosItens[_chaveOS] = itensAtualizados;
+                    renderizarItens(itensAtualizados, _chaveOS);
+                } catch (e) {
+                    console.error('[salvarItem] Erro ao persistir no banco:', e);
+                }
+            }
 
             Swal.fire({ icon: "success", title: modoItemEdicao ? "Item atualizado" : "Item salvo", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
         }
