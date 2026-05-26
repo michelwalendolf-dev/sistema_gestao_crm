@@ -1585,8 +1585,21 @@
         .anexos-preview-sem-suporte a:hover {
             color: #7aadff;
         }
-    </style>
+    
+        /* Fix dropdown z-index nos cadastros */
+        #modalClientes .dropdown-menu,
+        #modalFuncionarios .dropdown-menu,
+        #modalFornecedores .dropdown-menu {
+            z-index: 99999 !important;
+            position: fixed !important;
+        }
+</style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* SweetAlert sempre na frente de qualquer modal */
+        .swal2-container { z-index: 999999 !important; }
+        .swal2-popup     { z-index: 999999 !important; }
+    </style>
 </head>
 
 <body>
@@ -2793,6 +2806,24 @@
             tr.classList.add("row-selecionada");
         }
 
+        // Deseleciona ao clicar fora das linhas
+        document.addEventListener("click", function(e) {
+            // Grid principal
+            const gridPrincipal = document.querySelector(".grid-principal");
+            if (gridPrincipal && !e.target.closest(".os-row") && gridPrincipal.contains(e.target)) {
+                document.querySelectorAll(".grid-principal .os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
+                osSelecionada = null;
+                window.osSelecionada = null;
+            }
+            // Grid inferior (itens)
+            const gridInferior = document.querySelector(".grid-inferior");
+            if (gridInferior && !e.target.closest(".os-row") && gridInferior.contains(e.target)) {
+                document.querySelectorAll(".grid-inferior .os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
+                itemSelecionado = null;
+                trItemSelecionado = null;
+            }
+        });
+
         var _dadosOS = []; // populado via os.php
 
         var _dadosItens = {}; // populado via os.php
@@ -3382,7 +3413,7 @@
             document.getElementById("cad-dtPrevista").value = osSelecionada.dtPrevista || "";
             document.getElementById("cad-horas").value = osSelecionada.horas || "";
             document.getElementById("cad-respExec").value = osSelecionada.respExec || "";
-            document.getElementById("cad-valor").value = osSelecionada.valor || "";
+            document.getElementById("cad-valor").value = (osSelecionada.valor || "").replace(/R$\s*/g, "").trim();
             document.getElementById("cad-contato").value = osSelecionada.contato || "";
             document.getElementById("cad-status").value = osSelecionada.status || "";
             _abrirModal();
@@ -3754,8 +3785,8 @@
             document.getElementById("item-respExec").value = itemSelecionado.respExec || "";
             document.getElementById("item-hrsEst").value = itemSelecionado.hrsEst || "";
             document.getElementById("item-hrsReal").value = itemSelecionado.hrsReal || "";
-            document.getElementById("item-vlrServico").value = itemSelecionado.vlrServico || "";
-            document.getElementById("item-vlrTotal").value = itemSelecionado.vlrTotal || "";
+            document.getElementById("item-vlrServico").value = (itemSelecionado.vlrServico || "").replace(/R$\s*/g, "").trim();
+            document.getElementById("item-vlrTotal").value = (itemSelecionado.vlrTotal || "").replace(/R$\s*/g, "").trim();
             const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
             document.getElementById("item-observacao").value = _obsItens[chave] || "";
             _abrirModalItem();
@@ -3897,27 +3928,33 @@
                 lista.push(novoItem);
             }
 
-            renderizarItens(lista, _chaveOS);
-            fecharModalItem();
+            // ── Mostra loading no botão Salvar ──
+            const _btnSalvarItem = document.querySelector('#modalItem .btn-footer-salvar');
+            if (_btnSalvarItem) { _btnSalvarItem.disabled = true; _btnSalvarItem.textContent = '⏳ Salvando...'; }
 
-            // ── Persiste itens no banco imediatamente se for OS já existente ──
+            // ── Persiste itens no banco ANTES de fechar/renderizar ──
             if (osSelecionada && osSelecionada.id) {
                 try {
                     const listaDb = lista.map(it => typeof window.itemTelaParaDb === 'function' ? window.itemTelaParaDb(it) : it);
                     await window.DB.atualizarOS(osSelecionada.id, {
                         itens: JSON.stringify(listaDb)
                     });
-                    // Invalida cache para forçar releitura do banco na próxima seleção
+                    // Invalida cache e recarrega do banco
                     if (window._dadosItens) delete window._dadosItens[_chaveOS];
-                    // Recarrega do banco e atualiza cache e tela
                     const itensAtualizados = await window.DB.buscarItensPorOS(_chaveOS, true);
                     window._dadosItens[_chaveOS] = itensAtualizados;
+                    // Renderiza, fecha e mostra toast ao mesmo tempo
                     renderizarItens(itensAtualizados, _chaveOS);
                 } catch (e) {
                     console.error('[salvarItem] Erro ao persistir no banco:', e);
+                    renderizarItens(lista, _chaveOS);
                 }
+            } else {
+                renderizarItens(lista, _chaveOS);
             }
 
+            if (_btnSalvarItem) { _btnSalvarItem.disabled = false; _btnSalvarItem.textContent = '💾 Salvar'; }
+            fecharModalItem();
             Swal.fire({ icon: "success", title: modoItemEdicao ? "Item atualizado" : "Item salvo", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
         }
 
@@ -5362,7 +5399,7 @@
                                 <div class="grupo-botoes"><button class="btn-dropdown" type="button">&#9660;</button>
                                 </div>
                                 <div class="dropdown-menu">
-                                    <div class="item">Jrúnior</div>
+                                    <div class="item">Júnior</div>
                                     <div class="item">Pleno</div>
                                     <div class="item">Sênior</div>
                                     <div class="item">Especialista</div>
@@ -5994,19 +6031,45 @@
             }
 
             function initDropdownsModal() {
-                document.querySelectorAll('#modalClientes .dropdown-container, #modalFuncionarios .dropdown-container, #modalFornecedores .dropdown-container').forEach(function (dc) {
+                const seletores = '#modalClientes .dropdown-container, #modalFuncionarios .dropdown-container, #modalFornecedores .dropdown-container';
+                document.querySelectorAll(seletores).forEach(function (dc) {
                     if (dc.dataset.init) return;
                     dc.dataset.init = '1';
                     const input = dc.querySelector('input');
-                    dc.addEventListener('mouseenter', () => dc.classList.add('ativo'));
-                    dc.addEventListener('mouseleave', () => dc.classList.remove('ativo'));
+                    const menu = dc.querySelector('.dropdown-menu');
+                    if (menu) {
+                        menu.style.position = 'fixed';
+                        menu.style.zIndex = '99999';
+                        menu.style.minWidth = '180px';
+                    }
+                    const btn = dc.querySelector('.btn-dropdown');
+                    function abrirDropdown(e) {
+                        e.stopPropagation();
+                        // Fecha outros dropdowns de cadastro
+                        document.querySelectorAll(seletores).forEach(function(other) {
+                            if (other !== dc) other.classList.remove('ativo');
+                        });
+                        if (menu) {
+                            const rect = dc.getBoundingClientRect();
+                            menu.style.top = rect.bottom + 'px';
+                            menu.style.left = rect.left + 'px';
+                            menu.style.width = rect.width + 'px';
+                        }
+                        dc.classList.toggle('ativo');
+                    }
+                    if (btn) btn.addEventListener('click', abrirDropdown);
+                    else dc.addEventListener('click', abrirDropdown);
                     dc.querySelectorAll('.item').forEach(item => {
-                        item.addEventListener('click', () => {
-                            if (input) input.value = item.textContent;
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (input) input.value = item.textContent.trim();
                             dc.classList.remove('ativo');
                         });
                     });
                 });
+                document.addEventListener('click', function() {
+                    document.querySelectorAll(seletores).forEach(dc => dc.classList.remove('ativo'));
+                }, true);
             }
 
             const mapa = {
