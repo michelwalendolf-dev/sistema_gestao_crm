@@ -342,6 +342,60 @@
             width: 26px;
         }
 
+        /* Botão ⋮ no formulário de usuário */
+        .btn-mais {
+            all: unset;
+            width: 26px;
+            height: 100%;
+            border-left: 1px solid #737373;
+            background: #253150;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #cfd8e3;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-radius: 0 4px 4px 0;
+        }
+        .btn-mais:hover { background: #2f3e63; }
+
+        /* Menu dropdown do ⋮ */
+        .usr-mais-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 180px;
+            background: #1b2744;
+            border: 1px solid #737373;
+            border-radius: 4px;
+            z-index: 9999;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        }
+        .usr-mais-menu div {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #cfd8e3;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .usr-mais-menu div:hover { background: #2f3e63; }
+        .usr-mais-menu div:first-child { border-radius: 4px 4px 0 0; }
+        .usr-mais-menu div:last-child  { border-radius: 0 0 4px 4px; }
+
+        /* Grupo de acesso customizado */
+        .usr-grupo-item {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #cfd8e3;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .usr-grupo-item:hover { background: #2f3e63; }
+        .usr-grupo-item:first-child { border-radius: 4px 4px 0 0; }
+        .usr-grupo-item:last-child  { border-radius: 0 0 4px 4px; }
+
         .usr-campo .btn-data {
             all: unset;
             width: 26px;
@@ -1586,12 +1640,68 @@
             color: #7aadff;
         }
     
-        /* Fix dropdown z-index nos cadastros */
+        /* ── Fix completo: dropdowns nos modais de cadastro ── */
+
+        /* 1. Menu flutua sobre tudo */
         #modalClientes .dropdown-menu,
         #modalFuncionarios .dropdown-menu,
         #modalFornecedores .dropdown-menu {
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            width: 100% !important;
             z-index: 99999 !important;
-            position: fixed !important;
+        }
+
+        /* 2. Container é o ponto de ancoragem */
+        #modalClientes .dropdown-container,
+        #modalFuncionarios .dropdown-container,
+        #modalFornecedores .dropdown-container {
+            position: relative !important;
+            overflow: visible !important;
+            z-index: 1 !important;
+        }
+
+        /* 3. Quando ativo, sobe acima de todos os irmãos do grid */
+        #modalClientes .dropdown-container.ativo,
+        #modalFuncionarios .dropdown-container.ativo,
+        #modalFornecedores .dropdown-container.ativo {
+            z-index: 9999 !important;
+        }
+
+        /* 4. campo-completo que envolve o dropdown ativo também sobe */
+        #modalClientes .campo-completo:has(.dropdown-container.ativo),
+        #modalFuncionarios .campo-completo:has(.dropdown-container.ativo),
+        #modalFornecedores .campo-completo:has(.dropdown-container.ativo) {
+            z-index: 9999 !important;
+            position: relative !important;
+        }
+
+        /* 5. Todos os painéis e grades permitem overflow visível */
+        #modalClientes .erp-panel,
+        #modalFuncionarios .erp-panel,
+        #modalFornecedores .erp-panel,
+        #modalClientes .erp-content,
+        #modalFuncionarios .erp-content,
+        #modalFornecedores .erp-content,
+        #modalClientes .painel-com-foto,
+        #modalFuncionarios .painel-com-foto,
+        #modalFornecedores .painel-com-foto,
+        #modalClientes .erp-grid,
+        #modalFuncionarios .erp-grid,
+        #modalFornecedores .erp-grid,
+        #modalClientes .campo-completo,
+        #modalFuncionarios .campo-completo,
+        #modalFornecedores .campo-completo {
+            overflow: visible !important;
+        }
+
+        /* 6. erp-content: scroll vertical sem cortar dropdown */
+        #modalClientes .erp-content,
+        #modalFuncionarios .erp-content,
+        #modalFornecedores .erp-content {
+            overflow-x: visible !important;
+            overflow-y: auto !important;
         }
 </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1629,6 +1739,9 @@
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </button>
+                <button title="Cadastrar / Editar cliente"
+                    onclick="limparModal('modalClientes'); abrirModal('modalClientes','overlayClientes');"
+                    style="font-size:16px;font-weight:700;letter-spacing:1px;padding:0 5px;">⋮</button>
             </div>
         </div>
         <div class="barra-acoes">
@@ -1672,12 +1785,13 @@
             </div>
         </div>
         <div class="barra-acoes dropdown-container">
-            <input type="text" id="status" placeholder="Status" value="Pré-Ordem" readonly>
+            <input type="text" id="status" placeholder="Status" value="Todos" readonly>
             <div class="grupo-botoes">
                 <button class="btn-dropdown">▼</button>
             </div>
             <div class="dropdown-menu">
-                <div class="item" selected>Pré-Ordem</div>
+                <div class="item">Todos</div>
+                <div class="item">Pré-Ordem</div>
                 <div class="item">Aberto</div>
                 <div class="item">Fechado</div>
                 <div class="item">Cancelado</div>
@@ -2022,7 +2136,8 @@
                                         <div class="grupos">
                                             <button class="btn-limpar" title="Limpar"
                                                 onclick="usr_limparCampo('usr-f-funcionario')">✖</button>
-                                            <button class="btn-busca" title="Buscar funcionário">
+                                            <button class="btn-busca" title="Buscar funcionário"
+                                                onclick="usr_buscarFuncionario()">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                                     stroke-linejoin="round">
@@ -2030,6 +2145,15 @@
                                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                                                 </svg>
                                             </button>
+                                            <div class="usr-mais-wrap" style="position:relative;">
+                                                <button class="btn-mais" title="Mais opções" id="usr-func-mais-btn"
+                                                    onclick="usr_toggleMais('usr-func-mais', event)">⋮</button>
+                                                <div class="usr-mais-menu" id="usr-func-mais" style="display:none;">
+                                                    <div onclick="usr_buscarFuncionario()">🔍 Buscar funcionário</div>
+                                                    <div onclick="usr_limparCampo('usr-f-funcionario'); usr_limparCampo('usr-f-setor')">✖ Desvincular</div>
+                                                    <div onclick="usr_abrirFuncionario()">👤 Abrir cadastro</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2041,7 +2165,8 @@
                                         <div class="grupos">
                                             <button class="btn-limpar" title="Limpar"
                                                 onclick="usr_limparCampo('usr-f-setor')">✖</button>
-                                            <button class="btn-busca" title="Buscar setor">
+                                            <button class="btn-busca" title="Buscar setor"
+                                                onclick="usr_buscarSetor()">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                                     stroke-linejoin="round">
@@ -2049,19 +2174,36 @@
                                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                                                 </svg>
                                             </button>
+                                            <div class="usr-mais-wrap" style="position:relative;">
+                                                <button class="btn-mais" title="Mais opções" id="usr-setor-mais-btn"
+                                                    onclick="usr_toggleMais('usr-setor-mais', event)">⋮</button>
+                                                <div class="usr-mais-menu" id="usr-setor-mais" style="display:none;">
+                                                    <div onclick="usr_buscarSetor()">🔍 Buscar setor</div>
+                                                    <div onclick="usr_limparCampo('usr-f-setor')">✖ Limpar setor</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="usr-campo">
                                     <label>Grupo de Acesso</label>
-                                    <div class="bar-acoes">
-                                        <select id="usr-f-grupo" disabled style="flex:1;background:#0d1f35;color:#cfd8e3;border:1px solid #2a3a5c;border-radius:4px;padding:0 8px;height:26px;font-size:12px;font-family:inherit;">
-                                            <option value="">— Selecione —</option>
-                                            <option value="Admin">Admin</option>
-                                            <option value="Funcionário">Funcionário</option>
-                                            <option value="Técnico">Técnico</option>
-                                        </select>
+                                    <div class="bar-acoes usr-grupo-container" style="position:relative;">
+                                        <input type="text" id="usr-f-grupo" placeholder="Selecione..." readonly
+                                            disabled style="flex:1;cursor:pointer;"
+                                            onclick="usr_toggleGrupo(event)">
+                                        <div class="grupos">
+                                            <button class="btn-dropdown" id="usr-grupo-btn" disabled
+                                                onclick="usr_toggleGrupo(event)">▼</button>
+                                        </div>
+                                        <div class="usr-grupo-menu" id="usr-grupo-menu" style="display:none;
+                                            position:absolute; top:100%; left:0; width:100%;
+                                            background:#1b2744; border:1px solid #737373; border-radius:4px;
+                                            z-index:9999; flex-direction:column;">
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Admin')">👑 Admin</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Funcionário')">👤 Funcionário</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Técnico')">🔧 Técnico</div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -2629,13 +2771,13 @@
 
                     statusDropdown.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        statusDropdown.classList.add('ativo');
+                        statusDropdown.classList.toggle('ativo');
                     });
 
                     statusMenu.querySelectorAll('.item').forEach(item => {
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            statusInput.value = item.textContent;
+                            statusInput.value = item.textContent.trim();
                             statusDropdown.classList.remove('ativo');
                             aplicarFiltros();
                         });
@@ -2864,6 +3006,24 @@
                 if (tecnico && !row.tecnico?.toLowerCase().includes(tecnico)) return false;
                 if (servico && !row.descricao?.toLowerCase().includes(servico)) return false;
                 if (descricao && !row.descricao?.toLowerCase().includes(descricao)) return false;
+
+                if (status && status !== 'todos') {
+                    // Normaliza o status do banco para as 4 categorias do frontend
+                    const mapStatus = {
+                        'aberta':           'pré-ordem',
+                        'pré-ordem':        'pré-ordem',
+                        'em andamento':     'aberto',
+                        'aguardando peça':  'aberto',
+                        'aberto':           'aberto',
+                        'concluída':        'fechado',
+                        'entregue':         'fechado',
+                        'fechado':          'fechado',
+                        'cancelada':        'cancelado',
+                        'cancelado':        'cancelado',
+                    };
+                    const rowStatusNorm = mapStatus[(row.status || '').trim().toLowerCase()] || 'pré-ordem';
+                    if (rowStatusNorm !== status) return false;
+                }
 
 
                 const dRow = parseDateBR(row.dtCriacao);
@@ -3413,7 +3573,7 @@
             document.getElementById("cad-dtPrevista").value = osSelecionada.dtPrevista || "";
             document.getElementById("cad-horas").value = osSelecionada.horas || "";
             document.getElementById("cad-respExec").value = osSelecionada.respExec || "";
-            document.getElementById("cad-valor").value = (osSelecionada.valor || "").replace(/R$\s*/g, "").trim();
+            document.getElementById("cad-valor").value = (osSelecionada.valor || "").replace(/R\$\s*/g, "").trim();
             document.getElementById("cad-contato").value = osSelecionada.contato || "";
             document.getElementById("cad-status").value = osSelecionada.status || "";
             _abrirModal();
@@ -3785,8 +3945,8 @@
             document.getElementById("item-respExec").value = itemSelecionado.respExec || "";
             document.getElementById("item-hrsEst").value = itemSelecionado.hrsEst || "";
             document.getElementById("item-hrsReal").value = itemSelecionado.hrsReal || "";
-            document.getElementById("item-vlrServico").value = (itemSelecionado.vlrServico || "").replace(/R$\s*/g, "").trim();
-            document.getElementById("item-vlrTotal").value = (itemSelecionado.vlrTotal || "").replace(/R$\s*/g, "").trim();
+            document.getElementById("item-vlrServico").value = (itemSelecionado.vlrServico || "").replace(/R\$\s*/g, "").trim();
+            document.getElementById("item-vlrTotal").value = (itemSelecionado.vlrTotal || "").replace(/R\$\s*/g, "").trim();
             const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
             document.getElementById("item-observacao").value = _obsItens[chave] || "";
             _abrirModalItem();
@@ -4987,6 +5147,8 @@
                                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg>
                         </button>
+                        <button title="Novo cadastro de cliente" onclick="limparModal('modalClientes')"
+                            style="font-size:16px;font-weight:700;letter-spacing:1px;padding:0 5px;">⋮</button>
                     </div>
                 </div>
             </div>
@@ -5281,6 +5443,7 @@
             </div>
 
             <div class="erp-footer">
+                <input type="hidden" id="cli-id">
                 <button class="btn-footer-novo" onclick="limparModal('modalClientes')">&#10010; Novo</button>
                 <button class="btn-footer-salvar" onclick="salvarCliente()">&#128190; Salvar</button>
                 <button class="btn-footer-sair" onclick="fecharModal('modalClientes','overlayClientes')">&#10006;
@@ -5628,6 +5791,7 @@
             </div>
 
             <div class="erp-footer">
+                <input type="hidden" id="func-id">
                 <button class="btn-footer-novo" onclick="limparModal('modalFuncionarios')">&#10010; Novo</button>
                 <button class="btn-footer-salvar" onclick="salvarFuncionario()">&#128190; Salvar</button>
                 <button class="btn-footer-sair"
@@ -5667,6 +5831,8 @@
                                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg>
                         </button>
+                        <button title="Novo cadastro de fornecedor" onclick="limparModal('modalFornecedores')"
+                            style="font-size:16px;font-weight:700;letter-spacing:1px;padding:0 5px;">⋮</button>
                     </div>
                 </div>
             </div>
@@ -5945,6 +6111,7 @@
             </div>
 
             <div class="erp-footer">
+                <input type="hidden" id="forn-id">
                 <button class="btn-footer-novo" onclick="limparModal('modalFornecedores')">&#10010; Novo</button>
                 <button class="btn-footer-salvar" onclick="salvarFornecedor()">&#128190; Salvar</button>
                 <button class="btn-footer-sair"
@@ -5971,6 +6138,7 @@
                 modal.style.top = '80px';
                 modal.style.transform = 'translateX(-50%)';
                 ativarDrag(modal, modal.querySelector('.erp-titlebar'));
+                if (typeof initDropdownsModal === 'function') setTimeout(initDropdownsModal, 50);
             }
             window.abrirModal = abrirModal; // expõe globalmente para outros IIFEs
 
@@ -6037,25 +6205,31 @@
                     dc.dataset.init = '1';
                     const input = dc.querySelector('input');
                     const menu = dc.querySelector('.dropdown-menu');
+                    // Usa position:absolute (definido no CSS), não sobrescreve com fixed
                     if (menu) {
-                        menu.style.position = 'fixed';
-                        menu.style.zIndex = '99999';
+                        menu.style.position = '';
+                        menu.style.zIndex = '9999';
                         menu.style.minWidth = '180px';
+                        menu.style.top = '';
+                        menu.style.left = '';
+                        menu.style.width = '';
                     }
                     const btn = dc.querySelector('.btn-dropdown');
+                    const campoPai = dc.closest('.campo-completo');
                     function abrirDropdown(e) {
                         e.stopPropagation();
-                        // Fecha outros dropdowns de cadastro
+                        const jaAtivo = dc.classList.contains('ativo');
+                        // Fecha todos os outros dropdowns de cadastro e rebaixa seus pais
                         document.querySelectorAll(seletores).forEach(function(other) {
-                            if (other !== dc) other.classList.remove('ativo');
+                            other.classList.remove('ativo');
+                            const pai = other.closest('.campo-completo');
+                            if (pai) pai.style.zIndex = '';
                         });
-                        if (menu) {
-                            const rect = dc.getBoundingClientRect();
-                            menu.style.top = rect.bottom + 'px';
-                            menu.style.left = rect.left + 'px';
-                            menu.style.width = rect.width + 'px';
+                        // Abre este apenas se estava fechado e eleva o campo-pai
+                        if (!jaAtivo) {
+                            dc.classList.add('ativo');
+                            if (campoPai) campoPai.style.zIndex = '9999';
                         }
-                        dc.classList.toggle('ativo');
                     }
                     if (btn) btn.addEventListener('click', abrirDropdown);
                     else dc.addEventListener('click', abrirDropdown);
@@ -6064,12 +6238,18 @@
                             e.stopPropagation();
                             if (input) input.value = item.textContent.trim();
                             dc.classList.remove('ativo');
+                            if (campoPai) campoPai.style.zIndex = '';
                         });
                     });
                 });
+                // Fecha ao clicar fora — rebaixa todos os pais também
                 document.addEventListener('click', function() {
-                    document.querySelectorAll(seletores).forEach(dc => dc.classList.remove('ativo'));
-                }, true);
+                    document.querySelectorAll(seletores).forEach(dc => {
+                        dc.classList.remove('ativo');
+                        const pai = dc.closest('.campo-completo');
+                        if (pai) pai.style.zIndex = '';
+                    });
+                });
             }
 
             const mapa = {
@@ -8096,12 +8276,14 @@
             };
 
             var _CAMPOS = ['usr-f-nome', 'usr-f-funcionario', 'usr-f-setor', 'usr-f-grupo', 'usr-f-email', 'usr-f-login', 'usr-f-senha', 'usr-f-senha-conf', 'usr-f-obs', 'usr-f-suspenso', 'usr-f-data-saida'];
+            var _BOTOES_EXTRA = ['usr-grupo-btn', 'usr-func-mais-btn', 'usr-setor-mais-btn'];
 
             function _g(id) { return document.getElementById(id); }
 
             function usr_habilitar() {
                 var bl = document.getElementById('usr-form-bloqueio'); if (bl) bl.style.display = 'none';
                 _CAMPOS.forEach(function (id) { var el = _g(id); if (el) el.disabled = false; });
+                _BOTOES_EXTRA.forEach(function (id) { var el = _g(id); if (el) el.disabled = false; });
                 var bc = _g('usr-btn-cal-saida'); if (bc) bc.disabled = false;
                 if (_fpSaida) { try { _fpSaida.destroy(); } catch (e) { } }
                 _fpSaida = flatpickr('#usr-f-data-saida', { dateFormat: 'd/m/Y', allowInput: true });
@@ -8110,7 +8292,12 @@
             function usr_bloquear() {
                 var bl = document.getElementById('usr-form-bloqueio'); if (bl) bl.style.display = 'flex';
                 _CAMPOS.forEach(function (id) { var el = _g(id); if (el) el.disabled = true; });
+                _BOTOES_EXTRA.forEach(function (id) { var el = _g(id); if (el) el.disabled = true; });
                 var bc = _g('usr-btn-cal-saida'); if (bc) bc.disabled = true;
+                // Fecha todos os menus abertos ao bloquear
+                ['usr-func-mais', 'usr-setor-mais', 'usr-grupo-menu'].forEach(function (id) {
+                    var m = _g(id); if (m) m.style.display = 'none';
+                });
             }
 
             function usr_limparCampos() {
@@ -8122,6 +8309,79 @@
 
             window.usr_limparCampo = function (id) {
                 var el = _g(id); if (el && !el.disabled) el.value = '';
+            };
+
+            /* ── Grupo de Acesso: dropdown customizado ── */
+            window.usr_toggleGrupo = function (e) {
+                e.stopPropagation();
+                var menu = _g('usr-grupo-menu');
+                if (!menu) return;
+                var aberto = menu.style.display === 'flex';
+                menu.style.display = aberto ? 'none' : 'flex';
+                if (!aberto) menu.style.flexDirection = 'column';
+            };
+
+            window.usr_selecionarGrupo = function (valor) {
+                var input = _g('usr-f-grupo');
+                if (input && !input.disabled) {
+                    input.value = valor;
+                    var menu = _g('usr-grupo-menu');
+                    if (menu) menu.style.display = 'none';
+                }
+            };
+
+            /* ── Botão ⋮: toggle dos mini-menus ── */
+            window.usr_toggleMais = function (menuId, e) {
+                e.stopPropagation();
+                var menu = _g(menuId);
+                if (!menu) return;
+                // fecha todos os outros menus ⋮
+                ['usr-func-mais', 'usr-setor-mais'].forEach(function (id) {
+                    if (id !== menuId) { var m = _g(id); if (m) m.style.display = 'none'; }
+                });
+                _g('usr-grupo-menu') && (_g('usr-grupo-menu').style.display = 'none');
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            };
+
+            /* Fecha todos os menus ao clicar fora */
+            document.addEventListener('click', function () {
+                ['usr-func-mais', 'usr-setor-mais', 'usr-grupo-menu'].forEach(function (id) {
+                    var m = _g(id); if (m) m.style.display = 'none';
+                });
+            });
+
+            /* ── Busca de funcionário: usa modal de busca de origens se disponível ── */
+            window.usr_buscarFuncionario = function () {
+                var elFunc = _g('usr-f-funcionario');
+                var elSetor = _g('usr-f-setor');
+                if (!elFunc || elFunc.disabled) return;
+                if (typeof abrirBuscaOrigemCampo === 'function') {
+                    abrirBuscaOrigemCampo('func', 'usr-f-funcionario', function (item) {
+                        elFunc.value = item.nome || item.label || '';
+                        if (elSetor && item.setor) elSetor.value = item.setor;
+                    });
+                } else {
+                    var nome = prompt('Nome do funcionário:');
+                    if (nome) elFunc.value = nome;
+                }
+                _g('usr-func-mais') && (_g('usr-func-mais').style.display = 'none');
+            };
+
+            window.usr_abrirFuncionario = function () {
+                var nome = _g('usr-f-funcionario')?.value;
+                if (!nome) { alert('Nenhum funcionário vinculado.'); return; }
+                if (typeof abrirModal === 'function') abrirModal('modalFuncionarios', 'overlayFuncionarios');
+                _g('usr-func-mais') && (_g('usr-func-mais').style.display = 'none');
+            };
+
+            /* ── Busca de setor ── */
+            window.usr_buscarSetor = function () {
+                var el = _g('usr-f-setor');
+                if (!el || el.disabled) return;
+                var setores = ['TI', 'Financeiro', 'Técnico', 'Administrativo', 'Comercial', 'RH'];
+                var setor = prompt('Setor (' + setores.join(', ') + '):');
+                if (setor) el.value = setor;
+                _g('usr-setor-mais') && (_g('usr-setor-mais').style.display = 'none');
             };
 
             window.usr_validarSenhas = function () {
@@ -8141,6 +8401,136 @@
 
     <!-- ══ INTEGRAÇÃO REAL COM BANCO ══ -->
     <script src="assets/js/db_real.js"></script>
+
+    <script>
+        // ── Helpers ──────────────────────────────────────────────────────────
+        function _gVal(id) {
+            var el = document.getElementById(id);
+            if (!el) return '';
+            return (el.tagName === 'TEXTAREA' ? el.value : el.value || '').trim();
+        }
+        function _showMsg(ok, msg) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: ok ? 'success' : 'error', title: ok ? 'Sucesso' : 'Erro', text: msg, confirmButtonText: 'OK' });
+            } else {
+                alert((ok ? '✔ ' : '✖ ') + msg);
+            }
+        }
+
+        // ── Corrigir limparModal para limpar o campo id oculto ────────────────
+        var _origLimparModal = window.limparModal;
+        window.limparModal = function (modalId) {
+            _origLimparModal(modalId);
+            var idMap = {
+                'modalClientes': 'cli-id',
+                'modalFuncionarios': 'func-id',
+                'modalFornecedores': 'forn-id'
+            };
+            var hiddenId = idMap[modalId];
+            if (hiddenId) {
+                var el = document.getElementById(hiddenId);
+                if (el) el.value = '';
+            }
+        };
+
+        // ── salvarFuncionario ─────────────────────────────────────────────────
+        window.salvarFuncionario = async function () {
+            var nome = _gVal('func-nome');
+            if (!nome) { _showMsg(false, 'O campo Nome Completo é obrigatório.'); return; }
+
+            var fd = new FormData();
+            var id = _gVal('func-id');
+            fd.append('acao', id ? 'atualizar' : 'criar');
+            if (id) fd.append('id', id);
+
+            var campos = ['nome','cpf','rg','nascimento','cargo','setor','departamento',
+                          'nivel','genero','nacionalidade','status','obs',
+                          'tel','cel','whatsapp','emergencia','email',
+                          'cep','uf','rua','numero','complemento','bairro','cidade'];
+            campos.forEach(function (c) { fd.append(c, _gVal('func-' + c)); });
+
+            var chkTec = document.getElementById('func-tecnico');
+            var chkPad = document.getElementById('func-padrao');
+            fd.append('tecnico', chkTec && chkTec.checked ? '1' : '0');
+            fd.append('padrao',  chkPad && chkPad.checked ? '1' : '0');
+
+            try {
+                var r = await fetch('funcionarios.php', { method: 'POST', body: fd });
+                var j = await r.json();
+                if (j.sucesso) {
+                    if (j.id) document.getElementById('func-id').value = j.id;
+                    _showMsg(true, 'Funcionário salvo com sucesso!');
+                } else {
+                    _showMsg(false, j.mensagem || 'Erro ao salvar funcionário.');
+                }
+            } catch (e) {
+                _showMsg(false, 'Erro de comunicação com o servidor.');
+            }
+        };
+
+        // ── salvarCliente ─────────────────────────────────────────────────────
+        window.salvarCliente = async function () {
+            var nome = _gVal('cli-nome');
+            if (!nome) { _showMsg(false, 'O campo Nome é obrigatório.'); return; }
+
+            var fd = new FormData();
+            var id = _gVal('cli-id');
+            fd.append('acao', id ? 'atualizar' : 'criar');
+            if (id) fd.append('id', id);
+
+            var campos = ['nome','doc','ie','nascimento','tipo','status',
+                          'genero','nacionalidade','vendedor','obs',
+                          'tel','cel','whatsapp','contato','email','site',
+                          'cep','uf','rua','num','comp','bairro','cidade',
+                          'limite','prazo','forma_pag','desconto','banco','obs_fin'];
+            campos.forEach(function (c) { fd.append(c, _gVal('cli-' + c)); });
+
+            try {
+                var r = await fetch('clientes.php', { method: 'POST', body: fd });
+                var j = await r.json();
+                if (j.sucesso) {
+                    if (j.id) document.getElementById('cli-id').value = j.id;
+                    _showMsg(true, 'Cliente salvo com sucesso!');
+                } else {
+                    _showMsg(false, j.mensagem || 'Erro ao salvar cliente.');
+                }
+            } catch (e) {
+                _showMsg(false, 'Erro de comunicação com o servidor.');
+            }
+        };
+
+        // ── salvarFornecedor ──────────────────────────────────────────────────
+        window.salvarFornecedor = async function () {
+            var razao = _gVal('forn-razao');
+            if (!razao) { _showMsg(false, 'O campo Razão Social é obrigatório.'); return; }
+
+            var fd = new FormData();
+            var id = _gVal('forn-id');
+            fd.append('acao', id ? 'atualizar' : 'criar');
+            if (id) fd.append('id', id);
+
+            fd.append('razao_social', razao);
+            var campos = ['fantasia','doc','ie','im','status','categoria','tipo',
+                          'representante','origem','obs',
+                          'tel','cel','whatsapp','contato','email','site',
+                          'cep','uf','rua','numero','complemento','bairro','cidade',
+                          'prazo','limite','forma_pag','desconto','banco','obs_fin'];
+            campos.forEach(function (c) { fd.append(c, _gVal('forn-' + c)); });
+
+            try {
+                var r = await fetch('fornecedores.php', { method: 'POST', body: fd });
+                var j = await r.json();
+                if (j.sucesso) {
+                    if (j.id) document.getElementById('forn-id').value = j.id;
+                    _showMsg(true, 'Fornecedor salvo com sucesso!');
+                } else {
+                    _showMsg(false, j.mensagem || 'Erro ao salvar fornecedor.');
+                }
+            } catch (e) {
+                _showMsg(false, 'Erro de comunicação com o servidor.');
+            }
+        };
+    </script>
 
 </body>
 
