@@ -443,6 +443,42 @@
         return resp.json();
     }
 
+    // ── Carrega grupo do usuário logado ───────────────────────
+    async function carregarSessao() {
+        try {
+            const data = await postUrl('usuarios.php', { acao: 'perfil' });
+            if (data.sucesso && data.usuario) {
+                window._grupoAtual = data.usuario.grupo || '';
+                window._nomeAtual  = data.usuario.nome  || '';
+                window._usuarioLogado = data.usuario.nome || '';
+
+                // Atualiza o nome exibido na barra superior
+                const spanNome = document.querySelector('.user-name');
+                if (spanNome && window._nomeAtual) {
+                    spanNome.textContent = window._nomeAtual;
+                }
+
+                // Esconde o item "Usuários" no menu se não for Admin
+                if (window._grupoAtual !== 'Admin') {
+                    document.querySelectorAll('.btn-submenu-item').forEach(function(el) {
+                        if (el.textContent.trim() === 'Usuários') el.style.display = 'none';
+                    });
+                }
+            }
+        } catch(e) { console.warn('[carregarSessao]', e); }
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarSessao);
+
+    // ── Abre Usuários apenas para Admin ───────────────────────
+    window.usr_abrirSeAdmin = function() {
+        if (window._grupoAtual && window._grupoAtual !== 'Admin') {
+            Swal.fire({ icon: 'warning', title: 'Acesso negado', text: 'Apenas administradores podem acessar o gerenciamento de usuários.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+        if (typeof window.usr_abrir === 'function') window.usr_abrir();
+    };
+
     function stripMoeda(v) {
         return (v || '').toString().replace(/R\$\s*/g, '').trim();
     }
@@ -484,7 +520,11 @@
     async function carregarUsuarios() {
         try {
             const data = await postUrl('usuarios.php', { acao: 'listar' });
-            if (!data.sucesso) return;
+            console.log('[carregarUsuarios] resposta:', data);
+            if (!data.sucesso) {
+                console.warn('[carregarUsuarios] sem sucesso:', data.mensagem);
+                return;
+            }
             window._usrDados = (data.dados || []).map(u => ({
                 id:         u.id          || '',
                 nome:       u.nome        || '',
@@ -498,6 +538,7 @@
                 suspensao:  u.status === 'Suspenso',
                 dataSaida:  u.data_saida  || '',
             }));
+            console.log('[carregarUsuarios] total:', window._usrDados.length);
             if (typeof window.usr_renderizar === 'function') window.usr_renderizar(window._usrDados);
             if (typeof window.usr_filtrar    === 'function') window.usr_filtrar();
         } catch(e) {
@@ -508,8 +549,13 @@
     // Patch usr_abrir para carregar dados reais
     const _usrAbrirOrig = window.usr_abrir;
     window.usr_abrir = async function() {
-        _usrAbrirOrig();
+        if (typeof _usrAbrirOrig === 'function') _usrAbrirOrig();
         await carregarUsuarios();
+        // Força re-render após carregar, garantindo que o modal já está visível
+        if (window._usrDados && window._usrDados.length) {
+            if (typeof window.usr_renderizar === 'function') window.usr_renderizar(window._usrDados);
+            if (typeof window.usr_filtrar    === 'function') window.usr_filtrar();
+        }
     };
 
     // usr_salvar real
@@ -789,6 +835,51 @@
             } catch(e) {
                 console.error('[filtrarBuscaOrigem:cli]', e);
                 tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Erro ao buscar clientes.</td></tr>';
+            }
+        };
+    })();
+
+    // ── Patch buscaOrigem: fornecedores usa banco real ────────
+    (function patchBuscaFornecedores() {
+        const _origFiltrar = window.filtrarBuscaOrigem;
+        window.filtrarBuscaOrigem = async function() {
+            const tipo = (typeof window._buscaOrigemTipoAtual !== 'undefined')
+                ? window._buscaOrigemTipoAtual : 'cli';
+            if (tipo !== 'forn') {
+                if (typeof _origFiltrar === 'function') await _origFiltrar();
+                return;
+            }
+            const nomeF    = (document.getElementById('bo-f-nome')?.value    || '').trim();
+            const contatoF = (document.getElementById('bo-f-doc')?.value     || '').trim();
+            const telF     = (document.getElementById('bo-f-tel')?.value     || '').trim();
+            const cidF     = (document.getElementById('bo-f-cidade')?.value  || '').trim();
+            const tbody = document.getElementById('bo-tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Buscando...</td></tr>';
+            try {
+                const data = await postUrl('fornecedores.php', { acao: 'listar', busca: nomeF || '' });
+                if (!data.sucesso || !data.dados?.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Nenhum fornecedor encontrado</td></tr>';
+                    document.getElementById('bo-count').textContent = '0 registro(s)';
+                    return;
+                }
+                let rows = data.dados;
+                if (cidF) rows = rows.filter(f => (f.cidade || '').toLowerCase().includes(cidF.toLowerCase()));
+                document.getElementById('bo-count').textContent = rows.length + ' registro(s)';
+                tbody.innerHTML = rows.map((f, idx) => {
+                    const cols = [
+                        f.id ? f.id.substring(0,6) : String(idx+1).padStart(3,'0'),
+                        f.razao_social || '—',
+                        f.documento    || '—',
+                        f.contato      || f.representante || '—',
+                        f.tel          || f.cel || '—',
+                        f.cidade       || '—',
+                    ];
+                    return '<tr class="bo-row" data-idx="' + idx + '" data-id="' + (f.id||'') + '" onclick="selecionarLinhaBo(this)">' +
+                        cols.map(v => '<td>' + (v||'—') + '</td>').join('') + '</tr>';
+                }).join('');
+            } catch(e) {
+                console.error('[filtrarBuscaOrigem:forn]', e);
+                tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Erro ao buscar fornecedores.</td></tr>';
             }
         };
     })();

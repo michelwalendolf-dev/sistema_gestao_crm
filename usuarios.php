@@ -38,7 +38,7 @@ if ($acao === 'listar') {
         $rows = $db->select(
             'usuarios',
             $filtros,
-            'id,nome,login,email,grupo,setor,status,created_at'
+            'id,nome,login,email,grupo,setor,status,observacoes,funcionario_id,data_saida,created_at'
         );
 
         echo json_encode(['sucesso' => true, 'dados' => $rows]);
@@ -62,7 +62,7 @@ if ($acao === 'buscar') {
     }
 
     try {
-        $rows = $db->select('usuarios', ['id' => "eq.$id"], 'id,nome,login,email,grupo,setor,status,created_at');
+        $rows = $db->select('usuarios', ['id' => "eq.$id"], 'id,nome,login,email,grupo,setor,status,observacoes,funcionario_id,data_saida,created_at');
         if (empty($rows)) {
             echo json_encode(['sucesso' => false, 'mensagem' => 'Usuário não encontrado.']);
             exit;
@@ -130,13 +130,16 @@ if ($acao === 'criar') {
         $senhaHash = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 12]);
 
         $inserted = $db->insert('usuarios', [
-            'nome'       => $nome,
-            'login'      => $login,
-            'email'      => $email,
-            'senha_hash' => $senhaHash,
-            'grupo'      => $grupo,
-            'setor'      => $setor,
-            'status'     => 'Ativo',
+            'nome'           => $nome,
+            'login'          => $login,
+            'email'          => $email,
+            'senha_hash'     => $senhaHash,
+            'grupo'          => $grupo,
+            'setor'          => $setor,
+            'status'         => 'Ativo',
+            'observacoes'    => trim($_POST['observacoes']   ?? ''),
+            'funcionario_id' => trim($_POST['funcionario_id'] ?? '') ?: null,
+            'data_saida'     => trim($_POST['data_saida']    ?? '') ?: null,
         ]);
 
         registrarLog($db, $user['id'], 'Usuário criado', "Usuário $login criado por {$user['nome']}.");
@@ -169,7 +172,7 @@ if ($acao === 'atualizar') {
 
     $data = [];
 
-    $camposTexto = ['nome', 'email', 'setor'];
+    $camposTexto = ['nome', 'email', 'setor', 'observacoes', 'funcionario_id', 'data_saida'];
     foreach ($camposTexto as $campo) {
         if (isset($_POST[$campo])) {
             $data[$campo] = trim($_POST[$campo]);

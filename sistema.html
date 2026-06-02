@@ -2792,21 +2792,28 @@
             }
 
             document.querySelectorAll(".botao-dropdown").forEach(btn => {
-
                 const menu = btn.nextElementSibling;
+                if (!menu || !menu.classList.contains('dropdown-botao')) return;
+
+                // Move o menu para o body para escapar de contextos transform/overflow
+                document.body.appendChild(menu);
 
                 btn.addEventListener("click", function (e) {
                     e.stopPropagation();
 
-                    const rect = btn.getBoundingClientRect();
+                    // Fecha todos os outros
+                    document.querySelectorAll(".dropdown-botao.show").forEach(m => {
+                        if (m !== menu) m.classList.remove("show");
+                    });
 
+                    const rect = btn.getBoundingClientRect();
                     menu.style.position = "fixed";
-                    menu.style.top = rect.bottom + "px";
+                    menu.style.top  = rect.bottom + "px";
                     menu.style.left = rect.left + "px";
+                    menu.style.zIndex = "99999";
 
                     menu.classList.toggle("show");
                 });
-
             });
 
             document.addEventListener("click", function () {
@@ -3204,6 +3211,17 @@
         }
 
         async function excluirOS() {
+            // Verifica permissão de acesso
+            if (window._grupoAtual && window._grupoAtual !== 'Admin') {
+                Swal.fire({
+                    icon: "error",
+                    title: "Acesso Negado",
+                    html: "<b>Seu perfil não tem permissão para excluir Ordens de Serviço.</b><br><small style='color:#9ca3af;'>Entre em contato com um administrador.</small>",
+                    confirmButtonColor: "#2d7dff",
+                    scrollbarPadding: false
+                });
+                return;
+            }
             if (!osSelecionada) {
                 Swal.fire({
                     icon: "warning",
@@ -3256,6 +3274,17 @@
         let trItemSelecionado = null;
 
         async function excluirItem() {
+            // Verifica permissão de acesso
+            if (window._grupoAtual && window._grupoAtual !== 'Admin') {
+                Swal.fire({
+                    icon: "error",
+                    title: "Acesso Negado",
+                    html: "<b>Seu perfil não tem permissão para excluir itens.</b><br><small style='color:#9ca3af;'>Entre em contato com um administrador.</small>",
+                    confirmButtonColor: "#2d7dff",
+                    scrollbarPadding: false
+                });
+                return;
+            }
             if (!osSelecionada) {
                 Swal.fire({
                     icon: "warning",
@@ -6283,7 +6312,7 @@
         <a href="#" class="btn-submenu-item">Cadastro de Clientes</a>
         <a href="#" class="btn-submenu-item">Cadastro de Funcionários</a>
         <a href="#" class="btn-submenu-item">Cadastro de Fornecedores</a>
-        <a href="#" class="btn-submenu-item" onclick="usr_abrir(); return false;">Usuários</a>
+        <a href="#" class="btn-submenu-item" onclick="usr_abrirSeAdmin(); return false;">Usuários</a>
     </div>
 
 
@@ -6631,6 +6660,7 @@
 
             window.abrirBuscaOrigem = function (tipo, callback) {
                 _tipo = tipo || 'cli';
+                window._buscaOrigemTipoAtual = _tipo; // garante visível para db_real.js
                 _callback = callback || null;
                 _linhaSel = null;
 
@@ -6770,20 +6800,33 @@
 
 
             // abrirBuscaOrigemCampo — abre o modal de busca e ao confirmar,
-            // coloca o nome selecionado no campo alvo
-            window.abrirBuscaOrigemCampo = function (tipo, campoAlvoId, valorInicial, isFiltroPrincipal) {
+            // coloca o nome selecionado no campo alvo.
+            // 3º argumento pode ser:
+            //   - string: valor inicial para pré-preencher o filtro de nome
+            //   - function(item): callback personalizado chamado ao selecionar
+            window.abrirBuscaOrigemCampo = function (tipo, campoAlvoId, valorInicialOuCallback, isFiltroPrincipal) {
                 window._buscaOrigemCampoAlvo = campoAlvoId;
                 window._buscaOrigemIsFiltroPrincipal = isFiltroPrincipal;
                 window._buscaOrigemTipoAtual = tipo;
+
+                var valorInicial = null;
+                var extraCallback = null;
+
+                if (typeof valorInicialOuCallback === 'function') {
+                    extraCallback = valorInicialOuCallback;
+                } else if (valorInicialOuCallback) {
+                    valorInicial = valorInicialOuCallback;
+                }
 
                 abrirBuscaOrigem(tipo, function (dados) {
                     var nome = dados['Nome'] || dados['Nome / Razão Social'] || dados['Razão Social'] || '';
                     var campo = document.getElementById(campoAlvoId);
                     if (campo) campo.value = nome;
                     if (isFiltroPrincipal && typeof aplicarFiltros === 'function') aplicarFiltros();
+                    if (typeof extraCallback === 'function') extraCallback(dados);
                 });
 
-                // Preenche filtro inicial se houver valor
+                // Preenche filtro inicial se houver valor (string)
                 if (valorInicial) {
                     setTimeout(function () {
                         var inp = document.getElementById('bo-f-nome');
@@ -8145,6 +8188,7 @@
             var _usrSel = null;
             var _usrModo = null;
             // Expõe no window para que db_real.js possa ler/escrever
+            Object.defineProperty(window, '_usrDados', { get: function(){ return _usrDados; }, set: function(v){ _usrDados = v; }, configurable: true });
             Object.defineProperty(window, '_usrSel',  { get: function(){ return _usrSel;  }, set: function(v){ _usrSel  = v; }, configurable: true });
             Object.defineProperty(window, '_usrModo', { get: function(){ return _usrModo; }, set: function(v){ _usrModo = v; }, configurable: true });
 

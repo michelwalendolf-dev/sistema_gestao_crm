@@ -31,14 +31,11 @@ if ($acao === 'listar') {
     try {
         $filtros = ['order' => 'razao_social.asc'];
 
-        $status = trim($_POST['status'] ?? '');
-        if ($status !== '') $filtros['status'] = "eq.$status";
-
         $busca = trim($_POST['busca'] ?? '');
         if ($busca !== '') $filtros['razao_social'] = "ilike.*$busca*";
 
         $rows = $db->select('fornecedores', $filtros,
-            'id,razao_social,fantasia,documento,tipo,status,tel,cel,email,cidade,uf,created_at'
+            'id,razao_social,fantasia,documento,tipo,tel,cel,email,cidade,uf,created_at'
         );
 
         echo json_encode(['sucesso' => true, 'dados' => $rows]);
@@ -89,13 +86,15 @@ if ($acao === 'criar') {
         exit;
     }
 
+    $documento = trim($_POST['documento'] ?? '')
+              ?: trim($_POST['cnpj']      ?? '');
+
     $data = [
         'razao_social'  => $razao,
         'fantasia'      => trim($_POST['fantasia']      ?? ''),
-        'documento'     => trim($_POST['documento']     ?? ''),
+        'documento'     => $documento,
         'ie'            => trim($_POST['ie']            ?? ''),
         'im'            => trim($_POST['im']            ?? ''),
-        'status'        => trim($_POST['status']        ?? 'Ativo'),
         'categoria'     => trim($_POST['categoria']     ?? ''),
         'tipo'          => trim($_POST['tipo']          ?? ''),
         'representante' => trim($_POST['representante'] ?? ''),
@@ -130,7 +129,7 @@ if ($acao === 'criar') {
         echo json_encode(['sucesso' => true, 'id' => $inserted[0]['id'] ?? null]);
     } catch (RuntimeException $e) {
         error_log('[Fornecedores:criar] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao salvar fornecedor. Verifique os dados e tente novamente.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro: ' . $e->getMessage()]);
     }
     exit;
 }
@@ -146,7 +145,7 @@ if ($acao === 'atualizar') {
     }
 
     $campos = [
-        'razao_social','fantasia','documento','ie','im','status',
+        'razao_social','fantasia','ie','im',
         'categoria','tipo','representante','origem','obs',
         'tel','cel','whatsapp','contato','email','site',
         'cep','uf','rua','numero','complemento','bairro','cidade',
@@ -158,6 +157,12 @@ if ($acao === 'atualizar') {
         if (isset($_POST[$campo])) {
             $data[$campo] = trim($_POST[$campo]);
         }
+    }
+
+    if (isset($_POST['documento'])) {
+        $data['documento'] = trim($_POST['documento']);
+    } elseif (isset($_POST['cnpj'])) {
+        $data['documento'] = trim($_POST['cnpj']);
     }
 
     if (empty($data)) {
@@ -178,7 +183,7 @@ if ($acao === 'atualizar') {
 }
 
 // ════════════════════════════════════════════════════════════
-//  EXCLUIR (soft delete)
+//  EXCLUIR (hard delete — sem coluna status)
 // ════════════════════════════════════════════════════════════
 if ($acao === 'excluir') {
     $id = trim($_POST['id'] ?? '');
@@ -188,11 +193,11 @@ if ($acao === 'excluir') {
     }
 
     try {
-        $db->update('fornecedores', ['status' => 'Inativo', 'updated_at' => date('c')], ['id' => "eq.$id"]);
+        $db->delete('fornecedores', ['id' => "eq.$id"]);
         echo json_encode(['sucesso' => true]);
     } catch (RuntimeException $e) {
         error_log('[Fornecedores:excluir] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao inativar fornecedor.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao excluir fornecedor.']);
     }
     exit;
 }

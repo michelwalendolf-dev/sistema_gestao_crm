@@ -31,14 +31,11 @@ if ($acao === 'listar') {
     try {
         $filtros = ['order' => 'nome.asc'];
 
-        $status = trim($_POST['status'] ?? '');
-        if ($status !== '') $filtros['status'] = "eq.$status";
-
         $busca = trim($_POST['busca'] ?? '');
         if ($busca !== '') $filtros['nome'] = "ilike.*$busca*";
 
         $rows = $db->select('funcionarios', $filtros,
-            'id,nome,cpf,cargo,setor,status,tel,cel,email,cidade,uf,tecnico,created_at'
+            'id,nome,cpf,cargo,setor,tel,cel,email,cidade,uf,tecnico,created_at'
         );
 
         echo json_encode(['sucesso' => true, 'dados' => $rows]);
@@ -89,20 +86,30 @@ if ($acao === 'criar') {
         exit;
     }
 
+    function parseDateBr(?string $v): ?string {
+        if (!$v) return null;
+        if (str_contains($v, '/')) {
+            $parts = explode('/', $v);
+            if (count($parts) === 3 && strlen($parts[2]) === 4) {
+                return "{$parts[2]}-{$parts[1]}-{$parts[0]}";
+            }
+        }
+        return $v ?: null;
+    }
+
     $data = [
         'nome'          => $nome,
         'cpf'           => trim($_POST['cpf']           ?? ''),
         'rg'            => trim($_POST['rg']            ?? ''),
-        'nascimento'    => trim($_POST['nascimento']    ?? '') ?: null,
+        'nascimento'    => parseDateBr(trim($_POST['nascimento']    ?? '')) ?: null,
         'cargo'         => trim($_POST['cargo']         ?? ''),
         'setor'         => trim($_POST['setor']         ?? ''),
         'departamento'  => trim($_POST['departamento']  ?? ''),
         'nivel'         => trim($_POST['nivel']         ?? ''),
         'genero'        => trim($_POST['genero']        ?? ''),
         'nacionalidade' => trim($_POST['nacionalidade'] ?? ''),
-        'status'        => trim($_POST['status']        ?? 'Ativo'),
-        'tecnico'       => ($_POST['tecnico'] ?? '0') === '1',
-        'padrao'        => ($_POST['padrao']  ?? '0') === '1',
+        'tecnico'       => in_array($_POST['tecnico'] ?? '0', ['1', 'true'], true),
+        'padrao'        => in_array($_POST['padrao']  ?? '0', ['1', 'true'], true),
         'obs'           => trim($_POST['obs']           ?? ''),
         'tel'           => trim($_POST['tel']           ?? ''),
         'cel'           => trim($_POST['cel']           ?? ''),
@@ -116,6 +123,11 @@ if ($acao === 'criar') {
         'complemento'   => trim($_POST['complemento']   ?? ''),
         'bairro'        => trim($_POST['bairro']        ?? ''),
         'cidade'        => trim($_POST['cidade']        ?? ''),
+        'admissao'      => parseDateBr(trim($_POST['admissao']      ?? '')) ?: null,
+        'salario'       => trim($_POST['salario']       ?? '') ?: null,
+        'tipo_contrato' => trim($_POST['tipo_contrato'] ?? ''),
+        'pis'           => trim($_POST['pis']           ?? ''),
+        'ctps'          => trim($_POST['ctps']          ?? ''),
         'criado_por'    => $user['id'],
     ];
 
@@ -126,7 +138,7 @@ if ($acao === 'criar') {
         echo json_encode(['sucesso' => true, 'id' => $inserted[0]['id'] ?? null]);
     } catch (RuntimeException $e) {
         error_log('[Funcionarios:criar] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao salvar funcionário. Verifique os dados e tente novamente.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro: ' . $e->getMessage()]);
     }
     exit;
 }
@@ -143,21 +155,28 @@ if ($acao === 'atualizar') {
 
     $campos = [
         'nome','cpf','rg','nascimento','cargo','setor','departamento',
-        'nivel','genero','nacionalidade','status','obs',
+        'nivel','genero','nacionalidade','obs',
         'tel','cel','whatsapp','emergencia','email',
         'cep','uf','rua','numero','complemento','bairro','cidade',
+        'admissao','salario','tipo_contrato','pis','ctps',
     ];
 
     $data = [];
     foreach ($campos as $campo) {
         if (isset($_POST[$campo])) {
-            $data[$campo] = trim($_POST[$campo]);
+            $v = trim($_POST[$campo]);
+            if (in_array($campo, ['nascimento', 'admissao']) && $v) {
+                if (str_contains($v, '/')) {
+                    $parts = explode('/', $v);
+                    if (count($parts) === 3) $v = "{$parts[2]}-{$parts[1]}-{$parts[0]}";
+                }
+            }
+            $data[$campo] = $v;
         }
     }
 
-    // Checkboxes
-    if (isset($_POST['tecnico'])) $data['tecnico'] = $_POST['tecnico'] === '1';
-    if (isset($_POST['padrao']))  $data['padrao']  = $_POST['padrao']  === '1';
+    if (isset($_POST['tecnico'])) $data['tecnico'] = in_array($_POST['tecnico'], ['1', 'true'], true);
+    if (isset($_POST['padrao']))  $data['padrao']  = in_array($_POST['padrao'],  ['1', 'true'], true);
 
     if (empty($data)) {
         echo json_encode(['sucesso' => false, 'mensagem' => 'Nenhum campo para atualizar.']);
@@ -177,7 +196,7 @@ if ($acao === 'atualizar') {
 }
 
 // ════════════════════════════════════════════════════════════
-//  EXCLUIR (soft delete)
+//  EXCLUIR (hard delete — sem coluna status)
 // ════════════════════════════════════════════════════════════
 if ($acao === 'excluir') {
     $id = trim($_POST['id'] ?? '');
@@ -187,11 +206,11 @@ if ($acao === 'excluir') {
     }
 
     try {
-        $db->update('funcionarios', ['status' => 'Inativo', 'updated_at' => date('c')], ['id' => "eq.$id"]);
+        $db->delete('funcionarios', ['id' => "eq.$id"]);
         echo json_encode(['sucesso' => true]);
     } catch (RuntimeException $e) {
         error_log('[Funcionarios:excluir] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao inativar funcionário.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao excluir funcionário.']);
     }
     exit;
 }
