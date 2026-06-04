@@ -1716,7 +1716,7 @@
     <div class="container-top">
         <img src="/assets/logo.png" alt="Logo" class="top-logo">
         <div class="user-info"> Usuário:
-            <span class="user-name">admin</span>
+            <span class="user-name"></span>
         </div>
         <a href="#" class="btn-exist" id="btnSair">✕ Sair</a>
     </div>
@@ -2995,6 +2995,43 @@
             return new Date(+y, +m - 1, +d);
         }
 
+        function txtContem(valor, termo) {
+            return (valor || "").toLowerCase().includes(termo);
+        }
+
+        const MAP_STATUS_FILTRO = {
+            'aberta':           'pré-ordem',
+            'pré-ordem':        'pré-ordem',
+            'pre-ordem':        'pré-ordem',
+            'em andamento':     'aberto',
+            'aguardando peça':  'aberto',
+            'aberto':           'aberto',
+            'concluída':        'fechado',
+            'concluida':        'fechado',
+            'entregue':         'fechado',
+            'fechado':          'fechado',
+            'cancelada':        'cancelado',
+            'cancelado':        'cancelado',
+        };
+
+        function normalizarStatusOS(status) {
+            return MAP_STATUS_FILTRO[(status || '').trim().toLowerCase()] || 'pré-ordem';
+        }
+
+        function textoDescricaoOS(row) {
+            return [row.descricao, row.equipamento, row.defeito, row.observacao].filter(Boolean).join(' ');
+        }
+
+        function matchServicosOS(row, termo) {
+            if (txtContem(row.resumoServicos, termo)) return true;
+            const itens = (window._dadosItens && window._dadosItens[row.codigo]) || [];
+            if (itens.some(it => txtContem(
+                [it.descricao, it.produto, it.tipo, it.maquina, it.codItem, it.codBarras].join(' '),
+                termo
+            ))) return true;
+            return txtContem(row.observacao, termo);
+        }
+
         function aplicarFiltros() {
             const cliente = (document.getElementById("filtro-cliente")?.value || "").trim().toLowerCase();
             const tecnico = (document.getElementById("filtro-tecnico")?.value || "").trim().toLowerCase();
@@ -3009,37 +3046,26 @@
             const dFim = parseDateBR(dtFim);
 
             const filtrados = _dadosOS.filter(row => {
-                if (cliente && !row.cliente?.toLowerCase().includes(cliente)) return false;
-                if (tecnico && !row.tecnico?.toLowerCase().includes(tecnico)) return false;
-                if (servico && !row.descricao?.toLowerCase().includes(servico)) return false;
-                if (descricao && !row.descricao?.toLowerCase().includes(descricao)) return false;
+                if (cliente && !txtContem(row.cliente, cliente)) return false;
+                if (tecnico && !txtContem(row.tecnico, tecnico)) return false;
+                if (servico && !matchServicosOS(row, servico)) return false;
+                if (descricao && !txtContem(textoDescricaoOS(row), descricao)) return false;
 
                 if (status && status !== 'todos') {
-                    // Normaliza o status do banco para as 4 categorias do frontend
-                    const mapStatus = {
-                        'aberta':           'pré-ordem',
-                        'pré-ordem':        'pré-ordem',
-                        'em andamento':     'aberto',
-                        'aguardando peça':  'aberto',
-                        'aberto':           'aberto',
-                        'concluída':        'fechado',
-                        'entregue':         'fechado',
-                        'fechado':          'fechado',
-                        'cancelada':        'cancelado',
-                        'cancelado':        'cancelado',
-                    };
-                    const rowStatusNorm = mapStatus[(row.status || '').trim().toLowerCase()] || 'pré-ordem';
-                    if (rowStatusNorm !== status) return false;
+                    if (normalizarStatusOS(row.status) !== status) return false;
                 }
-
 
                 const dRow = parseDateBR(row.dtCriacao);
                 if (dIni && dRow && dRow < dIni) return false;
                 if (dFim && dRow && dRow > dFim) return false;
+
                 if (pesquisa) {
-                    const campos = [row.codigo, row.codUnit, row.descricao, row.cliente,
-                    row.tecnico, row.contato, row.valor, row.respExec].map(v => (v || "").toLowerCase());
-                    if (!campos.some(c => c.includes(pesquisa))) return false;
+                    const campos = [
+                        row.codigo, row.codUnit, row.descricao, row.equipamento, row.defeito,
+                        row.cliente, row.tecnico, row.contato, row.valor, row.respExec,
+                        row.status, row.observacao, row.dtCriacao, row.dtPrevista, row.horas
+                    ];
+                    if (!campos.some(c => txtContem(c, pesquisa))) return false;
                 }
                 return true;
             });
@@ -3483,12 +3509,8 @@
             e.preventDefault();
 
             // 1. Solicita confirmação ao backend
-            const resConfirm = await fetch("sistema.php", {
-                method: "POST",
-                body: new URLSearchParams({ acao: "logout_confirm" })
-            });
-
-            const confirm = await resConfirm.json();
+            const resConfirm = await window.apiPost("sistema.php", { acao: "logout_confirm" });
+            const confirm = resConfirm;
 
             if (!confirm.sucesso) {
                 Swal.fire({
@@ -3518,10 +3540,7 @@
 
             if (swalResult.isConfirmed) {
                 // 3. Efetiva o logout no backend (destrói sessão PHP)
-                await fetch("sistema.php", {
-                    method: "POST",
-                    body: new URLSearchParams({ acao: "logout" })
-                });
+                await window.apiPost("sistema.php", { acao: "logout" });
                 window.location.href = "login.html";
             }
 
@@ -3569,8 +3588,7 @@
             cadCodigo.style.color = "#a6c8ff";
             _abrirModal();
             try {
-                const resp = await fetch("os.php", { method: "POST", body: new URLSearchParams({ acao: "proximo_numero" }) });
-                const data = await resp.json();
+                const data = await window.apiPost("os.php", { acao: "proximo_numero" });
                 cadCodigo.value = data.sucesso ? data.numero : "";
             } catch (e) {
                 cadCodigo.value = "";
@@ -6705,64 +6723,16 @@
                 ativarDragBo();
             };
 
-            window.filtrarBuscaOrigem = function () {
-                var filtros = FILTROS_IDS.map(function (id) {
-                    return (document.getElementById(id)?.value || '').trim().toLowerCase();
-                });
-
-                var linhas = coletarDados(filtros);
-
-                var tbody = document.getElementById('bo-tbody');
+            window._desativarBotoesBo = _desativarBotoes;
+            window._boResetAposBusca = function () {
                 _linhaSel = null;
                 _desativarBotoes();
-
-                if (!linhas.length) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Nenhum registro encontrado</td></tr>';
-                    document.getElementById('bo-count').textContent = '0 registro(s)';
-                    return;
-                }
-
-                document.getElementById('bo-count').textContent = linhas.length + ' registro(s)';
-                tbody.innerHTML = linhas.map(function (cols, idx) {
-                    return '<tr class="bo-row" data-idx="' + idx + '" onclick="selecionarLinhaBo(this)">' +
-                        cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
-                        '</tr>';
-                }).join('');
             };
 
-            function coletarDados(filtros) {
-                var modalId = { cli: 'modalClientes', func: 'modalFuncionarios', forn: 'modalFornecedores' }[_tipo];
-                var modal = document.getElementById(modalId);
-
-                return dadosDemo(filtros);
-            }
-
-            function dadosDemo(filtros) {
-                var demo = {
-                    cli: [
-                        ['001', 'João da Silva', '123.456.789-00', '(47) 99999-0001', 'joao@email.com', 'Joinville'],
-                        ['002', 'Maria Souza', '987.654.321-00', '(47) 98888-0002', 'maria@email.com', 'Blumenau'],
-                        ['003', 'Empresa ABC Ltda', '12.345.678/0001-90', '(47) 3333-0003', 'contato@abc.com', 'Joinville'],
-                        ['004', 'Carlos Pereira', '111.222.333-44', '(47) 97777-0004', 'carlos@email.com', 'Florianópolis'],
-                        ['005', 'Fernanda Lima', '555.666.777-88', '(47) 96666-0005', 'fernanda@email.com', 'Jaraguá do Sul'],
-                    ],
-                    func: [
-                        ['001', 'Ana Paula Costa', '111.111.111-11', 'Técnica', '(47) 91111-1111', 'ana@empresa.com'],
-                        ['002', 'Bruno Martins', '222.222.222-22', 'Gerente', '(47) 92222-2222', 'bruno@empresa.com'],
-                        ['003', 'Cláudio Ramos', '333.333.333-33', 'Suporte', '(47) 93333-3333', 'claudio@empresa.com'],
-                    ],
-                    forn: [
-                        ['001', 'Fornecedora XYZ Ltda', '11.111.111/0001-11', 'Marcos', '(47) 91010-1010', 'Joinville'],
-                        ['002', 'Distribuidora Beta', '22.222.222/0001-22', 'Lucia', '(47) 92020-2020', 'São Paulo'],
-                        ['003', 'TechParts S.A.', '33.333.333/0001-33', 'Roberto', '(47) 93030-3030', 'Curitiba'],
-                    ],
+            if (typeof window.filtrarBuscaOrigem !== 'function') {
+                window.filtrarBuscaOrigem = function () {
+                    console.warn('[buscaOrigem] Aguarde o carregamento do sistema (db_real.js).');
                 };
-                var rows = demo[_tipo] || [];
-                return rows.filter(function (cols) {
-                    return filtros.every(function (f, i) {
-                        return !f || (cols[i] || '').toLowerCase().includes(f);
-                    });
-                });
             }
 
             window.selecionarLinhaBo = function (tr) {
@@ -6780,22 +6750,29 @@
                 document.getElementById('bo-btn-ok').disabled = false;
             };
 
-            window.selecionarOrigem = function () {
+            window.selecionarOrigem = async function () {
                 if (!_linhaSel) return;
 
                 var cols = Array.from(_linhaSel.cells).map(function (c) { return c.textContent || ''; });
-
-                if (CAMPOS[_tipo]) CAMPOS[_tipo](cols);
-
-                atualizarCampoBusca(_tipo, cols[1] || cols[0] || '');
+                var registroId = _linhaSel.dataset.id || '';
 
                 if (typeof _callback === 'function') {
                     var dados = {};
                     COLUNAS[_tipo].forEach(function (col, i) { dados[col] = cols[i] || ''; });
+                    if (registroId) dados.id = registroId;
                     _callback(dados);
+                    fecharModal('modalBuscaOrigem', 'overlayBuscaOrigem');
+                    return;
                 }
 
                 fecharModal('modalBuscaOrigem', 'overlayBuscaOrigem');
+
+                if (registroId && typeof window.carregarOrigemNoForm === 'function') {
+                    await window.carregarOrigemNoForm(_tipo, registroId);
+                } else if (CAMPOS[_tipo]) {
+                    CAMPOS[_tipo](cols);
+                    atualizarCampoBusca(_tipo, cols[1] || cols[0] || '');
+                }
             };
 
 
@@ -6839,12 +6816,27 @@
             window.abrirNovoDeOrigem = function () {
                 var map = { cli: ['modalClientes', 'overlayClientes'], func: ['modalFuncionarios', 'overlayFuncionarios'], forn: ['modalFornecedores', 'overlayFornecedores'] };
                 var ids = map[_tipo];
-                if (ids) { limparModal(ids[0]); abrirModal(ids[0], ids[1]); }
+                if (ids) {
+                    limparModal(ids[0]);
+                    if (typeof window.limparSelecoesOrigem === 'function') window.limparSelecoesOrigem();
+                    abrirModal(ids[0], ids[1]);
+                }
             };
 
-            window.editarSelecionadoBo = function () {
+            window.editarSelecionadoBo = async function () {
                 if (!_linhaSel) return;
-                abrirNovoDeOrigem();
+                var registroId = _linhaSel.dataset.id;
+                if (!registroId) {
+                    alert('Registro sem identificador. Busque novamente na base de dados.');
+                    return;
+                }
+                var map = { cli: ['modalClientes', 'overlayClientes'], func: ['modalFuncionarios', 'overlayFuncionarios'], forn: ['modalFornecedores', 'overlayFornecedores'] };
+                var ids = map[_tipo];
+                fecharModal('modalBuscaOrigem', 'overlayBuscaOrigem');
+                if (ids) abrirModal(ids[0], ids[1]);
+                if (typeof window.carregarOrigemNoForm === 'function') {
+                    await window.carregarOrigemNoForm(_tipo, registroId);
+                }
             };
 
             window.limparTodosFiltrosBo = function () {
@@ -8216,11 +8208,12 @@
                     tr.className = 'usr-row';
                     tr.dataset.id = u.id;
                     var badge = BADGE[u.status] || 'usr-badge-inativo';
+                    var idExib = u.id ? (String(u.id).length > 10 ? String(u.id).substring(0, 8) : u.id) : '—';
                     tr.innerHTML =
-                        '<td>' + u.id + '</td>' +
-                        '<td>' + u.nome + '</td>' +
-                        '<td>' + u.setor + '</td>' +
-                        '<td><span class="usr-badge ' + badge + '">' + u.status + '</span></td>';
+                        '<td title="' + (u.id || '') + '">' + idExib + '</td>' +
+                        '<td>' + (u.nome || '—') + '</td>' +
+                        '<td>' + (u.setor || '—') + '</td>' +
+                        '<td><span class="usr-badge ' + badge + '">' + (u.status || '—') + '</span></td>';
                     tr.addEventListener('click', function () { usr_selecionar(tr, u); });
                     tbody.appendChild(tr);
                 });
@@ -8228,18 +8221,23 @@
             window.usr_renderizar = usr_renderizar;
 
             window.usr_filtrar = function () {
-                var nome = (document.getElementById('usr-filtro-nome').value || '').trim().toLowerCase();
-                var pesq = (document.getElementById('usr-pesquisa-topo').value || '').trim().toLowerCase();
+                var nome = (document.getElementById('usr-filtro-nome')?.value || '').trim().toLowerCase();
+                var pesq = (document.getElementById('usr-pesquisa-topo')?.value || '').trim().toLowerCase();
                 var checks = document.querySelectorAll('#modalUsuarios .usr-status-filtros input[type=checkbox]');
                 var statusAtivos = [];
                 ['Ativo', 'Inativo', 'Suspenso'].forEach(function (s, i) {
                     if (checks[i] && checks[i].checked) statusAtivos.push(s);
                 });
-                var res = _usrDados.filter(function (u) {
-                    if (nome && !u.nome.toLowerCase().includes(nome)) return false;
+                var res = (_usrDados || []).filter(function (u) {
+                    if (nome) {
+                        var camposNome = [u.nome, u.login, u.email, u.setor, u.grupo, u.funcionario, u.id]
+                            .map(function (v) { return (v || '').toLowerCase(); });
+                        if (!camposNome.some(function (c) { return c.includes(nome); })) return false;
+                    }
                     if (statusAtivos.length && !statusAtivos.includes(u.status)) return false;
                     if (pesq) {
-                        var campos = [u.id, u.nome, u.setor, u.grupo, u.email, u.login, u.status].map(function (v) { return (v || '').toLowerCase(); });
+                        var campos = [u.id, u.nome, u.setor, u.grupo, u.email, u.login, u.status, u.funcionario, u.obs]
+                            .map(function (v) { return (v || '').toLowerCase(); });
                         if (!campos.some(function (c) { return c.includes(pesq); })) return false;
                     }
                     return true;
@@ -8279,8 +8277,56 @@
                 usr_habilitar();
             };
 
-            window.usr_abrirEdicao = function () {
-                if (!_usrSel) return;
+            window.usr_abrirEdicao = async function () {
+                if (!_usrSel?.id) return;
+
+                try {
+                    var data = await window.apiPost('usuarios.php', { acao: 'buscar', id: _usrSel.id });
+                    if (!data.sucesso || !data.usuario) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon: 'error', title: 'Erro', text: data.mensagem || 'Não foi possível carregar o usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                        }
+                        return;
+                    }
+
+                    var u = data.usuario;
+                    var funcNome = '';
+                    if (u.funcionario_id) {
+                        try {
+                            var fr = await window.apiPost('funcionarios.php', { acao: 'buscar', id: u.funcionario_id });
+                            if (fr.sucesso && fr.funcionario) funcNome = fr.funcionario.nome || '';
+                        } catch (e) { /* opcional */ }
+                    }
+
+                    function fmtDt(v) {
+                        if (!v) return '';
+                        if (v.indexOf('/') >= 0) return v;
+                        var p = v.split('T')[0].split('-');
+                        return p.length === 3 ? (p[2] + '/' + p[1] + '/' + p[0]) : v;
+                    }
+
+                    _usrSel = {
+                        id: u.id,
+                        nome: u.nome || '',
+                        login: u.login || '',
+                        email: u.email || '',
+                        grupo: u.grupo || '',
+                        setor: u.setor || '',
+                        status: u.status || 'Ativo',
+                        funcionarioId: u.funcionario_id || '',
+                        funcionario: funcNome,
+                        obs: u.observacoes || '',
+                        suspensao: u.status === 'Suspenso',
+                        dataSaida: fmtDt(u.data_saida || '')
+                    };
+                } catch (e) {
+                    console.error('[usr_abrirEdicao]', e);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha ao carregar dados do usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    }
+                    return;
+                }
+
                 _usrModo = 'editar';
                 var u = _usrSel;
                 var t = document.getElementById('usr-form-titulo'); if (t) t.textContent = 'Editar — ' + u.nome;
@@ -8296,7 +8342,6 @@
                 _g('usr-f-suspenso').checked = u.suspensao;
                 _g('usr-f-data-saida').value = u.dataSaida || '';
                 usr_habilitar();
-                // Login não pode ser alterado após criação
                 var elLogin = _g('usr-f-login');
                 if (elLogin) { elLogin.disabled = true; elLogin.title = 'O login não pode ser alterado.'; }
             };
@@ -8461,7 +8506,7 @@
             }
         }
 
-        // ── Corrigir limparModal para limpar o campo id oculto ────────────────
+        // ── Corrigir limparModal para limpar o campo id oculto e seleção ─────
         var _origLimparModal = window.limparModal;
         window.limparModal = function (modalId) {
             _origLimparModal(modalId);
@@ -8470,109 +8515,18 @@
                 'modalFuncionarios': 'func-id',
                 'modalFornecedores': 'forn-id'
             };
+            var selMap = {
+                'modalClientes': '_cliSel',
+                'modalFuncionarios': '_funcSel',
+                'modalFornecedores': '_fornSel'
+            };
             var hiddenId = idMap[modalId];
             if (hiddenId) {
                 var el = document.getElementById(hiddenId);
                 if (el) el.value = '';
             }
-        };
-
-        // ── salvarFuncionario ─────────────────────────────────────────────────
-        window.salvarFuncionario = async function () {
-            var nome = _gVal('func-nome');
-            if (!nome) { _showMsg(false, 'O campo Nome Completo é obrigatório.'); return; }
-
-            var fd = new FormData();
-            var id = _gVal('func-id');
-            fd.append('acao', id ? 'atualizar' : 'criar');
-            if (id) fd.append('id', id);
-
-            var campos = ['nome','cpf','rg','nascimento','cargo','setor','departamento',
-                          'nivel','genero','nacionalidade','status','obs',
-                          'tel','cel','whatsapp','emergencia','email',
-                          'cep','uf','rua','numero','complemento','bairro','cidade'];
-            campos.forEach(function (c) { fd.append(c, _gVal('func-' + c)); });
-
-            var chkTec = document.getElementById('func-tecnico');
-            var chkPad = document.getElementById('func-padrao');
-            fd.append('tecnico', chkTec && chkTec.checked ? '1' : '0');
-            fd.append('padrao',  chkPad && chkPad.checked ? '1' : '0');
-
-            try {
-                var r = await fetch('funcionarios.php', { method: 'POST', body: fd });
-                var j = await r.json();
-                if (j.sucesso) {
-                    if (j.id) document.getElementById('func-id').value = j.id;
-                    _showMsg(true, 'Funcionário salvo com sucesso!');
-                } else {
-                    _showMsg(false, j.mensagem || 'Erro ao salvar funcionário.');
-                }
-            } catch (e) {
-                _showMsg(false, 'Erro de comunicação com o servidor.');
-            }
-        };
-
-        // ── salvarCliente ─────────────────────────────────────────────────────
-        window.salvarCliente = async function () {
-            var nome = _gVal('cli-nome');
-            if (!nome) { _showMsg(false, 'O campo Nome é obrigatório.'); return; }
-
-            var fd = new FormData();
-            var id = _gVal('cli-id');
-            fd.append('acao', id ? 'atualizar' : 'criar');
-            if (id) fd.append('id', id);
-
-            var campos = ['nome','doc','ie','nascimento','tipo','status',
-                          'genero','nacionalidade','vendedor','obs',
-                          'tel','cel','whatsapp','contato','email','site',
-                          'cep','uf','rua','num','comp','bairro','cidade',
-                          'limite','prazo','forma_pag','desconto','banco','obs_fin'];
-            campos.forEach(function (c) { fd.append(c, _gVal('cli-' + c)); });
-
-            try {
-                var r = await fetch('clientes.php', { method: 'POST', body: fd });
-                var j = await r.json();
-                if (j.sucesso) {
-                    if (j.id) document.getElementById('cli-id').value = j.id;
-                    _showMsg(true, 'Cliente salvo com sucesso!');
-                } else {
-                    _showMsg(false, j.mensagem || 'Erro ao salvar cliente.');
-                }
-            } catch (e) {
-                _showMsg(false, 'Erro de comunicação com o servidor.');
-            }
-        };
-
-        // ── salvarFornecedor ──────────────────────────────────────────────────
-        window.salvarFornecedor = async function () {
-            var razao = _gVal('forn-razao');
-            if (!razao) { _showMsg(false, 'O campo Razão Social é obrigatório.'); return; }
-
-            var fd = new FormData();
-            var id = _gVal('forn-id');
-            fd.append('acao', id ? 'atualizar' : 'criar');
-            if (id) fd.append('id', id);
-
-            fd.append('razao_social', razao);
-            var campos = ['fantasia','doc','ie','im','status','categoria','tipo',
-                          'representante','origem','obs',
-                          'tel','cel','whatsapp','contato','email','site',
-                          'cep','uf','rua','numero','complemento','bairro','cidade',
-                          'prazo','limite','forma_pag','desconto','banco','obs_fin'];
-            campos.forEach(function (c) { fd.append(c, _gVal('forn-' + c)); });
-
-            try {
-                var r = await fetch('fornecedores.php', { method: 'POST', body: fd });
-                var j = await r.json();
-                if (j.sucesso) {
-                    if (j.id) document.getElementById('forn-id').value = j.id;
-                    _showMsg(true, 'Fornecedor salvo com sucesso!');
-                } else {
-                    _showMsg(false, j.mensagem || 'Erro ao salvar fornecedor.');
-                }
-            } catch (e) {
-                _showMsg(false, 'Erro de comunicação com o servidor.');
-            }
+            var selKey = selMap[modalId];
+            if (selKey) window[selKey] = null;
         };
     </script>
 

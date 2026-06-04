@@ -57,6 +57,43 @@ if ($acao === 'listar') {
             }));
         }
 
+        // Resumo dos itens/serviços de cada OS (para filtros no frontend)
+        if (!empty($rows)) {
+            $idsUnicos = array_unique(array_filter(array_column($rows, 'id')));
+            $resumoPorOs = [];
+
+            foreach (array_chunk($idsUnicos, 30) as $chunk) {
+                $inClause = implode(',', $chunk);
+                try {
+                    $itens = $db->select(
+                        'os_itens',
+                        ['os_id' => "in.($inClause)"],
+                        'os_id,descricao,produto,tipo,maquina,cod_item'
+                    );
+                    foreach ($itens as $it) {
+                        $oid = $it['os_id'] ?? '';
+                        if ($oid === '') continue;
+                        $texto = trim(implode(' ', array_filter([
+                            $it['descricao'] ?? '',
+                            $it['produto']    ?? '',
+                            $it['tipo']       ?? '',
+                            $it['maquina']    ?? '',
+                            $it['cod_item']   ?? '',
+                        ])));
+                        if ($texto === '') continue;
+                        $resumoPorOs[$oid] = trim(($resumoPorOs[$oid] ?? '') . ' ' . $texto);
+                    }
+                } catch (RuntimeException $e) {
+                    // não crítico para listagem
+                }
+            }
+
+            foreach ($rows as &$row) {
+                $row['resumo_servicos'] = $resumoPorOs[$row['id']] ?? '';
+            }
+            unset($row);
+        }
+
         echo json_encode(['sucesso' => true, 'dados' => $rows]);
 
     } catch (RuntimeException $e) {

@@ -22,6 +22,12 @@ session_start();
  */
 function requireSession(bool $jsonResponse = false): void
 {
+    if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['last_activity'])) {
+        if (time() - (int) $_SESSION['last_activity'] > SESSION_LIFETIME) {
+            $_SESSION = [];
+        }
+    }
+
     if (empty($_SESSION['usuario_id'])) {
         if ($jsonResponse) {
             header('Content-Type: application/json');

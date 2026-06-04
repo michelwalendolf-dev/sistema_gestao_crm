@@ -106,7 +106,8 @@ form.addEventListener("submit", async function(e){
 
     const resposta = await fetch("login.php", {
         method: "POST",
-        body: new FormData(form)
+        body: new FormData(form),
+        credentials: "same-origin"
     });
 
     const resultado = await resposta.json();

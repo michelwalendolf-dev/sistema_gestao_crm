@@ -6,6 +6,46 @@
 (function () {
     'use strict';
 
+    let _redirectingLogin = false;
+
+    async function apiPost(url, params) {
+        const body = new URLSearchParams();
+        Object.entries(params || {}).forEach(function ([k, v]) {
+            if (v !== null && v !== undefined) body.append(k, String(v));
+        });
+
+        const resp = await fetch(url, {
+            method: 'POST',
+            body,
+            credentials: 'same-origin',
+        });
+
+        if (resp.status === 401) {
+            if (!_redirectingLogin) {
+                _redirectingLogin = true;
+                if (typeof Swal !== 'undefined') {
+                    await Swal.fire({
+                        icon: 'warning',
+                        title: 'Sessão expirada',
+                        text: 'Faça login novamente para continuar.',
+                        confirmButtonColor: '#2d7dff',
+                        scrollbarPadding: false,
+                    });
+                }
+                window.location.href = 'login.html';
+            }
+            return { sucesso: false, titulo: 'Sessão expirada', mensagem: 'Faça login novamente.' };
+        }
+
+        return resp.json();
+    }
+
+    window.apiPost = apiPost;
+})();
+
+(function () {
+    'use strict';
+
     // ── Helpers ──────────────────────────────────────────────
 
     function hoje() {
@@ -29,19 +69,11 @@
     }
 
     async function postOS(params) {
-        const resp = await fetch('os.php', {
-            method: 'POST',
-            body: new URLSearchParams(params),
-        });
-        return resp.json();
+        return window.apiPost('os.php', params);
     }
 
     async function postFuncionarios(params) {
-        const resp = await fetch('funcionarios.php', {
-            method: 'POST',
-            body: new URLSearchParams(params),
-        });
-        return resp.json();
+        return window.apiPost('funcionarios.php', params);
     }
 
     // ── Converte linha do banco → objeto da tela ──────────────
@@ -61,6 +93,7 @@
             valor:      fmtMoeda(r.valor_total || 0),
             status:     r.status      || '',
             observacao: r.observacoes || '',
+            resumoServicos: r.resumo_servicos || '',
             // Campos extras do form
             equipamento:       r.equipamento       || '',
             marca:             r.marca             || '',
@@ -240,7 +273,9 @@
             // Preserva o cache de itens já carregados; apenas garante que o objeto existe
             if (!window._dadosItens) window._dadosItens = {};
 
-            if (typeof renderizarGrid === 'function') {
+            if (typeof aplicarFiltros === 'function') {
+                aplicarFiltros();
+            } else if (typeof renderizarGrid === 'function') {
                 renderizarGrid(rows);
             }
         } catch (e) {
@@ -345,7 +380,7 @@
             };
 
             try {
-                const r = await (await fetch('os.php', { method: 'POST', body: new URLSearchParams(params) })).json();
+                const r = await window.apiPost('os.php', params);
                 if (!r.sucesso) {
                     Swal.fire({ icon: 'error', title: 'Erro', text: r.mensagem || 'Erro ao criar OS.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
                     return;
@@ -365,68 +400,6 @@
         }
     };
 
-    // ── Busca real de funcionários no modal buscaOrigem ──────
-    (function patchBuscaFuncionarios() {
-        var _origFiltrar = window.filtrarBuscaOrigem;
-
-        window.filtrarBuscaOrigem = async function () {
-            var tipo = (typeof _tipo !== 'undefined' ? _tipo : null)
-                    || window._buscaOrigemTipoAtual
-                    || 'cli';
-
-            if (tipo !== 'func') {
-                if (typeof _origFiltrar === 'function') _origFiltrar();
-                return;
-            }
-
-            var filtroNome  = (document.getElementById('bo-f-nome')?.value || '').trim().toLowerCase();
-            var filtroCpf   = (document.getElementById('bo-f-doc')?.value  || '').trim().toLowerCase();
-            var filtroCargo = (document.getElementById('bo-f-tel')?.value  || '').trim().toLowerCase();
-
-            var tbody = document.getElementById('bo-tbody');
-            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Buscando...</td></tr>';
-
-            try {
-                const funcs = await window.DB.buscarFuncionarios(filtroNome || filtroCpf || filtroCargo || '');
-
-                var filtrados = funcs.filter(function (f) {
-                    var nome  = (f.nome  || '').toLowerCase();
-                    var cpf   = (f.cpf   || '').toLowerCase();
-                    var cargo = (f.cargo || '').toLowerCase();
-                    if (filtroNome  && !nome.includes(filtroNome))   return false;
-                    if (filtroCpf   && !cpf.includes(filtroCpf))     return false;
-                    if (filtroCargo && !cargo.includes(filtroCargo))  return false;
-                    return true;
-                });
-
-                document.getElementById('bo-count').textContent = filtrados.length + ' registro(s)';
-
-                if (!filtrados.length) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Nenhum funcionário encontrado</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = filtrados.map(function (f, idx) {
-                    var cols = [
-                        f.id   ? f.id.substring(0, 6) : String(idx + 1).padStart(3, '0'),
-                        f.nome  || '—',
-                        f.cpf   || '—',
-                        f.cargo || '—',
-                        f.cel   || f.tel || '—',
-                        f.email || '—',
-                    ];
-                    return '<tr class="bo-row" data-idx="' + idx + '" data-id="' + (f.id || '') + '" onclick="selecionarLinhaBo(this)">' +
-                        cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
-                        '</tr>';
-                }).join('');
-
-            } catch (e) {
-                console.error('[filtrarBuscaOrigem:func]', e);
-                tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Erro ao buscar funcionários.</td></tr>';
-            }
-        };
-    })();
-
     console.log('[db_real.js] Carregado com sucesso.');
 })();
 
@@ -439,8 +412,7 @@
 
     // ── Helpers de fetch ──────────────────────────────────────
     async function postUrl(url, params) {
-        const resp = await fetch(url, { method: 'POST', body: new URLSearchParams(params) });
-        return resp.json();
+        return window.apiPost(url, params);
     }
 
     // ── Carrega grupo do usuário logado ───────────────────────
@@ -491,6 +463,180 @@
         return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
     }
 
+    function fmtDataBr(v) {
+        if (!v) return '';
+        if (v.includes('/')) return v;
+        const [y, m, d] = v.split('T')[0].split('-');
+        if (!y || !m || !d) return '';
+        return `${d}/${m}/${y}`;
+    }
+
+    function setFormVal(id, val) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === 'checkbox') {
+            el.checked = !!val;
+        } else {
+            el.value = (val === null || val === undefined || val === '—') ? '' : val;
+        }
+    }
+
+    function obterIdOrigem(tipo) {
+        const map = { cli: '_cliSel', func: '_funcSel', forn: '_fornSel' };
+        const hidden = { cli: 'cli-id', func: 'func-id', forn: 'forn-id' };
+        const sel = window[map[tipo]];
+        if (sel?.id) return sel.id;
+        return (document.getElementById(hidden[tipo])?.value || '').trim();
+    }
+
+    function definirIdOrigem(tipo, id) {
+        const map = { cli: '_cliSel', func: '_funcSel', forn: '_fornSel' };
+        const hidden = { cli: 'cli-id', func: 'func-id', forn: 'forn-id' };
+        if (id) {
+            window[map[tipo]] = { id };
+            setFormVal(hidden[tipo], id);
+        } else {
+            window[map[tipo]] = null;
+            setFormVal(hidden[tipo], '');
+        }
+    }
+
+    function limparSelecoesOrigem() {
+        ['cli', 'func', 'forn'].forEach(t => definirIdOrigem(t, null));
+    }
+
+    function preencherClienteForm(c) {
+        definirIdOrigem('cli', c.id);
+        setFormVal('cli-codigo', c.codigo);
+        setFormVal('cli-nome', c.nome);
+        setFormVal('cli-fantasia', c.razao_social);
+        setFormVal('cli-doc', c.cpf_cnpj);
+        setFormVal('cli-rg', c.rg_ie);
+        setFormVal('cli-nascimento', fmtDataBr(c.data_nascimento));
+        setFormVal('cli-tipo', c.tipo_pessoa === 'J' ? 'Pessoa Jurídica' : 'Pessoa Física');
+        setFormVal('cli-status', c.ativo === false ? 'Inativo' : 'Ativo');
+        setFormVal('cli-obs', c.observacoes);
+        setFormVal('cli-tel', c.telefone);
+        setFormVal('cli-cel', c.celular);
+        setFormVal('cli-contato', c.contato);
+        setFormVal('cli-email', c.email);
+        setFormVal('cli-cep', c.cep);
+        setFormVal('cli-uf', c.uf);
+        setFormVal('cli-rua', c.logradouro);
+        setFormVal('cli-num', c.numero);
+        setFormVal('cli-comp', c.complemento);
+        setFormVal('cli-bairro', c.bairro);
+        setFormVal('cli-cidade', c.cidade);
+        const busca = document.getElementById('busca-cli');
+        if (busca) busca.value = c.nome || '';
+    }
+
+    function preencherFuncionarioForm(f) {
+        definirIdOrigem('func', f.id);
+        setFormVal('func-codigo', f.codigo);
+        setFormVal('func-nome', f.nome);
+        setFormVal('func-cpf', f.cpf);
+        setFormVal('func-rg', f.rg);
+        setFormVal('func-nascimento', fmtDataBr(f.data_nascimento || f.nascimento));
+        setFormVal('func-cargo', f.cargo);
+        setFormVal('func-setor', f.setor);
+        setFormVal('func-departamento', f.departamento);
+        setFormVal('func-nivel', f.nivel);
+        setFormVal('func-genero', f.genero || f.sexo);
+        setFormVal('func-nacionalidade', f.nacionalidade);
+        setFormVal('func-status', f.status || (f.ativo === false ? 'Inativo' : 'Ativo'));
+        setFormVal('func-tecnico', f.tecnico === true || f.tecnico === '1' || f.tecnico === 1);
+        setFormVal('func-padrao', f.padrao === true || f.padrao === '1' || f.padrao === 1);
+        setFormVal('func-obs', f.observacoes || f.obs);
+        setFormVal('func-tel', f.telefone || f.tel);
+        setFormVal('func-cel', f.celular || f.cel);
+        setFormVal('func-whatsapp', f.whatsapp);
+        setFormVal('func-emergencia', f.emergencia);
+        setFormVal('func-email', f.email);
+        setFormVal('func-cep', f.cep);
+        setFormVal('func-uf', f.uf);
+        setFormVal('func-rua', f.logradouro || f.rua);
+        setFormVal('func-num', f.numero);
+        setFormVal('func-comp', f.complemento);
+        setFormVal('func-bairro', f.bairro);
+        setFormVal('func-cidade', f.cidade);
+        setFormVal('func-admissao', fmtDataBr(f.data_admissao || f.admissao));
+        setFormVal('func-demissao', fmtDataBr(f.data_demissao || f.demissao));
+        setFormVal('func-salario', f.salario);
+        setFormVal('func-tipo-contrato', f.tipo_contrato);
+        setFormVal('func-carga', f.carga_horaria);
+        setFormVal('func-pis', f.pis_pasep || f.pis);
+        setFormVal('func-ctps', f.ctps_numero || f.ctps);
+        setFormVal('func-ctps-serie', f.ctps_serie);
+        const busca = document.getElementById('busca-func');
+        if (busca) busca.value = f.nome || '';
+    }
+
+    function preencherFornecedorForm(f) {
+        definirIdOrigem('forn', f.id);
+        setFormVal('forn-codigo', f.codigo);
+        setFormVal('forn-razao', f.razao_social);
+        setFormVal('forn-fantasia', f.fantasia);
+        setFormVal('forn-doc', f.documento);
+        setFormVal('forn-ie', f.ie);
+        setFormVal('forn-im', f.im);
+        setFormVal('forn-status', f.status || 'Ativo');
+        setFormVal('forn-categoria', f.categoria);
+        setFormVal('forn-tipo', f.tipo);
+        setFormVal('forn-representante', f.representante);
+        setFormVal('forn-origem', f.origem);
+        setFormVal('forn-obs', f.obs);
+        setFormVal('forn-tel', f.tel);
+        setFormVal('forn-cel', f.cel);
+        setFormVal('forn-whatsapp', f.whatsapp);
+        setFormVal('forn-contato', f.contato);
+        setFormVal('forn-email', f.email);
+        setFormVal('forn-site', f.site);
+        setFormVal('forn-cep', f.cep);
+        setFormVal('forn-uf', f.uf);
+        setFormVal('forn-rua', f.rua);
+        setFormVal('forn-num', f.numero);
+        setFormVal('forn-comp', f.complemento);
+        setFormVal('forn-bairro', f.bairro);
+        setFormVal('forn-cidade', f.cidade);
+        setFormVal('forn-prazo', f.prazo);
+        setFormVal('forn-limite', f.limite);
+        setFormVal('forn-forma-pag', f.forma_pag);
+        setFormVal('forn-desconto', f.desconto);
+        setFormVal('forn-banco', f.banco);
+        setFormVal('forn-obs-fin', f.obs_fin);
+        const busca = document.getElementById('busca-forn');
+        if (busca) busca.value = f.razao_social || '';
+    }
+
+    window.carregarOrigemNoForm = async function (tipo, id) {
+        if (!tipo || !id) return false;
+        const endpoints = {
+            cli:  { url: 'clientes.php',     key: 'cliente',     fill: preencherClienteForm },
+            func: { url: 'funcionarios.php', key: 'funcionario', fill: preencherFuncionarioForm },
+            forn: { url: 'fornecedores.php', key: 'fornecedor',  fill: preencherFornecedorForm },
+        };
+        const cfg = endpoints[tipo];
+        if (!cfg) return false;
+
+        try {
+            const data = await postUrl(cfg.url, { acao: 'buscar', id });
+            const registro = data[cfg.key];
+            if (!data.sucesso || !registro) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: data.mensagem || 'Registro não encontrado.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                return false;
+            }
+            cfg.fill(registro);
+            return true;
+        } catch (e) {
+            console.error('[carregarOrigemNoForm]', e);
+            Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha ao carregar os dados.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return false;
+        }
+    };
+
+    window.limparSelecoesOrigem = limparSelecoesOrigem;
+
     // ── Loading state helper ─────────────────────────────────
     function setLoadingBtn(selector, loading) {
         const btn = document.querySelector(selector);
@@ -526,17 +672,18 @@
                 return;
             }
             window._usrDados = (data.dados || []).map(u => ({
-                id:         u.id          || '',
-                nome:       u.nome        || '',
-                login:      u.login       || '',
-                email:      u.email       || '',
-                grupo:      u.grupo       || '',
-                setor:      u.setor       || '',
-                status:     u.status      || 'Ativo',
-                funcionario:u.funcionario_id || '',
-                obs:        u.observacoes || '',
-                suspensao:  u.status === 'Suspenso',
-                dataSaida:  u.data_saida  || '',
+                id:            u.id               || '',
+                nome:          u.nome             || '',
+                login:         u.login            || '',
+                email:         u.email            || '',
+                grupo:         u.grupo            || '',
+                setor:         u.setor            || '',
+                status:        u.status           || 'Ativo',
+                funcionarioId: u.funcionario_id   || '',
+                funcionario:   '',
+                obs:           u.observacoes      || '',
+                suspensao:     u.status === 'Suspenso',
+                dataSaida:     fmtDataBr(u.data_saida || ''),
             }));
             console.log('[carregarUsuarios] total:', window._usrDados.length);
             if (typeof window.usr_renderizar === 'function') window.usr_renderizar(window._usrDados);
@@ -560,7 +707,12 @@
 
     // usr_salvar real
     window.usr_salvar = async function() {
-        const modo = window._usrModo;
+        let modo = window._usrModo;
+        if (!modo && window._usrSel?.id) modo = 'editar';
+        if (!modo) {
+            Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Clique em "Novo" ou "Editar" antes de salvar.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
         const nome = document.getElementById('usr-f-nome')?.value.trim();
         if (!nome) {
             Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe o nome.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
@@ -589,10 +741,19 @@
             setor:       document.getElementById('usr-f-setor')?.value.trim() || '',
             observacoes: document.getElementById('usr-f-obs')?.value.trim() || '',
             status:      document.getElementById('usr-f-suspenso')?.checked ? 'Suspenso' : 'Ativo',
-            data_saida:  dateBrToIso(document.getElementById('usr-f-data-saida')?.value.trim()) || '',
+            data_saida:  (() => {
+                const raw = document.getElementById('usr-f-data-saida')?.value.trim() || '';
+                return raw ? (dateBrToIso(raw) || '') : '';
+            })(),
         };
-        if (senha) params.senha = senha;
-        if (modo === 'editar' && window._usrSel?.id) params.id = window._usrSel.id;
+        if (modo === 'editar') {
+            if (window._usrSel?.id) params.id = window._usrSel.id;
+            if (senha) params.nova_senha = senha;
+        } else if (senha) {
+            params.senha = senha;
+        }
+        const funcId = window._usrSel?.funcionarioId || '';
+        if (funcId) params.funcionario_id = funcId;
 
         let res = { sucesso: false };
         try { res = await postUrl('usuarios.php', params); } catch(e) {}
@@ -642,7 +803,7 @@
         const btn = document.querySelector('#modalClientes .btn-footer-salvar');
         if (btn) { btn.disabled = true; btn._orig = btn.textContent; btn.textContent = '⏳ Salvando...'; }
 
-        const cliId = window._cliSel?.id;
+        const cliId = obterIdOrigem('cli');
         const params = {
             acao:       cliId ? 'atualizar' : 'criar',
             nome,
@@ -676,8 +837,7 @@
             Swal.fire({ icon: 'error', title: 'Erro', text: r.mensagem || 'Erro ao salvar.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
             return;
         }
-        window._cliSel = null;
-        if (typeof limparModal === 'function') limparModal('modalClientes');
+        if (r.id) definirIdOrigem('cli', r.id);
         Swal.fire({ icon: 'success', title: cliId ? 'Cliente atualizado!' : 'Cliente salvo!', timer: 1800, showConfirmButton: false, scrollbarPadding: false });
     };
 
@@ -691,7 +851,7 @@
         const btn = document.querySelector('#modalFuncionarios .btn-footer-salvar');
         if (btn) { btn.disabled = true; btn._orig = btn.textContent; btn.textContent = '⏳ Salvando...'; }
 
-        const funcId = window._funcSel?.id;
+        const funcId = obterIdOrigem('func');
         const params = {
             acao:          funcId ? 'atualizar' : 'criar',
             nome,
@@ -702,11 +862,16 @@
             setor:         document.getElementById('func-setor')?.value.trim() || '',
             departamento:  document.getElementById('func-departamento')?.value.trim() || '',
             nivel:         document.getElementById('func-nivel')?.value.trim() || '',
+            genero:        document.getElementById('func-genero')?.value.trim() || '',
+            nacionalidade: document.getElementById('func-nacionalidade')?.value.trim() || '',
             status:        (document.getElementById('func-status')?.value.trim() || '').replace(/[●○▲✖\s]/g, '') || 'Ativo',
             tecnico:       document.getElementById('func-tecnico')?.checked ? '1' : '0',
+            padrao:        document.getElementById('func-padrao')?.checked ? '1' : '0',
             obs:           document.getElementById('func-obs')?.value.trim() || '',
             tel:           document.getElementById('func-tel')?.value.trim() || '',
             cel:           document.getElementById('func-cel')?.value.trim() || '',
+            whatsapp:      document.getElementById('func-whatsapp')?.value.trim() || '',
+            emergencia:    document.getElementById('func-emergencia')?.value.trim() || '',
             email:         document.getElementById('func-email')?.value.trim() || '',
             cep:           document.getElementById('func-cep')?.value.trim() || '',
             uf:            document.getElementById('func-uf')?.value.trim() || '',
@@ -716,10 +881,13 @@
             bairro:        document.getElementById('func-bairro')?.value.trim() || '',
             cidade:        document.getElementById('func-cidade')?.value.trim() || '',
             admissao:      dateBrToIso(document.getElementById('func-admissao')?.value.trim()) || '',
+            demissao:      dateBrToIso(document.getElementById('func-demissao')?.value.trim()) || '',
             salario:       document.getElementById('func-salario')?.value.trim() || '',
             tipo_contrato: document.getElementById('func-tipo-contrato')?.value.trim() || '',
+            carga:         document.getElementById('func-carga')?.value.trim() || '',
             pis:           document.getElementById('func-pis')?.value.trim() || '',
             ctps:          document.getElementById('func-ctps')?.value.trim() || '',
+            ctps_serie:    document.getElementById('func-ctps-serie')?.value.trim() || '',
         };
         if (funcId) params.id = funcId;
 
@@ -732,8 +900,7 @@
             Swal.fire({ icon: 'error', title: 'Erro', text: r.mensagem || 'Erro ao salvar.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
             return;
         }
-        window._funcSel = null;
-        if (typeof limparModal === 'function') limparModal('modalFuncionarios');
+        if (r.id) definirIdOrigem('func', r.id);
         Swal.fire({ icon: 'success', title: funcId ? 'Funcionário atualizado!' : 'Funcionário salvo!', timer: 1800, showConfirmButton: false, scrollbarPadding: false });
     };
 
@@ -747,7 +914,7 @@
         const btn = document.querySelector('#modalFornecedores .btn-footer-salvar');
         if (btn) { btn.disabled = true; btn._orig = btn.textContent; btn.textContent = '⏳ Salvando...'; }
 
-        const fornId = window._fornSel?.id;
+        const fornId = obterIdOrigem('forn');
         const params = {
             acao:           fornId ? 'atualizar' : 'criar',
             razao_social:   razao,
@@ -790,99 +957,148 @@
             Swal.fire({ icon: 'error', title: 'Erro', text: r.mensagem || 'Erro ao salvar.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
             return;
         }
-        window._fornSel = null;
-        if (typeof limparModal === 'function') limparModal('modalFornecedores');
+        if (r.id) definirIdOrigem('forn', r.id);
         Swal.fire({ icon: 'success', title: fornId ? 'Fornecedor atualizado!' : 'Fornecedor salvo!', timer: 1800, showConfirmButton: false, scrollbarPadding: false });
     };
 
-    // ── Patch buscaOrigem: clientes usa banco real ────────────
-    (function patchBuscaClientes() {
-        const _origFiltrar = window.filtrarBuscaOrigem;
-        window.filtrarBuscaOrigem = async function() {
-            const tipo = (typeof window._buscaOrigemTipoAtual !== 'undefined')
-                ? window._buscaOrigemTipoAtual : 'cli';
-            if (tipo !== 'cli') {
-                if (typeof _origFiltrar === 'function') await _origFiltrar();
-                return;
-            }
-            const nomeF  = (document.getElementById('bo-f-nome')?.value  || '').trim();
-            const docF   = (document.getElementById('bo-f-doc')?.value   || '').trim();
-            const cidF   = (document.getElementById('bo-f-cidade')?.value || '').trim();
-            const tbody = document.getElementById('bo-tbody');
-            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Buscando...</td></tr>';
-            try {
-                const data = await postUrl('clientes.php', { acao: 'listar', busca: nomeF || docF || '' });
-                if (!data.sucesso || !data.dados?.length) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Nenhum cliente encontrado</td></tr>';
-                    document.getElementById('bo-count').textContent = '0 registro(s)';
-                    return;
-                }
-                let rows = data.dados;
-                if (cidF) rows = rows.filter(c => (c.cidade || '').toLowerCase().includes(cidF.toLowerCase()));
-                document.getElementById('bo-count').textContent = rows.length + ' registro(s)';
-                tbody.innerHTML = rows.map((c, idx) => {
-                    const cols = [
-                        c.codigo || String(idx+1).padStart(3,'0'),
-                        c.nome || c.razao_social || '—',
-                        c.cpf_cnpj || '—',
-                        c.telefone || c.celular || '—',
-                        c.email || '—',
-                        c.cidade || '—',
-                    ];
-                    return '<tr class="bo-row" data-idx="' + idx + '" data-id="' + (c.id||'') + '" onclick="selecionarLinhaBo(this)">' +
-                        cols.map(v => '<td>' + (v||'—') + '</td>').join('') + '</tr>';
-                }).join('');
-            } catch(e) {
-                console.error('[filtrarBuscaOrigem:cli]', e);
-                tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Erro ao buscar clientes.</td></tr>';
-            }
-        };
-    })();
+    // ── Pesquisa unificada: modal Busca Origens (cli / func / forn) ──
+    const BO_FILTROS_IDS = ['bo-f-codigo', 'bo-f-nome', 'bo-f-doc', 'bo-f-tel', 'bo-f-email', 'bo-f-cidade'];
 
-    // ── Patch buscaOrigem: fornecedores usa banco real ────────
-    (function patchBuscaFornecedores() {
-        const _origFiltrar = window.filtrarBuscaOrigem;
-        window.filtrarBuscaOrigem = async function() {
-            const tipo = (typeof window._buscaOrigemTipoAtual !== 'undefined')
-                ? window._buscaOrigemTipoAtual : 'cli';
-            if (tipo !== 'forn') {
-                if (typeof _origFiltrar === 'function') await _origFiltrar();
+    const BO_CAMPOS_FILTRO = {
+        cli: [
+            ['codigo', 'id'],
+            ['nome', 'razao_social'],
+            ['cpf_cnpj'],
+            ['telefone', 'celular', 'tel', 'cel'],
+            ['email'],
+            ['cidade'],
+        ],
+        func: [
+            ['codigo', 'id'],
+            ['nome'],
+            ['cpf'],
+            ['cargo'],
+            ['tel', 'cel', 'telefone', 'celular'],
+            ['email'],
+        ],
+        forn: [
+            ['codigo', 'id'],
+            ['razao_social', 'fantasia'],
+            ['documento'],
+            ['contato', 'representante'],
+            ['tel', 'cel', 'telefone', 'celular'],
+            ['cidade'],
+        ],
+    };
+
+    const BO_ENDPOINTS = {
+        cli:  { url: 'clientes.php',     vazio: 'Nenhum cliente encontrado' },
+        func: { url: 'funcionarios.php', vazio: 'Nenhum funcionário encontrado' },
+        forn: { url: 'fornecedores.php', vazio: 'Nenhum fornecedor encontrado' },
+    };
+
+    function boTexto(val) {
+        return (val === null || val === undefined) ? '' : String(val).toLowerCase();
+    }
+
+    function boLinhaAtendeFiltros(row, tipo, termos) {
+        const defs = BO_CAMPOS_FILTRO[tipo] || [];
+        return defs.every(function (fields, i) {
+            const termo = termos[i];
+            if (!termo) return true;
+            return fields.some(function (f) {
+                if (f === 'id') {
+                    return boTexto(row.id).includes(termo);
+                }
+                return boTexto(row[f]).includes(termo);
+            });
+        });
+    }
+
+    function boColunasLinha(row, tipo, idx) {
+        const cod = row.codigo || (row.id ? String(row.id).substring(0, 8) : String(idx + 1).padStart(3, '0'));
+        if (tipo === 'cli') {
+            return [
+                cod,
+                row.nome || row.razao_social || '—',
+                row.cpf_cnpj || '—',
+                row.telefone || row.celular || row.tel || row.cel || '—',
+                row.email || '—',
+                row.cidade || '—',
+            ];
+        }
+        if (tipo === 'func') {
+            return [
+                cod,
+                row.nome || '—',
+                row.cpf || '—',
+                row.cargo || '—',
+                row.tel || row.cel || row.telefone || row.celular || '—',
+                row.email || '—',
+            ];
+        }
+        return [
+            cod,
+            row.razao_social || '—',
+            row.documento || '—',
+            row.contato || row.representante || '—',
+            row.tel || row.cel || row.telefone || row.celular || '—',
+            row.cidade || '—',
+        ];
+    }
+
+    function boRenderTabela(rows, tipo) {
+        const tbody = document.getElementById('bo-tbody');
+        const count = document.getElementById('bo-count');
+        const cfg = BO_ENDPOINTS[tipo];
+
+        if (!rows.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">' + (cfg?.vazio || 'Nenhum registro encontrado') + '</td></tr>';
+            if (count) count.textContent = '0 registro(s)';
+            return;
+        }
+
+        if (count) count.textContent = rows.length + ' registro(s)';
+        tbody.innerHTML = rows.map(function (row, idx) {
+            const cols = boColunasLinha(row, tipo, idx);
+            return '<tr class="bo-row" data-idx="' + idx + '" data-id="' + (row.id || '') + '" onclick="selecionarLinhaBo(this)">' +
+                cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
+                '</tr>';
+        }).join('');
+    }
+
+    window.filtrarBuscaOrigem = async function () {
+        const tipo = window._buscaOrigemTipoAtual || 'cli';
+        const cfg = BO_ENDPOINTS[tipo];
+        if (!cfg) return;
+
+        const termos = BO_FILTROS_IDS.map(function (id) {
+            return (document.getElementById(id)?.value || '').trim().toLowerCase();
+        });
+
+        const tbody = document.getElementById('bo-tbody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Buscando...</td></tr>';
+
+        const buscaGeral = termos.filter(Boolean).join(' ');
+
+        try {
+            const data = await postUrl(cfg.url, { acao: 'listar', busca: buscaGeral });
+            if (!data.sucesso) {
+                if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Erro ao buscar registros.</td></tr>';
                 return;
             }
-            const nomeF    = (document.getElementById('bo-f-nome')?.value    || '').trim();
-            const contatoF = (document.getElementById('bo-f-doc')?.value     || '').trim();
-            const telF     = (document.getElementById('bo-f-tel')?.value     || '').trim();
-            const cidF     = (document.getElementById('bo-f-cidade')?.value  || '').trim();
-            const tbody = document.getElementById('bo-tbody');
-            tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Buscando...</td></tr>';
-            try {
-                const data = await postUrl('fornecedores.php', { acao: 'listar', busca: nomeF || '' });
-                if (!data.sucesso || !data.dados?.length) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Nenhum fornecedor encontrado</td></tr>';
-                    document.getElementById('bo-count').textContent = '0 registro(s)';
-                    return;
-                }
-                let rows = data.dados;
-                if (cidF) rows = rows.filter(f => (f.cidade || '').toLowerCase().includes(cidF.toLowerCase()));
-                document.getElementById('bo-count').textContent = rows.length + ' registro(s)';
-                tbody.innerHTML = rows.map((f, idx) => {
-                    const cols = [
-                        f.id ? f.id.substring(0,6) : String(idx+1).padStart(3,'0'),
-                        f.razao_social || '—',
-                        f.documento    || '—',
-                        f.contato      || f.representante || '—',
-                        f.tel          || f.cel || '—',
-                        f.cidade       || '—',
-                    ];
-                    return '<tr class="bo-row" data-idx="' + idx + '" data-id="' + (f.id||'') + '" onclick="selecionarLinhaBo(this)">' +
-                        cols.map(v => '<td>' + (v||'—') + '</td>').join('') + '</tr>';
-                }).join('');
-            } catch(e) {
-                console.error('[filtrarBuscaOrigem:forn]', e);
-                tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Erro ao buscar fornecedores.</td></tr>';
+            let rows = data.dados || [];
+            rows = rows.filter(function (row) { return boLinhaAtendeFiltros(row, tipo, termos); });
+            boRenderTabela(rows, tipo);
+
+            if (typeof window._boResetAposBusca === 'function') {
+                window._boResetAposBusca();
             }
-        };
-    })();
+        } catch (e) {
+            console.error('[filtrarBuscaOrigem]', e);
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Erro ao buscar registros.</td></tr>';
+        }
+    };
 
     console.log('[db_real.js] Extensões carregadas.');
 })();

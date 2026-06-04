@@ -9,6 +9,8 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
 require_once __DIR__ . '/session_check.php';
 
+require_once __DIR__ . '/crud_helpers.php';
+
 header('Content-Type: application/json');
 requireSession(true);
 
@@ -175,7 +177,14 @@ if ($acao === 'atualizar') {
     $camposTexto = ['nome', 'email', 'setor', 'observacoes', 'funcionario_id', 'data_saida'];
     foreach ($camposTexto as $campo) {
         if (isset($_POST[$campo])) {
-            $data[$campo] = trim($_POST[$campo]);
+            $v = trim($_POST[$campo]);
+            if ($campo === 'data_saida') {
+                $data[$campo] = parseDateBr($v);
+            } elseif ($campo === 'funcionario_id') {
+                $data[$campo] = $v !== '' ? $v : null;
+            } else {
+                $data[$campo] = $v;
+            }
         }
     }
 
@@ -216,7 +225,7 @@ if ($acao === 'atualizar') {
 
     } catch (RuntimeException $e) {
         error_log('[Usuarios:atualizar] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar usuário.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => supabaseErrorMessage($e, 'Erro ao atualizar usuário')]);
     }
     exit;
 }

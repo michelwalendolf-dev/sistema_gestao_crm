@@ -12,6 +12,8 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
 require_once __DIR__ . '/session_check.php';
 
+require_once __DIR__ . '/crud_helpers.php';
+
 header('Content-Type: application/json');
 requireSession(true);
 
@@ -31,12 +33,15 @@ if ($acao === 'listar') {
     try {
         $filtros = ['order' => 'razao_social.asc'];
 
-        $busca = trim($_POST['busca'] ?? '');
-        if ($busca !== '') $filtros['razao_social'] = "ilike.*$busca*";
-
         $rows = $db->select('fornecedores', $filtros,
-            'id,razao_social,fantasia,documento,tipo,tel,cel,email,cidade,uf,created_at'
+            'id,codigo,razao_social,fantasia,documento,tipo,tel,cel,telefone,celular,email,contato,representante,cidade,uf,created_at'
         );
+
+        $busca = trim($_POST['busca'] ?? '');
+        $rows = filtrarLinhasBusca($rows, $busca, [
+            'codigo', 'razao_social', 'fantasia', 'documento', 'contato', 'representante',
+            'tel', 'cel', 'telefone', 'celular', 'email', 'cidade',
+        ]);
 
         echo json_encode(['sucesso' => true, 'dados' => $rows]);
     } catch (RuntimeException $e) {
@@ -86,50 +91,16 @@ if ($acao === 'criar') {
         exit;
     }
 
-    $documento = trim($_POST['documento'] ?? '')
-              ?: trim($_POST['cnpj']      ?? '');
-
-    $data = [
-        'razao_social'  => $razao,
-        'fantasia'      => trim($_POST['fantasia']      ?? ''),
-        'documento'     => $documento,
-        'ie'            => trim($_POST['ie']            ?? ''),
-        'im'            => trim($_POST['im']            ?? ''),
-        'categoria'     => trim($_POST['categoria']     ?? ''),
-        'tipo'          => trim($_POST['tipo']          ?? ''),
-        'representante' => trim($_POST['representante'] ?? ''),
-        'origem'        => trim($_POST['origem']        ?? ''),
-        'obs'           => trim($_POST['obs']           ?? ''),
-        'tel'           => trim($_POST['tel']           ?? ''),
-        'cel'           => trim($_POST['cel']           ?? ''),
-        'whatsapp'      => trim($_POST['whatsapp']      ?? ''),
-        'contato'       => trim($_POST['contato']       ?? ''),
-        'email'         => $email,
-        'site'          => trim($_POST['site']          ?? ''),
-        'cep'           => trim($_POST['cep']           ?? ''),
-        'uf'            => trim($_POST['uf']            ?? ''),
-        'rua'           => trim($_POST['rua']           ?? ''),
-        'numero'        => trim($_POST['numero']        ?? ''),
-        'complemento'   => trim($_POST['complemento']   ?? ''),
-        'bairro'        => trim($_POST['bairro']        ?? ''),
-        'cidade'        => trim($_POST['cidade']        ?? ''),
-        'prazo'         => trim($_POST['prazo']         ?? '') ?: null,
-        'limite'        => trim($_POST['limite']        ?? '') ?: null,
-        'forma_pag'     => trim($_POST['forma_pag']     ?? ''),
-        'desconto'      => trim($_POST['desconto']      ?? '') ?: null,
-        'banco'         => trim($_POST['banco']         ?? ''),
-        'obs_fin'       => trim($_POST['obs_fin']       ?? ''),
-        'criado_por'    => $user['id'],
-    ];
-
-    $data = array_filter($data, fn($v) => $v !== '' && $v !== null);
+    $data = montarDadosFornecedor($_POST, $razao);
+    $data['criado_por'] = $user['id'];
+    $data = array_filter($data, static fn($v) => $v !== null && $v !== '');
 
     try {
         $inserted = $db->insert('fornecedores', $data);
         echo json_encode(['sucesso' => true, 'id' => $inserted[0]['id'] ?? null]);
     } catch (RuntimeException $e) {
         error_log('[Fornecedores:criar] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro: ' . $e->getMessage()]);
+        echo json_encode(['sucesso' => false, 'mensagem' => supabaseErrorMessage($e, 'Erro ao salvar fornecedor')]);
     }
     exit;
 }
@@ -144,32 +115,19 @@ if ($acao === 'atualizar') {
         exit;
     }
 
-    $campos = [
-        'razao_social','fantasia','ie','im',
-        'categoria','tipo','representante','origem','obs',
-        'tel','cel','whatsapp','contato','email','site',
-        'cep','uf','rua','numero','complemento','bairro','cidade',
-        'prazo','limite','forma_pag','desconto','banco','obs_fin',
-    ];
-
-    $data = [];
-    foreach ($campos as $campo) {
-        if (isset($_POST[$campo])) {
-            $data[$campo] = trim($_POST[$campo]);
-        }
-    }
-
-    if (isset($_POST['documento'])) {
-        $data['documento'] = trim($_POST['documento']);
-    } elseif (isset($_POST['cnpj'])) {
-        $data['documento'] = trim($_POST['cnpj']);
-    }
-
-    if (empty($data)) {
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Nenhum campo para atualizar.']);
+    $razao = trim($_POST['razao_social'] ?? '');
+    if (!$razao) {
+        echo json_encode(['sucesso' => false, 'mensagem' => 'O campo Razão Social é obrigatório.']);
         exit;
     }
 
+    $email = trim($_POST['email'] ?? '');
+    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode(['sucesso' => false, 'mensagem' => 'E-mail inválido.']);
+        exit;
+    }
+
+    $data = montarDadosFornecedor($_POST, $razao);
     $data['updated_at'] = date('c');
 
     try {
@@ -177,7 +135,7 @@ if ($acao === 'atualizar') {
         echo json_encode(['sucesso' => true]);
     } catch (RuntimeException $e) {
         error_log('[Fornecedores:atualizar] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar fornecedor.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => supabaseErrorMessage($e, 'Erro ao atualizar fornecedor')]);
     }
     exit;
 }

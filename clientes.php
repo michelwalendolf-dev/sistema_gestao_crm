@@ -12,6 +12,8 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
 require_once __DIR__ . '/session_check.php';
 
+require_once __DIR__ . '/crud_helpers.php';
+
 header('Content-Type: application/json');
 requireSession(true);
 
@@ -35,12 +37,14 @@ if ($acao === 'listar') {
         if ($status === 'Ativo')   $filtros['ativo'] = 'eq.true';
         if ($status === 'Inativo') $filtros['ativo'] = 'eq.false';
 
-        $busca = trim($_POST['busca'] ?? '');
-        if ($busca !== '') $filtros['nome'] = "ilike.*$busca*";
-
         $rows = $db->select('clientes', $filtros,
-            'id,codigo,nome,razao_social,cpf_cnpj,tipo_pessoa,ativo,telefone,celular,email,cidade,uf,created_at'
+            'id,codigo,nome,razao_social,cpf_cnpj,tipo_pessoa,ativo,telefone,celular,email,contato,cidade,uf,created_at'
         );
+
+        $busca = trim($_POST['busca'] ?? '');
+        $rows = filtrarLinhasBusca($rows, $busca, [
+            'codigo', 'nome', 'razao_social', 'cpf_cnpj', 'telefone', 'celular', 'email', 'contato', 'cidade',
+        ]);
 
         echo json_encode(['sucesso' => true, 'dados' => $rows]);
     } catch (RuntimeException $e) {
@@ -101,7 +105,7 @@ if ($acao === 'criar') {
         'rg_ie'           => trim($_POST['rg']            ?? '') ?: null,
         'tipo_pessoa'     => $tipoPessoa,
         'ativo'           => trim($_POST['status'] ?? 'Ativo') !== 'Inativo',
-        'data_nascimento' => trim($_POST['nascimento']    ?? '') ?: null,
+        'data_nascimento' => parseDateBr(trim($_POST['nascimento'] ?? '')),
         'observacoes'     => trim($_POST['obs']           ?? '') ?: null,
         'telefone'        => trim($_POST['tel']           ?? '') ?: null,
         'celular'         => trim($_POST['cel']           ?? '') ?: null,
@@ -164,7 +168,11 @@ if ($acao === 'atualizar') {
     foreach ($mapa as $post => $col) {
         if (isset($_POST[$post])) {
             $v = trim($_POST[$post]);
-            $data[$col] = $v !== '' ? $v : null;
+            if ($col === 'data_nascimento') {
+                $data[$col] = parseDateBr($v);
+            } else {
+                $data[$col] = $v !== '' ? $v : null;
+            }
         }
     }
 
@@ -191,7 +199,7 @@ if ($acao === 'atualizar') {
         echo json_encode(['sucesso' => true]);
     } catch (RuntimeException $e) {
         error_log('[Clientes:atualizar] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar cliente.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => supabaseErrorMessage($e, 'Erro ao atualizar cliente')]);
     }
     exit;
 }
