@@ -6,6 +6,13 @@
 
 require_once __DIR__ . '/config.php';
 
+// ── Sessão: diretório fixo resolve problema com php -S ───────
+$sessionPath = __DIR__ . '/sessions';
+if (!is_dir($sessionPath)) {
+    mkdir($sessionPath, 0700, true);
+}
+ini_set('session.save_path', $sessionPath);
+
 session_name(SESSION_NAME);
 session_set_cookie_params([
     'lifetime' => SESSION_LIFETIME,

@@ -1,37 +1,18 @@
 <?php
-// ============================================================
-//  IluminusTech — alterar_senha.php
-//  Atualiza o hash da senha no Supabase (tabela "usuarios")
-//  Exige que o código de recuperação tenha sido verificado
-// ============================================================
 
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/supabase.php';
-require_once __DIR__ . '/session_check.php';
+session_start();
 
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['sucesso' => false, 'mensagem' => 'Requisição inválida.']);
-    exit;
-}
-
-// ── 1. Garante que o usuário passou pela verificação ─────────
-
-$email           = $_SESSION['email_recuperacao'] ?? '';
-$codigoVerificado = $_SESSION['codigo_verificado'] ?? false;
+$email            = $_SESSION['email_recuperacao']  ?? '';
+$codigoVerificado = $_SESSION['codigo_verificado']  ?? false;
 
 if (!$codigoVerificado || !$email) {
-    echo json_encode([
-        'sucesso'  => false,
-        'mensagem' => 'Sessão inválida. Inicie o processo de recuperação novamente.',
-    ]);
+    echo json_encode(['sucesso' => false, 'mensagem' => 'Sessão inválida. Inicie o processo novamente.']);
     exit;
 }
 
-// ── 2. Valida a nova senha ───────────────────────────────────
-
-$senha    = $_POST['senha']    ?? '';
+$senha     = $_POST['senha']     ?? '';
 $confirmar = $_POST['confirmar'] ?? '';
 
 if (!$senha || !$confirmar) {
@@ -44,7 +25,6 @@ if ($senha !== $confirmar) {
     exit;
 }
 
-// Regra de força: mínimo 8 chars, maiúscula, minúscula, número, especial
 $regexForca = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%&*]).{8,}$/';
 if (!preg_match($regexForca, $senha)) {
     echo json_encode([
@@ -54,41 +34,15 @@ if (!preg_match($regexForca, $senha)) {
     exit;
 }
 
-// ── 3. Gera hash bcrypt ──────────────────────────────────────
-// password_hash() gera hash no formato $2y$ (Blowfish),
-// compatível com pgcrypto crypt() do PostgreSQL.
+$senhaHash = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 12]);
 
-$novoHash = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 12]);
+/*
+    Aqui você atualiza no banco de dados. Exemplo:
 
-// ── 4. Atualiza no Supabase ──────────────────────────────────
+    $pdo->prepare("UPDATE usuarios SET senha = ? WHERE email = ?")
+        ->execute([$senhaHash, $email]);
+*/
 
-try {
-    $db   = new Supabase();
-    $rows = $db->update('usuarios', [
-        'senha_hash' => $novoHash,
-    ], [
-        'email'  => "eq.$email",
-        'status' => 'eq.Ativo',
-    ]);
-
-    if (empty($rows)) {
-        throw new RuntimeException('Usuário não encontrado.');
-    }
-
-} catch (RuntimeException $e) {
-    error_log('[AlterarSenha] Supabase error: ' . $e->getMessage());
-    echo json_encode([
-        'sucesso'  => false,
-        'mensagem' => 'Falha ao atualizar a senha. Tente novamente.',
-    ]);
-    exit;
-}
-
-// ── 5. Limpa os dados de recuperação da sessão ───────────────
-
-unset(
-    $_SESSION['email_recuperacao'],
-    $_SESSION['codigo_verificado']
-);
+unset($_SESSION['codigo_recuperacao'], $_SESSION['codigo_verificado'], $_SESSION['email_recuperacao']);
 
 echo json_encode(['sucesso' => true]);

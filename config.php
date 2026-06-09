@@ -11,9 +11,9 @@ define('SUPABASE_ANON_KEY',     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOi
 define('SUPABASE_SERVICE_KEY',  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0aGtmeHp2dXpweXlxaGJ1ZnNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njg5MDI0NiwiZXhwIjoyMDkyNDY2MjQ2fQ.t1iZ7RB8WctTKSBuII3mT-yJB4rxcxKHZ-OL0u65Czs');   // nunca exponha no frontend
 
 // ── Brevo (envio de e-mail) ──────────────────────────────────
-define('BREVO_API_KEY',  'sua_brevo_api_key_aqui');
+define('BREVO_API_KEY',  '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');
 define('BREVO_SENDER_NAME',  'IluminusTech');
-define('BREVO_SENDER_EMAIL', 'seuemail@dominio.com.br');
+define('BREVO_SENDER_EMAIL', 'michel_walendolf@estudante.sesisenai.org.br');
 
 // ── hCaptcha ────────────────────────────────────────────────
 define('HCAPTCHA_SECRET', 'ES_5f0cff6ae80643388ee12d6b609cf55f');
