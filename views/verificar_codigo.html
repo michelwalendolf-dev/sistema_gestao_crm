@@ -26,17 +26,14 @@
         </div>
     </div>
     <form id="formVerificar">
-        <div class="input-group">
-            <input 
-                type="text" 
-                name="codigo" 
-                placeholder="Digite o código aqui!"
-                maxlength="6"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                required
-                autocomplete="off"
-            >
+        <div class="codigo-boxes">
+            <input class="codigo-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+            <input class="codigo-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+            <input class="codigo-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+            <input class="codigo-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+            <input class="codigo-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+            <input class="codigo-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+            <input type="hidden" name="codigo" id="codigoCompleto" />
         </div>
         <button class="btn">Validar Código</button>
     </form>
@@ -48,6 +45,114 @@
         Não recebeu o código? Verifique sua caixa de spam.
     </div>
 </div>
+
+<style>
+.codigo-boxes {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.codigo-box {
+    width: 42px;
+    height: 48px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    border: 2px solid #1a3260;
+    border-radius: 10px;
+    background: #060e1c;
+    color: #4da3ff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    caret-color: transparent;
+}
+
+.codigo-box:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.codigo-box.preenchido {
+    border-color: #4da3ff;
+    box-shadow: 0 0 10px rgba(77, 163, 255, 0.2);
+}
+
+@media (max-width: 400px) {
+    .codigo-box {
+        width: 34px;
+        height: 42px;
+        font-size: 16px;
+        border-radius: 8px;
+    }
+    .codigo-boxes {
+        gap: 6px;
+    }
+}
+</style>
+
+<script>
+(function () {
+    const boxes = document.querySelectorAll('.codigo-box');
+    const hidden = document.getElementById('codigoCompleto');
+
+    function atualizarHidden() {
+        hidden.value = Array.from(boxes).map(b => b.value).join('');
+    }
+
+    boxes.forEach((box, i) => {
+        box.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/[^0-9]/g, '');
+            box.value = val ? val[val.length - 1] : '';
+            box.classList.toggle('preenchido', box.value !== '');
+            atualizarHidden();
+            if (box.value && i < boxes.length - 1) {
+                boxes[i + 1].focus();
+            }
+        });
+
+        box.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+                if (box.value) {
+                    box.value = '';
+                    box.classList.remove('preenchido');
+                    atualizarHidden();
+                } else if (i > 0) {
+                    boxes[i - 1].focus();
+                    boxes[i - 1].value = '';
+                    boxes[i - 1].classList.remove('preenchido');
+                    atualizarHidden();
+                }
+            } else if (e.key === 'ArrowLeft' && i > 0) {
+                boxes[i - 1].focus();
+            } else if (e.key === 'ArrowRight' && i < boxes.length - 1) {
+                boxes[i + 1].focus();
+            }
+        });
+
+        box.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData)
+                .getData('text')
+                .replace(/[^0-9]/g, '')
+                .slice(0, 6);
+            text.split('').forEach((char, j) => {
+                if (boxes[j]) {
+                    boxes[j].value = char;
+                    boxes[j].classList.add('preenchido');
+                }
+            });
+            atualizarHidden();
+            const next = boxes[Math.min(text.length, boxes.length - 1)];
+            if (next) next.focus();
+        });
+    });
+
+    boxes[0].focus();
+})();
+</script>
+
 <script src="../assets/js/script.js" defer></script>
 </body>
 </html>

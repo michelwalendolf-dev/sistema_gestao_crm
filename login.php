@@ -132,7 +132,7 @@ if (empty($rows)) {
     echo json_encode([
         'sucesso'  => false,
         'titulo'   => 'Falha no Login',
-        'mensagem' => 'Por favor, revise os dados informados no campo <b>Usuário</b>.',
+        'mensagem' => '<b>Usuário</b> não existe ou está suspenso.',
     ]);
     exit;
 }

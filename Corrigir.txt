@@ -1,0 +1,18 @@
+OS:
+Em Mais Opções, verificar a sessão Relatórios, pois os menus não estão funcionando de acordo. E fazer funcional a opção Fechamento.
+
+Itens OS:
+Em itens da OS em novo, Dt.Criação deve estar bloqueada. e a Dt.Prevista deve conter calendário para seleção.
+Em Editar itens da OS a mesma coisa.
+Em Mais Opções, fazer os botões Transferir e Copiar funcionais.
+
+Cadastros:
+Em cadastros de Clientes, Funcionários, Fornecedores e Usuários, verificar as informações aos quais são obrigatórias e adicionar o asterisco vermelho.
+3 pontos em Cadastro não esta funcionando.
+Botão novo em pesquisa esta fazendo a janela de cadastro surgir atrás (fazendo parecer que não faz nada, da pra perceber se mover a janela de cadastro antes).
+Botão de pesquisa de CEP não esta funcionando.
+Em úsuarios, Mais Opções, Redefinir Senha, Histórico de Acesso e Exportar Lista não funcionam.
+Vínculo de Funcionários não esta funcionando em usuário.
+Setor deveria ser um Dropbox com setores fixos.
+Ao clicar em algum usuário, o botão editar fica sempre em azul, e clicar fora não remove a seleção
+Limitar Inputs para o que é solicitado (número apenas números etc)
