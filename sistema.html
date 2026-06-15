@@ -2966,9 +2966,9 @@
             }
         });
 
-        var _dadosOS = []; // populado via os.php
+        window._dadosOS = []; // populado via os.php
 
-        var _dadosItens = {}; // populado via os.php
+        window._dadosItens = {}; // populado via os.php
 
         // ── DB real: implementado em db_real.js (carregado no fim do body)
         // As funções abaixo são placeholders substituídos pelo db_real.js
@@ -3001,7 +3001,7 @@
             const dIni = parseDateBR(dtIni);
             const dFim = parseDateBR(dtFim);
 
-            const filtrados = _dadosOS.filter(row => {
+            const filtrados = (window._dadosOS || []).filter(row => {
                 if (cliente && !row.cliente?.toLowerCase().includes(cliente)) return false;
                 if (tecnico && !row.tecnico?.toLowerCase().includes(tecnico)) return false;
                 if (servico && !row.descricao?.toLowerCase().includes(servico)) return false;
@@ -3232,8 +3232,8 @@
 
             await DB.excluirOS(osSelecionada.codigo);
 
-            const idx = _dadosOS.findIndex(o => o.codigo === osSelecionada.codigo);
-            if (idx !== -1) _dadosOS.splice(idx, 1);
+            const idx = (window._dadosOS || []).findIndex(o => o.codigo === osSelecionada.codigo);
+            if (idx !== -1) window._dadosOS.splice(idx, 1);
 
             if (_dadosItens[osSelecionada.codigo]) delete _dadosItens[osSelecionada.codigo];
 
@@ -4078,7 +4078,7 @@
             const _chaveOS = osSelecionada.codigo || "__novo__";
             const lista = _dadosItens[_chaveOS] || (_dadosItens[_chaveOS] = []);
             // Sincroniza com window._dadosItens para que db_real.js leia os itens corretos
-            window._dadosItens = _dadosItens;
+            window._dadosItens = window._dadosItens || {}; // Sincronizado
 
             if (modoItemEdicao) {
                 const idx = lista.findIndex(i => i.codItem === codItem);
@@ -4418,7 +4418,7 @@
             document.querySelectorAll(".fin-filtro-btn").forEach(b => b.classList.remove("ativo"));
             btn.classList.add("ativo");
             _finFiltroAtivo = btn.dataset.status;
-            finRenderizarLista(typeof _dadosOS !== "undefined" ? _dadosOS : []);
+            finRenderizarLista(typeof window._dadosOS !== "undefined" ? window._dadosOS : []);
         }
 
         function finFiltrarPeriodo(btn) {
@@ -4469,7 +4469,7 @@
         }
 
         function finAtualizarDados() {
-            const dados = typeof _dadosOS !== "undefined" ? _dadosOS : [];
+            const dados = typeof window._dadosOS !== "undefined" ? window._dadosOS : [];
             const grupos = { "Pré-Ordem": { qtd: 0, total: 0 }, "Aberto": { qtd: 0, total: 0 }, "Fechado": { qtd: 0, total: 0 }, "Cancelado": { qtd: 0, total: 0 } };
             dados.forEach(os => {
                 const st = finNormalizarStatus(os.status || "Pré-Ordem");
@@ -4545,7 +4545,7 @@
         }
 
         function finSelecionarOS(el) { document.querySelectorAll(".fin-os-item").forEach(i => i.classList.remove("selecionada")); el.classList.add("selecionada"); }
-        function finFiltrarOS() { finRenderizarLista(typeof _dadosOS !== "undefined" ? _dadosOS : []); }
+        function finFiltrarOS() { finRenderizarLista(typeof window._dadosOS !== "undefined" ? window._dadosOS : []); }
 
         function finDesenharGrafico() {
             const canvas = document.getElementById("finChart");
@@ -7955,6 +7955,48 @@
                 document.getElementById('filtros-nome-relat').textContent = _relatSel.nome;
                 document.getElementById('overlayFiltrosRelat').style.display = 'block';
                 document.getElementById('modalFiltrosRelat').style.display = 'flex';
+                
+                // ✅ NOVA FUNCIONALIDADE: Preencher filtros com dados da OS selecionada
+                if (window.osSelecionada) {
+                    const os = window.osSelecionada;
+                    
+                    // Preencher Código OS
+                    const filCodigo = document.getElementById('fil-codigo');
+                    if (filCodigo) filCodigo.value = os.codigo || '';
+                    
+                    // Preencher Código Unitário
+                    const filCodUnit = document.getElementById('fil-codunit');
+                    if (filCodUnit) filCodUnit.value = os.codUnit || '';
+                    
+                    // Preencher Cliente
+                    const filCliente = document.getElementById('fil-cliente');
+                    if (filCliente) filCliente.value = os.cliente || '';
+                    
+                    // Preencher Técnico
+                    const filTecnico = document.getElementById('fil-tecnico');
+                    if (filTecnico) filTecnico.value = os.tecnico || '';
+                    
+                    // Preencher Status
+                    const filStatus = document.getElementById('fil-status');
+                    if (filStatus && os.status) {
+                        // Normalizar status para as categorias do frontend
+                        const mapStatus = {
+                            'aberta':           'pré-ordem',
+                            'pré-ordem':        'pré-ordem',
+                            'em andamento':     'aberto',
+                            'aguardando peça':  'aberto',
+                            'aberto':           'aberto',
+                            'concluída':        'fechado',
+                            'entregue':         'fechado',
+                            'fechado':          'fechado',
+                            'cancelada':        'cancelado',
+                            'cancelado':        'cancelado',
+                        };
+                        const statusNorm = mapStatus[(os.status || '').trim().toLowerCase()] || '';
+                        if (statusNorm) filStatus.value = statusNorm;
+                    }
+                }
+                
                 _ativarDragFiltros();
             };
 
@@ -7974,9 +8016,18 @@
 
             window.rl_abrirRelatorio = function () {
                 if (!_relatSel) return;
+                
+                // ✅ CORRIGIDO: Passar o ID da OS selecionada na URL
+                let url = _relatSel.url;
+                
+                // Se há uma OS selecionada, adiciona o ID à URL
+                if (window.osSelecionada && window.osSelecionada.id) {
+                    url = url + '?id=' + encodeURIComponent(window.osSelecionada.id);
+                }
+                
                 rl_fecharFiltros();
                 fecharRelatorios();
-                window.open(_relatSel.url, '_blank');
+                window.open(url, '_blank');
             };
 
             function _ativarDragPrincipal() {
@@ -8069,8 +8120,13 @@
                 var sub = document.getElementById('submenuOrigens');
                 if (sub) sub.classList.remove('sub-visivel');
 
-                usr_renderizar(_usrDados);
-                usr_filtrar();
+                // Carrega usuários do banco ao abrir
+                if (typeof window.carregarUsuarios === 'function') {
+                    window.carregarUsuarios();
+                } else {
+                    usr_renderizar(_usrDados);
+                    usr_filtrar();
+                }
 
                 _ativarDrag();
             };
@@ -8145,6 +8201,7 @@
             var _usrSel = null;
             var _usrModo = null;
             // Expõe no window para que db_real.js possa ler/escrever
+            Object.defineProperty(window, '_usrDados', { get: function(){ return _usrDados; }, set: function(v){ _usrDados = v; }, configurable: true });
             Object.defineProperty(window, '_usrSel',  { get: function(){ return _usrSel;  }, set: function(v){ _usrSel  = v; }, configurable: true });
             Object.defineProperty(window, '_usrModo', { get: function(){ return _usrModo; }, set: function(v){ _usrModo = v; }, configurable: true });
 

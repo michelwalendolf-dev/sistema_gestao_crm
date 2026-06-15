@@ -689,68 +689,68 @@
             if (typeof window.usr_renderizar === 'function') window.usr_renderizar(window._usrDados);
             if (typeof window.usr_filtrar === 'function') window.usr_filtrar();
         } catch (e) {
-            console.er        // Determina o modo com segurança
-            let modo = window._usrModo;
-            if (!modo && window._usrSel?.id) modo = 'editar';
-            if (!modo) {
-                Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Clique em "Novo" ou "Editar" antes de salvar.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                return;
-            }
-
-            // No modo editar, garante que o id existe antes de prosseguir
-            if (modo === 'editar' && !window._usrSel?.id) {
-                Swal.fire({ icon: 'error', title: 'Erro', text: 'ID do usuário não encontrado. Feche e abra novamente.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                return;
-                let modo = window._usrModo;
-                if (!modo && window._usrSel?.id) modo = 'editar';
-                if (!modo) {
-                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Clique em "Novo" ou "Editar" antes de salvar.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                    return;
-                }
-                const nome = document.getElementById('usr-f-nome')?.value.trim();
-                if (!nome) {
-                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe o nome.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                    return;
-                }
-                const senha = document.getElementById('usr-f-senha')?.value.trim();
-                const senhaConf = document.getElementById('usr-f-senha-conf')?.value.trim();
-                if (modo === 'novo' && !senha) {
-                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe a senha.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                    return;
-                }
-                if (senha && senha !== senhaConf) {
-                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'As senhas não conferem.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
-                    return;
-                }
-
-                const btnSal = document.querySelector('#modalUsuarios .usr-btn-salvar');
-                if (btnSal) { btnSal.disabled = true; btnSal._orig = btnSal.textContent; btnSal.textContent = '⏳ Salvando...'; }
-
-                const params = {
-                    acao: modo === 'editar' ? 'atualizar' : 'criar',
-                    nome,
-                    login: document.getElementById('usr-f-login')?.value.trim() || '',
-                    email: document.getElementById('usr-f-email')?.value.trim() || '',
-                    grupo: document.getElementById('usr-f-grupo')?.value.trim() || '',
-                    setor: document.getElementById('usr-f-setor')?.value.trim() || '',
-                    observacoes: document.getElementById('usr-f-obs')?.value.trim() || '',
-                    status: document.getElementById('usr-f-suspenso')?.checked ? 'Suspenso' : 'Ativo',
-                    data_saida: (() => {
-                        const raw = document.getElementById('usr-f-data-saida')?.value.trim() || '';
-                        return raw ? (dateBrToIso(raw) || '') : '';
-                    })(),
-                };
-                if (modo === 'editar') {
-                    if (window._usrSel?.id) params.id = window._usrSel.id;
-                    if (senha) params.nova_senha = senha;
-                } else if (senha) {
-                    params.senha = senha;
-                }
-                params.senha = senha;
-            }
-            params.senha = senha;
+            console.error('[carregarUsuarios]', e);
         }
-        
+    }
+
+    window.carregarUsuarios = carregarUsuarios;
+
+    // ── Usuários: salvar ──────────────────────────────────────
+    window.usr_salvar = async function () {
+        let modo = window._usrModo;
+        if (!modo && window._usrSel?.id) modo = 'editar';
+        if (!modo) {
+            Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Clique em "Novo" ou "Editar" antes de salvar.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+
+        if (modo === 'editar' && !window._usrSel?.id) {
+            Swal.fire({ icon: 'error', title: 'Erro', text: 'ID do usuário não encontrado. Feche e abra novamente.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+
+        const nome = document.getElementById('usr-f-nome')?.value.trim();
+        if (!nome) {
+            Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe o nome.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+
+        const senha = document.getElementById('usr-f-senha')?.value.trim();
+        const senhaConf = document.getElementById('usr-f-senha-conf')?.value.trim();
+        if (modo === 'novo' && !senha) {
+            Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe a senha.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+        if (senha && senha !== senhaConf) {
+            Swal.fire({ icon: 'warning', title: 'Atenção', text: 'As senhas não conferem.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+            return;
+        }
+
+        const btnSal = document.querySelector('#modalUsuarios .usr-btn-salvar');
+        if (btnSal) { btnSal.disabled = true; btnSal._orig = btnSal.textContent; btnSal.textContent = '⏳ Salvando...'; }
+
+        const params = {
+            acao: modo === 'editar' ? 'atualizar' : 'criar',
+            nome,
+            login: document.getElementById('usr-f-login')?.value.trim() || '',
+            email: document.getElementById('usr-f-email')?.value.trim() || '',
+            grupo: document.getElementById('usr-f-grupo')?.value.trim() || '',
+            setor: document.getElementById('usr-f-setor')?.value.trim() || '',
+            observacoes: document.getElementById('usr-f-obs')?.value.trim() || '',
+            status: document.getElementById('usr-f-suspenso')?.checked ? 'Suspenso' : 'Ativo',
+            data_saida: (() => {
+                const raw = document.getElementById('usr-f-data-saida')?.value.trim() || '';
+                return raw ? (dateBrToIso(raw) || '') : '';
+            })(),
+        };
+
+        if (modo === 'editar') {
+            if (window._usrSel?.id) params.id = window._usrSel.id;
+            if (senha) params.nova_senha = senha;
+        } else {
+            if (senha) params.senha = senha;
+        }
+
         const funcId = window._usrSel?.funcionarioId || '';
         if (funcId) params.funcionario_id = funcId;
 
@@ -768,7 +768,7 @@
         Swal.fire({ icon: 'success', title: modo === 'editar' ? 'Usuário atualizado!' : 'Usuário criado!', timer: 1800, showConfirmButton: false, scrollbarPadding: false });
     };
 
-    // usr_excluir real
+    // ── Usuários: excluir ─────────────────────────────────────
     window.usr_excluir = async function () {
         if (!window._usrSel) {
             Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Selecione um usuário.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
