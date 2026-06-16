@@ -231,6 +231,60 @@ if ($acao === 'atualizar') {
 }
 
 // ════════════════════════════════════════════════════════════
+//  REDEFINIR SENHA  (somente Admin)
+// ════════════════════════════════════════════════════════════
+if ($acao === 'redefinir_senha') {
+
+    if ($user['grupo'] !== 'Admin') {
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Sem permissão.']);
+        exit;
+    }
+
+    $id        = trim($_POST['id']         ?? '');
+    $novaSenha = trim($_POST['nova_senha'] ?? '');
+
+    if (!$id)        { echo json_encode(['sucesso' => false, 'mensagem' => 'ID não informado.']);     exit; }
+    if (!$novaSenha) { echo json_encode(['sucesso' => false, 'mensagem' => 'Informe a nova senha.']); exit; }
+
+    $regexForca = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%&*]).{8,}$/';
+    if (!preg_match($regexForca, $novaSenha)) {
+        echo json_encode([
+            'sucesso'  => false,
+            'mensagem' => 'A senha deve ter ao menos 8 caracteres, incluindo maiúscula, minúscula, número e caractere especial (!@#$%&*).',
+        ]);
+        exit;
+    }
+
+    // Verifica se o usuário existe
+    try {
+        $rows = $db->select('usuarios', ['id' => "eq.$id"], 'id,nome,login');
+        if (empty($rows)) {
+            echo json_encode(['sucesso' => false, 'mensagem' => 'Usuário não encontrado.']);
+            exit;
+        }
+    } catch (RuntimeException $e) {
+        error_log('[Usuarios:redefinir_senha:check] ' . $e->getMessage());
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao verificar usuário.']);
+        exit;
+    }
+
+    try {
+        $db->update('usuarios', [
+            'senha_hash' => password_hash($novaSenha, PASSWORD_BCRYPT, ['cost' => 12]),
+            'updated_at' => date('c'),
+        ], ['id' => "eq.$id"]);
+
+        registrarLog($db, $user['id'], 'Senha redefinida', "Senha do usuário ID $id redefinida por {$user['nome']}.");
+        echo json_encode(['sucesso' => true, 'mensagem' => 'Senha redefinida com sucesso.']);
+
+    } catch (RuntimeException $e) {
+        error_log('[Usuarios:redefinir_senha] ' . $e->getMessage());
+        echo json_encode(['sucesso' => false, 'mensagem' => supabaseErrorMessage($e, 'Erro ao redefinir senha')]);
+    }
+    exit;
+}
+
+// ════════════════════════════════════════════════════════════
 //  EXCLUIR / INATIVAR  (somente Admin)
 // ════════════════════════════════════════════════════════════
 if ($acao === 'excluir') {

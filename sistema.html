@@ -342,6 +342,24 @@
             width: 26px;
         }
 
+        /* Botão ▼ dropdown no formulário de usuário */
+        .usr-campo .grupos .btn-dropdown {
+            all: unset;
+            width: 26px;
+            height: 100%;
+            border-left: 1px solid #737373;
+            background: #253150;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #a6c8ff;
+            font-size: 11px;
+            border-radius: 0 4px 4px 0;
+        }
+        .usr-campo .grupos .btn-dropdown:hover { background: #2f3e63; }
+        .usr-campo .grupos .btn-dropdown:disabled { opacity: 0.45; cursor: not-allowed; }
+
         /* Botão ⋮ no formulário de usuário */
         .btn-mais {
             all: unset;
@@ -501,12 +519,6 @@
 
         .usr-btn-salvar:hover {
             background: #2d5faa;
-        }
-
-        #btnEditarUsr.habilitado {
-            background: #1f4a8a;
-            border-color: #2d7dff;
-            color: #a6c8ff;
         }
 
         #btnEditarUsr:disabled,
@@ -2007,12 +2019,7 @@
                                 Editar</button>
                             <button id="btnExcluirUsr" onclick="usr_excluir()" disabled><span>🗑️</span>
                                 Excluir</button>
-                            <button class="botao-dropdown"><span>⋮</span> Mais Opções</button>
-                            <div class="dropdown-botao">
-                                <a href="#">🔒 Redefinir Senha</a>
-                                <a href="#">📋 Histórico de Acesso</a>
-                                <a href="#">📄 Exportar Lista</a>
-                            </div>
+                            <button id="btnMaisOpcUsr" onclick="usr_toggleMaisOpcoes(event)"><span>⋮</span> Mais Opções</button>
                         </div>
                         <span id="usr-status-bar"
                             style="margin-left:auto;font-size:11px;color:#4a6080;padding-right:4px;">Nenhum usuário
@@ -2149,9 +2156,9 @@
                                                 <button class="btn-mais" title="Mais opções" id="usr-func-mais-btn"
                                                     onclick="usr_toggleMais('usr-func-mais', event)">⋮</button>
                                                 <div class="usr-mais-menu" id="usr-func-mais" style="display:none;">
-                                                    <div onclick="usr_buscarFuncionario()">🔍 Buscar funcionário</div>
-                                                    <div onclick="usr_limparCampo('usr-f-funcionario'); usr_limparCampo('usr-f-setor')">✖ Desvincular</div>
-                                                    <div onclick="usr_abrirFuncionario()">👤 Abrir cadastro</div>
+                                                    <div onclick="usr_buscarFuncionario()">Buscar funcionário</div>
+                                                    <div onclick="usr_limparCampo('usr-f-funcionario'); usr_limparCampo('usr-f-setor')">Desvincular</div>
+                                                    <div onclick="usr_abrirFuncionario()">Abrir cadastro</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2160,28 +2167,24 @@
 
                                 <div class="usr-campo">
                                     <label>Setor</label>
-                                    <div class="bar-acoes">
-                                        <input type="text" id="usr-f-setor" placeholder="Setor do usuário" disabled>
+                                    <div class="bar-acoes usr-setor-container" style="position:relative;">
+                                        <input type="text" id="usr-f-setor" placeholder="Selecione..." readonly
+                                            disabled style="flex:1;cursor:pointer;"
+                                            onclick="usr_toggleSetor(event)">
                                         <div class="grupos">
-                                            <button class="btn-limpar" title="Limpar"
-                                                onclick="usr_limparCampo('usr-f-setor')">✖</button>
-                                            <button class="btn-busca" title="Buscar setor"
-                                                onclick="usr_buscarSetor()">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <circle cx="11" cy="11" r="8" />
-                                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                                </svg>
-                                            </button>
-                                            <div class="usr-mais-wrap" style="position:relative;">
-                                                <button class="btn-mais" title="Mais opções" id="usr-setor-mais-btn"
-                                                    onclick="usr_toggleMais('usr-setor-mais', event)">⋮</button>
-                                                <div class="usr-mais-menu" id="usr-setor-mais" style="display:none;">
-                                                    <div onclick="usr_buscarSetor()">🔍 Buscar setor</div>
-                                                    <div onclick="usr_limparCampo('usr-f-setor')">✖ Limpar setor</div>
-                                                </div>
-                                            </div>
+                                            <button class="btn-dropdown" id="usr-setor-mais-btn" disabled
+                                                onclick="usr_toggleSetor(event)">▼</button>
+                                        </div>
+                                        <div class="usr-setor-menu" id="usr-setor-menu" style="display:none;
+                                            position:absolute; top:100%; left:0; width:100%;
+                                            background:#1b2744; border:1px solid #737373; border-radius:4px;
+                                            z-index:9999; flex-direction:column;">
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('TI')">TI</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Financeiro')">Financeiro</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Técnico')">Técnico</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Administrativo')">Administrativo</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Comercial')">Comercial</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('RH')">RH</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2200,9 +2203,9 @@
                                             position:absolute; top:100%; left:0; width:100%;
                                             background:#1b2744; border:1px solid #737373; border-radius:4px;
                                             z-index:9999; flex-direction:column;">
-                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Admin')">👑 Admin</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Funcionário')">👤 Funcionário</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Técnico')">🔧 Técnico</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Admin')">Admin</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Funcionário')">Funcionário</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Técnico')">Técnico</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2226,8 +2229,9 @@
                                 <div class="usr-campo">
                                     <label>Senha</label>
                                     <div class="bar-acoes">
-                                        <input type="password" id="usr-f-senha" placeholder="••••••••" disabled>
+                                        <input type="password" id="usr-f-senha" placeholder="••••••••" disabled oninput="usr_validarForcaSenha()">
                                     </div>
+                                    <span id="usr-dica-forca-senha" style="font-size:10px;color:#4a6080;margin-top:1px;line-height:1.4;">A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais (!@#$%&*).</span>
                                 </div>
 
                                 <div class="usr-campo">
@@ -2378,18 +2382,32 @@
                             </div>
                         </div>
                         <div class="campo-completo">
-                            <label>Dt. Criação</label>
+                            <label>Dt. Criação <span style="color:#4a6080;font-size:10px;">(automático)</span></label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-dtCriacao" class="campo-data">
+                                <input type="text" id="cad-dtCriacao" class="campo-data" readonly
+                                    style="cursor:not-allowed;color:#7aa3e0;background:#1a2a40;"
+                                    title="A data de criação é preenchida automaticamente e não pode ser alterada">
                                 <div class="grupos">
                                 </div>
                             </div>
                         </div>
                         <div class="campo-completo">
                             <label>Dt. Prevista</label>
-                            <div class="bar-acoes ">
-                                <input type="text" id="cad-dtPrevista" class="campo-data">
+                            <div class="bar-acoes " style="position:relative;">
+                                <input type="text" id="cad-dtPrevista" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
                                 <div class="grupos">
+                                    <button class="btn-limpar" title="Limpar data prevista"
+                                        onclick="document.getElementById('cad-dtPrevista').value=''; if(window._fpDtPrevista) window._fpDtPrevista.clear();">✖</button>
+                                    <button class="btn-data" title="Abrir calendário"
+                                        onclick="if(window._fpDtPrevista) window._fpDtPrevista.open();">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none"
+                                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                                            <line x1="8" y1="3" x2="8" y2="7"></line>
+                                            <line x1="16" y1="3" x2="16" y2="7"></line>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -2516,15 +2534,32 @@
                         </div>
                     </div>
                     <div class="campo-completo">
-                        <label>Dt. Criação</label>
-                        <div class="bar-acoes"><input type="text" id="item-dtCriacao">
+                        <label>Dt. Criação <span style="color:#4a6080;font-size:10px;">(automático)</span></label>
+                        <div class="bar-acoes">
+                            <input type="text" id="item-dtCriacao" readonly
+                                style="cursor:not-allowed;color:#7aa3e0;background:#1a2a40;"
+                                title="A data de criação é preenchida automaticamente e não pode ser alterada">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>Dt. Solução</label>
-                        <div class="bar-acoes"><input type="text" id="item-dtSolucao">
-                            <div class="grupos"></div>
+                        <div class="bar-acoes">
+                            <input type="text" id="item-dtSolucao" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
+                            <div class="grupos">
+                                <button class="btn-limpar" title="Limpar data de solução"
+                                    onclick="document.getElementById('item-dtSolucao').value=''; if(window._fpDtSolucao) window._fpDtSolucao.clear();">✖</button>
+                                <button class="btn-data" title="Abrir calendário"
+                                    onclick="if(window._fpDtSolucao) window._fpDtSolucao.open();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none"
+                                        stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                                        <line x1="8" y1="3" x2="8" y2="7"></line>
+                                        <line x1="16" y1="3" x2="16" y2="7"></line>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="campo-completo">
@@ -2854,6 +2889,26 @@
                 if (id === "dataInicio") calendarioInicio.open();
                 else if (id === "dataFim") calendarioFim.open();
             };
+
+            // Calendário para Dt. Prevista da OS (modal Nova/Editar OS)
+            window._fpDtPrevista = flatpickr("#cad-dtPrevista", {
+                dateFormat: "d/m/Y",
+                allowInput: false,
+                disableMobile: true,
+                onChange: function(selectedDates, dateStr) {
+                    document.getElementById("cad-dtPrevista").value = dateStr;
+                }
+            });
+
+            // Calendário para Dt. Solução do Item (modal Item)
+            window._fpDtSolucao = flatpickr("#item-dtSolucao", {
+                dateFormat: "d/m/Y",
+                allowInput: false,
+                disableMobile: true,
+                onChange: function(selectedDates, dateStr) {
+                    document.getElementById("item-dtSolucao").value = dateStr;
+                }
+            });
         });
     </script>
     <script>
@@ -3532,6 +3587,7 @@
             const mm = String(hoje.getMonth() + 1).padStart(2, "0");
             const yyyy = hoje.getFullYear();
             document.getElementById("cad-dtCriacao").value = `${dd}/${mm}/${yyyy}`;
+            if (window._fpDtPrevista) window._fpDtPrevista.clear();
             // Busca e exibe próximo número de OS (somente leitura)
             const cadCodigo = document.getElementById("cad-codigo");
             cadCodigo.value = "";
@@ -3571,6 +3627,10 @@
             document.getElementById("cad-descricao").value = osSelecionada.descricao || "";
             document.getElementById("cad-dtCriacao").value = osSelecionada.dtCriacao || "";
             document.getElementById("cad-dtPrevista").value = osSelecionada.dtPrevista || "";
+            if (window._fpDtPrevista) {
+                if (osSelecionada.dtPrevista) window._fpDtPrevista.setDate(osSelecionada.dtPrevista, false, "d/m/Y");
+                else window._fpDtPrevista.clear();
+            }
             document.getElementById("cad-horas").value = osSelecionada.horas || "";
             document.getElementById("cad-respExec").value = osSelecionada.respExec || "";
             document.getElementById("cad-valor").value = (osSelecionada.valor || "").replace(/R\$\s*/g, "").trim();
@@ -3919,6 +3979,7 @@
             const _mmItem = String(_hojeItem.getMonth() + 1).padStart(2, "0");
             const _yyyyItem = _hojeItem.getFullYear();
             document.getElementById("item-dtCriacao").value = `${_ddItem}/${_mmItem}/${_yyyyItem}`;
+            if (window._fpDtSolucao) window._fpDtSolucao.clear();
             _abrirModalItem();
         }
 
@@ -3939,6 +4000,11 @@
             document.getElementById("item-maquina").value = itemSelecionado.maquina || "";
             document.getElementById("item-dtCriacao").value = itemSelecionado.dtCriacao || "";
             document.getElementById("item-dtSolucao").value = itemSelecionado.dtSolucao || "";
+            if (window._fpDtSolucao) {
+                const dtSol = itemSelecionado.dtSolucao;
+                if (dtSol && dtSol !== "—") window._fpDtSolucao.setDate(dtSol, false, "d/m/Y");
+                else window._fpDtSolucao.clear();
+            }
             document.getElementById("item-tecnico").value = itemSelecionado.tecnico || "";
             document.getElementById("item-codBarras").value = itemSelecionado.codBarras || "";
             document.getElementById("item-produto").value = itemSelecionado.produto || "";
@@ -5197,9 +5263,14 @@
                         </div>
                         <div class="campo-completo">
                             <label>Data de Nascimento</label>
-                            <div class="bar-acoes"><input type="text" id="cli-nascimento" class="campo-data"
-                                    placeholder="dd/mm/aaaa">
-                                <div class="grupos"></div>
+                            <div class="bar-acoes">
+                                <input type="text" id="cli-nascimento" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
+                                <div class="grupos">
+                                    <button class="btn-limpar" title="Limpar" onclick="document.getElementById('cli-nascimento').value=''; if(window._fpCliNasc) window._fpCliNasc.clear();">✖</button>
+                                    <button class="btn-data" title="Abrir calendário" onclick="if(window._fpCliNasc) window._fpCliNasc.open();">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="16" y1="3" x2="16" y2="7"></line></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="campo-completo">
@@ -5394,7 +5465,9 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>Limite de Cr&#233;dito</label>
-                        <div class="bar-acoes"><input type="text" id="cli-limite" placeholder="R$ 0,00">
+                        <div class="bar-acoes" style="position:relative;">
+                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                            <input type="text" id="cli-limite" placeholder="0,00" style="padding-left:28px;">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -5444,7 +5517,7 @@
 
             <div class="erp-footer">
                 <input type="hidden" id="cli-id">
-                <button class="btn-footer-novo" onclick="limparModal('modalClientes')">&#10010; Novo</button>
+                <button class="btn-footer-novo" onclick="limparModal('modalClientes')">Limpar</button>
                 <button class="btn-footer-salvar" onclick="salvarCliente()">&#128190; Salvar</button>
                 <button class="btn-footer-sair" onclick="fecharModal('modalClientes','overlayClientes')">&#10006;
                     Sair</button>
@@ -5532,9 +5605,14 @@
                         </div>
                         <div class="campo-completo">
                             <label>Data de Nascimento</label>
-                            <div class="bar-acoes"><input type="text" id="func-nascimento" class="campo-data"
-                                    placeholder="dd/mm/aaaa">
-                                <div class="grupos"></div>
+                            <div class="bar-acoes">
+                                <input type="text" id="func-nascimento" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
+                                <div class="grupos">
+                                    <button class="btn-limpar" title="Limpar" onclick="document.getElementById('func-nascimento').value=''; if(window._fpFuncNasc) window._fpFuncNasc.clear();">✖</button>
+                                    <button class="btn-data" title="Abrir calendário" onclick="if(window._fpFuncNasc) window._fpFuncNasc.open();">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="16" y1="3" x2="16" y2="7"></line></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="campo-completo">
@@ -5731,21 +5809,33 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>Data de Admiss&#227;o</label>
-                        <div class="bar-acoes"><input type="text" id="func-admissao" class="campo-data"
-                                placeholder="dd/mm/aaaa">
-                            <div class="grupos"></div>
+                        <div class="bar-acoes">
+                            <input type="text" id="func-admissao" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
+                            <div class="grupos">
+                                <button class="btn-limpar" title="Limpar" onclick="document.getElementById('func-admissao').value=''; if(window._fpFuncAdm) window._fpFuncAdm.clear();">✖</button>
+                                <button class="btn-data" title="Abrir calendário" onclick="if(window._fpFuncAdm) window._fpFuncAdm.open();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="16" y1="3" x2="16" y2="7"></line></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>Data de Demiss&#227;o</label>
-                        <div class="bar-acoes"><input type="text" id="func-demissao" class="campo-data"
-                                placeholder="dd/mm/aaaa">
-                            <div class="grupos"></div>
+                        <div class="bar-acoes">
+                            <input type="text" id="func-demissao" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
+                            <div class="grupos">
+                                <button class="btn-limpar" title="Limpar" onclick="document.getElementById('func-demissao').value=''; if(window._fpFuncDem) window._fpFuncDem.clear();">✖</button>
+                                <button class="btn-data" title="Abrir calendário" onclick="if(window._fpFuncDem) window._fpFuncDem.open();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="16" y1="3" x2="16" y2="7"></line></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>Sal&#225;rio</label>
-                        <div class="bar-acoes"><input type="text" id="func-salario" placeholder="R$ 0,00">
+                        <div class="bar-acoes" style="position:relative;">
+                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                            <input type="text" id="func-salario" placeholder="0,00" style="padding-left:28px;">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -5792,7 +5882,7 @@
 
             <div class="erp-footer">
                 <input type="hidden" id="func-id">
-                <button class="btn-footer-novo" onclick="limparModal('modalFuncionarios')">&#10010; Novo</button>
+                <button class="btn-footer-novo" onclick="limparModal('modalFuncionarios')">Limpar</button>
                 <button class="btn-footer-salvar" onclick="salvarFuncionario()">&#128190; Salvar</button>
                 <button class="btn-footer-sair"
                     onclick="fecharModal('modalFuncionarios','overlayFuncionarios')">&#10006; Sair</button>
@@ -6069,7 +6159,9 @@
                     </div>
                     <div class="campo-completo">
                         <label>Limite de Cr&#233;dito</label>
-                        <div class="bar-acoes"><input type="text" id="forn-limite" placeholder="R$ 0,00">
+                        <div class="bar-acoes" style="position:relative;">
+                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                            <input type="text" id="forn-limite" placeholder="0,00" style="padding-left:28px;">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6112,7 +6204,7 @@
 
             <div class="erp-footer">
                 <input type="hidden" id="forn-id">
-                <button class="btn-footer-novo" onclick="limparModal('modalFornecedores')">&#10010; Novo</button>
+                <button class="btn-footer-novo" onclick="limparModal('modalFornecedores')">Limpar</button>
                 <button class="btn-footer-salvar" onclick="salvarFornecedor()">&#128190; Salvar</button>
                 <button class="btn-footer-sair"
                     onclick="fecharModal('modalFornecedores','overlayFornecedores')">&#10006; Sair</button>
@@ -6776,18 +6868,26 @@
                 window._buscaOrigemIsFiltroPrincipal = isFiltroPrincipal;
                 window._buscaOrigemTipoAtual = tipo;
 
+                // Se valorInicial é uma função, trata como callback de seleção
+                var _callback = (typeof valorInicial === 'function') ? valorInicial : null;
+                var _filtroInicial = (typeof valorInicial === 'string') ? valorInicial : null;
+
                 abrirBuscaOrigem(tipo, function (dados) {
-                    var nome = dados['Nome'] || dados['Nome / Razão Social'] || dados['Razão Social'] || '';
-                    var campo = document.getElementById(campoAlvoId);
-                    if (campo) campo.value = nome;
+                    if (_callback) {
+                        _callback(dados);
+                    } else {
+                        var nome = dados['Nome'] || dados['Nome / Razão Social'] || dados['Razão Social'] || '';
+                        var campo = document.getElementById(campoAlvoId);
+                        if (campo) campo.value = nome;
+                    }
                     if (isFiltroPrincipal && typeof aplicarFiltros === 'function') aplicarFiltros();
                 });
 
-                // Preenche filtro inicial se houver valor
-                if (valorInicial) {
+                // Preenche filtro inicial se houver string de busca
+                if (_filtroInicial) {
                     setTimeout(function () {
                         var inp = document.getElementById('bo-f-nome');
-                        if (inp) { inp.value = valorInicial; }
+                        if (inp) { inp.value = _filtroInicial; }
                         if (typeof filtrarBuscaOrigem === 'function') filtrarBuscaOrigem();
                     }, 100);
                 }
@@ -8273,7 +8373,7 @@
                 _usrSel = u;
                 var bEdit = document.getElementById('btnEditarUsr');
                 var bExcl = document.getElementById('btnExcluirUsr');
-                if (bEdit) { bEdit.disabled = false; bEdit.classList.add('habilitado'); }
+                if (bEdit) { bEdit.disabled = false; }
                 if (bExcl) bExcl.disabled = false;
                 var sb = document.getElementById('usr-status-bar');
                 if (sb) sb.textContent = 'Selecionado: ' + u.nome + ' — ' + u.id;
@@ -8352,7 +8452,7 @@
                 _BOTOES_EXTRA.forEach(function (id) { var el = _g(id); if (el) el.disabled = true; });
                 var bc = _g('usr-btn-cal-saida'); if (bc) bc.disabled = true;
                 // Fecha todos os menus abertos ao bloquear
-                ['usr-func-mais', 'usr-setor-mais', 'usr-grupo-menu'].forEach(function (id) {
+                ['usr-func-mais', 'usr-grupo-menu', 'usr-setor-menu'].forEach(function (id) {
                     var m = _g(id); if (m) m.style.display = 'none';
                 });
             }
@@ -8393,16 +8493,17 @@
                 var menu = _g(menuId);
                 if (!menu) return;
                 // fecha todos os outros menus ⋮
-                ['usr-func-mais', 'usr-setor-mais'].forEach(function (id) {
+                ['usr-func-mais'].forEach(function (id) {
                     if (id !== menuId) { var m = _g(id); if (m) m.style.display = 'none'; }
                 });
                 _g('usr-grupo-menu') && (_g('usr-grupo-menu').style.display = 'none');
+                _g('usr-setor-menu') && (_g('usr-setor-menu').style.display = 'none');
                 menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             };
 
             /* Fecha todos os menus ao clicar fora */
             document.addEventListener('click', function () {
-                ['usr-func-mais', 'usr-setor-mais', 'usr-grupo-menu'].forEach(function (id) {
+                ['usr-func-mais', 'usr-grupo-menu', 'usr-setor-menu'].forEach(function (id) {
                     var m = _g(id); if (m) m.style.display = 'none';
                 });
             });
@@ -8414,8 +8515,8 @@
                 if (!elFunc || elFunc.disabled) return;
                 if (typeof abrirBuscaOrigemCampo === 'function') {
                     abrirBuscaOrigemCampo('func', 'usr-f-funcionario', function (item) {
-                        elFunc.value = item.nome || item.label || '';
-                        if (elSetor && item.setor) elSetor.value = item.setor;
+                        elFunc.value = item['Nome'] || item.nome || item.label || '';
+                        // Setor não vem do modal de busca; mantém o campo para preenchimento manual
                     });
                 } else {
                     var nome = prompt('Nome do funcionário:');
@@ -8431,14 +8532,88 @@
                 _g('usr-func-mais') && (_g('usr-func-mais').style.display = 'none');
             };
 
-            /* ── Busca de setor ── */
+            /* ── Setor: dropdown customizado (igual ao Grupo de Acesso) ── */
+            window.usr_toggleSetor = function (e) {
+                e.stopPropagation();
+                var menu = _g('usr-setor-menu');
+                if (!menu) return;
+                var aberto = menu.style.display === 'flex';
+                menu.style.display = aberto ? 'none' : 'flex';
+                if (!aberto) menu.style.flexDirection = 'column';
+            };
+
+            window.usr_selecionarSetor = function (valor) {
+                var input = _g('usr-f-setor');
+                if (input && !input.disabled) {
+                    input.value = valor;
+                    var menu = _g('usr-setor-menu');
+                    if (menu) menu.style.display = 'none';
+                }
+            };
+
+            /* ── Validação de força de senha ── */
+            window.usr_validarForcaSenha = function () {
+                var s1 = _g('usr-f-senha').value;
+                var dica = _g('usr-dica-forca-senha');
+                if (!dica) return;
+                if (!s1) {
+                    dica.textContent = 'A nova senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais (!@#$%&*).';
+                    dica.style.color = '#4a6080';
+                    return;
+                }
+                var erros = [];
+                if (s1.length < 8)              erros.push('mínimo 8 caracteres');
+                if (!/[A-Z]/.test(s1))          erros.push('letra maiúscula');
+                if (!/[a-z]/.test(s1))          erros.push('letra minúscula');
+                if (!/[0-9]/.test(s1))          erros.push('número');
+                if (!/[!@#$%&*]/.test(s1))      erros.push('caractere especial (!@#$%&*)');
+                if (erros.length === 0) {
+                    dica.textContent = '✔ Senha forte';
+                    dica.style.color = '#4cda7a';
+                } else {
+                    dica.textContent = '✖ Faltando: ' + erros.join(', ');
+                    dica.style.color = '#ff6b6b';
+                }
+            };
+
+            /* ── Busca de setor (mantida para compatibilidade) ── */
             window.usr_buscarSetor = function () {
                 var el = _g('usr-f-setor');
                 if (!el || el.disabled) return;
-                var setores = ['TI', 'Financeiro', 'Técnico', 'Administrativo', 'Comercial', 'RH'];
-                var setor = prompt('Setor (' + setores.join(', ') + '):');
-                if (setor) el.value = setor;
                 _g('usr-setor-mais') && (_g('usr-setor-mais').style.display = 'none');
+                // Mostra dropdown inline de setores
+                var setores = ['TI', 'Financeiro', 'Técnico', 'Administrativo', 'Comercial', 'RH'];
+                var existing = document.getElementById('usr-setor-dropdown-popup');
+                if (existing) existing.remove();
+                var popup = document.createElement('div');
+                popup.id = 'usr-setor-dropdown-popup';
+                popup.style.cssText = 'position:fixed;background:#1b2744;border:1px solid #2d7dff;border-radius:6px;z-index:999999;box-shadow:0 4px 20px rgba(0,0,0,0.7);min-width:180px;padding:4px 0;';
+                // Posiciona perto do campo
+                var rect = el.getBoundingClientRect();
+                popup.style.left = rect.left + 'px';
+                popup.style.top = (rect.bottom + 4) + 'px';
+                setores.forEach(function (s) {
+                    var item = document.createElement('div');
+                    item.textContent = s;
+                    item.style.cssText = 'padding:8px 16px;font-size:13px;color:#cfd8e3;cursor:pointer;white-space:nowrap;';
+                    item.addEventListener('mouseenter', function () { item.style.background = '#2f3e63'; });
+                    item.addEventListener('mouseleave', function () { item.style.background = ''; });
+                    item.addEventListener('mousedown', function (e) {
+                        e.preventDefault();
+                        el.value = s;
+                        popup.remove();
+                        document.removeEventListener('mousedown', closePopup);
+                    });
+                    popup.appendChild(item);
+                });
+                document.body.appendChild(popup);
+                function closePopup(e) {
+                    if (!popup.contains(e.target) && e.target !== el) {
+                        popup.remove();
+                        document.removeEventListener('mousedown', closePopup);
+                    }
+                }
+                setTimeout(function () { document.addEventListener('mousedown', closePopup); }, 0);
             };
 
             window.usr_validarSenhas = function () {
@@ -8587,6 +8762,328 @@
                 _showMsg(false, 'Erro de comunicação com o servidor.');
             }
         };
+    </script>
+
+    <!-- ══ MENU FLUTUANTE: MAIS OPÇÕES USUÁRIOS ══ -->
+    <div id="usrMaisOpcMenu" style="
+        display:none; position:fixed; z-index:999999;
+        background:#1b2744; border:1px solid #737373; border-radius:4px;
+        box-shadow:0 4px 16px rgba(0,0,0,0.55); min-width:180px;">
+        <a href="#" onclick="event.preventDefault(); usr_abrirRedefinirSenha();" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:#cfd8e3;text-decoration:none;transition:background .12s;" onmouseover="this.style.background='#2f3e63'" onmouseout="this.style.background=''" >Redefinir Senha</a>
+        <a href="#" onclick="event.preventDefault();" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:#cfd8e3;text-decoration:none;transition:background .12s;" onmouseover="this.style.background='#2f3e63'" onmouseout="this.style.background=''">Histórico de Acesso</a>
+        <a href="#" onclick="event.preventDefault();" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:#cfd8e3;text-decoration:none;transition:background .12s;" onmouseover="this.style.background='#2f3e63'" onmouseout="this.style.background=''">Exportar Lista</a>
+    </div>
+    <script>
+        (function () {
+            var _usrMenu = null;
+            function getMenu() { return _usrMenu || (_usrMenu = document.getElementById('usrMaisOpcMenu')); }
+
+            window.usr_toggleMaisOpcoes = function (e) {
+                e.stopPropagation();
+                var menu = getMenu();
+                var btn = document.getElementById('btnMaisOpcUsr');
+                if (menu.style.display === 'none' || !menu.style.display) {
+                    var rect = btn.getBoundingClientRect();
+                    menu.style.left = rect.left + 'px';
+                    menu.style.top = (rect.bottom + 2) + 'px';
+                    menu.style.display = 'block';
+                } else {
+                    menu.style.display = 'none';
+                }
+            };
+
+            document.addEventListener('click', function (e) {
+                var menu = getMenu();
+                var btn = document.getElementById('btnMaisOpcUsr');
+                if (menu && btn && !menu.contains(e.target) && e.target !== btn) {
+                    menu.style.display = 'none';
+                }
+            });
+        })();
+    </script>
+
+    <!-- ══ MODAL: REDEFINIR SENHA DO USUÁRIO ══ -->
+    <div class="overlay-modal" id="overlayRedefinirSenha" style="display:none;z-index:99990;"></div>
+
+    <div id="modalRedefinirSenha" style="
+        display:none; position:fixed; z-index:99991;
+        width:420px;
+        background:#0b1b2b;
+        border:2px solid #737373;
+        border-radius:4px;
+        box-shadow:0 8px 30px rgba(0,0,0,0.75);
+        flex-direction:column;
+        top:50%; left:50%;
+        transform:translate(-50%,-50%);">
+
+        <!-- Titlebar -->
+        <div id="dragRedefinirSenha" style="
+            background:linear-gradient(to bottom,#253150 0px,#253150 20px,#2d3e69 20px,#16213b 110%);
+            padding:6px 10px; display:flex; justify-content:space-between;
+            align-items:center; border-bottom:1px solid #737373;
+            height:36px; flex-shrink:0; cursor:move; user-select:none;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#a6c8ff;">
+                Redefinir Senha
+            </div>
+            <div class="erp-controls">
+                <button onclick="usr_fecharRedefinirSenha()">✖</button>
+            </div>
+        </div>
+
+        <!-- Info do usuário -->
+        <div id="rds-info-bar" style="
+            display:flex; align-items:center; gap:10px;
+            padding:10px 14px; background:#0d1f35;
+            border-bottom:1px solid #2a3a5c; flex-shrink:0;">
+            <span style="font-size:20px;">👤</span>
+            <div>
+                <div id="rds-nome-usr" style="font-size:13px;font-weight:600;color:#e2e8f0;">—</div>
+                <div id="rds-login-usr" style="font-size:11px;color:#5c6b91;margin-top:1px;">—</div>
+            </div>
+        </div>
+
+        <!-- Corpo do formulário -->
+        <div style="padding:16px 16px 8px; display:flex; flex-direction:column; gap:12px;">
+
+            <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;color:#7aa3e0;font-weight:500;">Nova Senha</label>
+                <div class="bar-acoes" style="height:28px;">
+                    <input type="password" id="rds-nova-senha" placeholder="••••••••"
+                        style="font-size:12px;background:#162840;color:#e2e8f0;"
+                        oninput="rds_validarForca()">
+                    <div class="grupos">
+                        <button class="btn-mais" title="Mostrar/ocultar"
+                            onmousedown="document.getElementById('rds-nova-senha').type='text'"
+                            onmouseup="document.getElementById('rds-nova-senha').type='password'"
+                            onmouseleave="document.getElementById('rds-nova-senha').type='password'"
+                            style="font-size:13px;letter-spacing:0;">👁</button>
+                    </div>
+                </div>
+                <span id="rds-forca" style="font-size:10px;color:#4a6080;margin-top:1px;line-height:1.4;">
+                    Mínimo 8 caracteres, letras maiúsculas, minúsculas, números e especiais (!@#$%&*).
+                </span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:3px;">
+                <label style="font-size:11px;color:#7aa3e0;font-weight:500;">Confirmar Nova Senha</label>
+                <div class="bar-acoes" style="height:28px;">
+                    <input type="password" id="rds-conf-senha" placeholder="••••••••"
+                        style="font-size:12px;background:#162840;color:#e2e8f0;"
+                        oninput="rds_validarConf()">
+                    <div class="grupos">
+                        <button class="btn-mais" title="Mostrar/ocultar"
+                            onmousedown="document.getElementById('rds-conf-senha').type='text'"
+                            onmouseup="document.getElementById('rds-conf-senha').type='password'"
+                            onmouseleave="document.getElementById('rds-conf-senha').type='password'"
+                            style="font-size:13px;letter-spacing:0;">👁</button>
+                    </div>
+                </div>
+                <span id="rds-conf-dica" style="font-size:10px;color:#4a6080;margin-top:1px;"></span>
+            </div>
+
+            <!-- Nota informativa -->
+            <div style="
+                display:flex; align-items:flex-start; gap:8px;
+                background:#0d1f35; border:1px solid #2a3a5c;
+                border-radius:4px; padding:9px 11px;
+                font-size:11px; color:#5c6b91; line-height:1.5;">
+                <span style="font-size:14px;flex-shrink:0;margin-top:1px;">ℹ</span>
+                <span>A senha será alterada imediatamente. O usuário precisará usar a nova senha no próximo login.</span>
+            </div>
+        </div>
+
+        <!-- Footer com botões -->
+        <div style="
+            border-top:1px solid #737373; padding:10px 14px;
+            display:flex; justify-content:flex-end; gap:8px; flex-shrink:0;
+            background:linear-gradient(to bottom,#253150,#16213b);">
+            <button onclick="usr_fecharRedefinirSenha()" style="
+                padding:5px 14px; background:#253150; border:1px solid #737373;
+                color:#9ca3af; font-size:12px; font-family:inherit;
+                border-radius:4px; cursor:pointer; transition:background .15s;"
+                onmouseover="this.style.background='#2f3e63';this.style.color='#e2e8f0'"
+                onmouseout="this.style.background='#253150';this.style.color='#9ca3af'">
+                ✖ Cancelar
+            </button>
+            <button id="rds-btn-salvar" onclick="usr_salvarRedefinirSenha()" style="
+                padding:5px 18px; background:#1f4a8a; border:1px solid #2d7dff;
+                color:#a6c8ff; font-size:12px; font-family:inherit; font-weight:600;
+                border-radius:4px; cursor:pointer; transition:background .15s;"
+                onmouseover="this.style.background='#2d5faa'"
+                onmouseout="this.style.background='#1f4a8a'">
+                Redefinir
+            </button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            /* ── helpers internos ── */
+            function _senhaForte(s) {
+                return s.length >= 8 &&
+                    /[A-Z]/.test(s) && /[a-z]/.test(s) &&
+                    /[0-9]/.test(s) && /[!@#$%&*]/.test(s);
+            }
+
+            /* ── abrir ── */
+            window.usr_abrirRedefinirSenha = function () {
+                // Fecha o menu de mais opções
+                var menu = document.getElementById('usrMaisOpcMenu');
+                if (menu) menu.style.display = 'none';
+
+                if (!window._usrSel) {
+                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Selecione um usuário primeiro.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+                var u = window._usrSel;
+                document.getElementById('rds-nome-usr').textContent  = u.nome  || '—';
+                document.getElementById('rds-login-usr').textContent = u.login ? '@' + u.login : '—';
+                document.getElementById('rds-nova-senha').value  = '';
+                document.getElementById('rds-conf-senha').value  = '';
+                document.getElementById('rds-forca').textContent  = 'Mínimo 8 caracteres, letras maiúsculas, minúsculas, números e especiais (!@#$%&*).';
+                document.getElementById('rds-forca').style.color  = '#4a6080';
+                document.getElementById('rds-conf-dica').textContent = '';
+
+                document.getElementById('overlayRedefinirSenha').style.display = 'block';
+                document.getElementById('modalRedefinirSenha').style.display   = 'flex';
+                document.getElementById('rds-nova-senha').focus();
+                _ativarDragRds();
+            };
+
+            /* ── fechar ── */
+            window.usr_fecharRedefinirSenha = function () {
+                document.getElementById('overlayRedefinirSenha').style.display = 'none';
+                document.getElementById('modalRedefinirSenha').style.display   = 'none';
+            };
+
+            /* ── validação força da senha ── */
+            window.rds_validarForca = function () {
+                var s    = document.getElementById('rds-nova-senha').value;
+                var dica = document.getElementById('rds-forca');
+                if (!s) {
+                    dica.textContent = 'Mínimo 8 caracteres, letras maiúsculas, minúsculas, números e especiais (!@#$%&*).';
+                    dica.style.color = '#4a6080';
+                    return;
+                }
+                var erros = [];
+                if (s.length < 8)         erros.push('mínimo 8 caracteres');
+                if (!/[A-Z]/.test(s))     erros.push('maiúscula');
+                if (!/[a-z]/.test(s))     erros.push('minúscula');
+                if (!/[0-9]/.test(s))     erros.push('número');
+                if (!/[!@#$%&*]/.test(s)) erros.push('especial (!@#$%&*)');
+                if (erros.length === 0) {
+                    dica.textContent = '✔ Senha forte';
+                    dica.style.color = '#4cda7a';
+                } else {
+                    dica.textContent = '✖ Faltando: ' + erros.join(', ');
+                    dica.style.color = '#ff6b6b';
+                }
+                rds_validarConf();
+            };
+
+            /* ── validação confirmação ── */
+            window.rds_validarConf = function () {
+                var s1   = document.getElementById('rds-nova-senha').value;
+                var s2   = document.getElementById('rds-conf-senha').value;
+                var dica = document.getElementById('rds-conf-dica');
+                if (!s2) { dica.textContent = ''; return; }
+                if (s1 === s2) { dica.textContent = '✔ Senhas conferem'; dica.style.color = '#4cda7a'; }
+                else           { dica.textContent = '✖ Senhas não conferem'; dica.style.color = '#ff6b6b'; }
+            };
+
+            /* ── salvar (chama usuarios.php acao=redefinir_senha) ── */
+            window.usr_salvarRedefinirSenha = async function () {
+                if (!window._usrSel?.id) {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: 'Usuário não identificado.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+                var s1 = document.getElementById('rds-nova-senha').value;
+                var s2 = document.getElementById('rds-conf-senha').value;
+
+                if (!s1) {
+                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe a nova senha.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+                if (!_senhaForte(s1)) {
+                    Swal.fire({ icon: 'warning', title: 'Senha fraca', text: 'A senha deve ter ao menos 8 caracteres com maiúsculas, minúsculas, números e especiais (!@#$%&*).', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+                if (s1 !== s2) {
+                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'As senhas não conferem.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+
+                var btn = document.getElementById('rds-btn-salvar');
+                if (btn) { btn.disabled = true; btn.textContent = '⏳ Salvando...'; }
+
+                var fd = new FormData();
+                fd.append('acao',        'redefinir_senha');
+                fd.append('id',          window._usrSel.id);
+                fd.append('nova_senha',  s1);
+
+                var res = { sucesso: false };
+                try {
+                    var r = await fetch('usuarios.php', { method: 'POST', body: fd });
+                    res = await r.json();
+                } catch (e) {
+                    res = { sucesso: false, mensagem: 'Erro de comunicação.' };
+                }
+
+                if (btn) { btn.disabled = false; btn.textContent = 'Redefinir'; }
+
+                if (!res.sucesso) {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: res.mensagem || 'Não foi possível redefinir a senha.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+
+                usr_fecharRedefinirSenha();
+                Swal.fire({ icon: 'success', title: 'Senha redefinida!', text: 'A senha de ' + (window._usrSel.nome || 'usuário') + ' foi alterada com sucesso.', timer: 2200, showConfirmButton: false, scrollbarPadding: false });
+            };
+
+            /* ── drag ── */
+            function _ativarDragRds() {
+                var modal  = document.getElementById('modalRedefinirSenha');
+                var handle = document.getElementById('dragRedefinirSenha');
+                if (!handle || handle.dataset.drag) return;
+                handle.dataset.drag = '1';
+                handle.addEventListener('mousedown', function (e) {
+                    var rect = modal.getBoundingClientRect();
+                    var sx = e.clientX - rect.left;
+                    var sy = e.clientY - rect.top;
+                    function mv(e) {
+                        modal.style.left      = e.clientX - sx + 'px';
+                        modal.style.top       = e.clientY - sy + 'px';
+                        modal.style.transform = 'none';
+                    }
+                    document.addEventListener('mousemove', mv);
+                    document.addEventListener('mouseup', function () {
+                        document.removeEventListener('mousemove', mv);
+                    }, { once: true });
+                });
+            }
+
+            /* Fechar ao clicar no overlay */
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('overlayRedefinirSenha')
+                    .addEventListener('click', window.usr_fecharRedefinirSenha);
+            });
+
+        })();
+    </script>
+
+    <!-- ══ FLATPICKR: CALENDÁRIOS DAS ORIGENS ══ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var fpCfg = { dateFormat: 'd/m/Y', allowInput: false, disableMobile: true };
+
+            // Cliente — Nascimento
+            window._fpCliNasc = flatpickr('#cli-nascimento', Object.assign({}, fpCfg));
+
+            // Funcionário — Nascimento, Admissão, Demissão
+            window._fpFuncNasc = flatpickr('#func-nascimento', Object.assign({}, fpCfg));
+            window._fpFuncAdm  = flatpickr('#func-admissao',  Object.assign({}, fpCfg));
+            window._fpFuncDem  = flatpickr('#func-demissao',  Object.assign({}, fpCfg));
+        });
     </script>
 
 </body>
