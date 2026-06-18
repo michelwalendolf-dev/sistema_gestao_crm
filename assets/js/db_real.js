@@ -308,7 +308,10 @@
         const valorStr = (document.getElementById('cad-valor')?.value || '').trim();
         const contato = (document.getElementById('cad-contato')?.value || '').trim();
         const status = (document.getElementById('cad-status')?.value || '').trim();
-        const observacao = (document.getElementById('cad-observacao')?.value || '').trim();
+        // Lê obs direto do textarea (se a aba Observação estiver ativa) ou do cache _observacoes
+        const _obsTextarea = (document.getElementById('cad-observacao')?.value || '').trim();
+        const _obsChave = (document.getElementById('cad-codigo')?.value || '').trim() || '__novo__';
+        const observacao = _obsTextarea || (window._observacoes && window._observacoes[_obsChave]) || '';
 
         if (!cliente) {
             Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe o cliente.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });

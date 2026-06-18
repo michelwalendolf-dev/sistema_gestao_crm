@@ -1940,7 +1940,6 @@
                     <div class="dropdown-botao">
                         <a href="#" onclick="abrirAuditoria()">📋 Auditoria</a>
                         <a href="#" onclick="abrirRelatorios(); return false;">📄 Relatórios</a>
-                        <a href="#">🔒 Fechamento</a>
                         <a href="#" onclick="abrirAnexos('os'); return false;">📎 Anexos</a>
                     </div>
                 </div>
@@ -2515,7 +2514,6 @@
                     <textarea id="cad-observacao" class="obs-textarea"
                         placeholder="Digite a observação desta OS..."></textarea>
                     <div class="panel-obs-acoes">
-                        <button class="btn-obs-salvar" onclick="salvarObservacao()">💾 Salvar</button>
                         <button class="btn-obs-limpar" onclick="limparObservacao()">🗑️ Limpar</button>
                     </div>
                 </div>
@@ -2744,7 +2742,6 @@
                         <div class="panel-obs-inner">
                             <textarea id="item-observacao" class="obs-textarea" placeholder="Observação do item..."></textarea>
                             <div class="panel-obs-acoes">
-                                <button class="btn-obs-salvar" onclick="salvarObsItem()">💾 Salvar</button>
                                 <button class="btn-obs-limpar" onclick="document.getElementById('item-observacao').value=''">🗑️ Limpar</button>
                             </div>
                         </div>
@@ -3158,6 +3155,19 @@
                 dateFormat: "d/m/Y",
                 allowInput: false,
                 disableMobile: true,
+                onOpen: function() {
+                    // Define data mínima como a data de criação da OS
+                    var dtCriacaoStr = document.getElementById("cad-dtCriacao").value.trim();
+                    if (dtCriacaoStr) {
+                        var parts = dtCriacaoStr.split("/");
+                        if (parts.length === 3) {
+                            var minDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                            window._fpDtPrevista.set("minDate", minDate);
+                        }
+                    } else {
+                        window._fpDtPrevista.set("minDate", "today");
+                    }
+                },
                 onChange: function(selectedDates, dateStr) {
                     document.getElementById("cad-dtPrevista").value = dateStr;
                 }
@@ -3168,6 +3178,19 @@
                 dateFormat: "d/m/Y",
                 allowInput: false,
                 disableMobile: true,
+                onOpen: function() {
+                    // Define data mínima como a data de criação do item
+                    var dtCriacaoStr = document.getElementById("item-dtCriacao").value.trim();
+                    if (dtCriacaoStr) {
+                        var parts = dtCriacaoStr.split("/");
+                        if (parts.length === 3) {
+                            var minDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                            window._fpDtSolucao.set("minDate", minDate);
+                        }
+                    } else {
+                        window._fpDtSolucao.set("minDate", "today");
+                    }
+                },
                 onChange: function(selectedDates, dateStr) {
                     document.getElementById("item-dtSolucao").value = dateStr;
                 }
@@ -4125,9 +4148,17 @@
     <script>
 
         const _observacoes = {};
+        window._observacoes = _observacoes; // exposto para db_real.js
 
         document.querySelectorAll(".erp-tab").forEach((tab, idx) => {
             tab.addEventListener("click", () => {
+                // Ao sair da aba Observação, salva automaticamente no cache
+                const tabAtiva = document.querySelector(".erp-tab.active");
+                const idxAtiva = Array.from(document.querySelectorAll(".erp-tab")).indexOf(tabAtiva);
+                if (idxAtiva === 1) {
+                    const chaveAtual = document.getElementById("cad-codigo").value.trim() || "__novo__";
+                    _observacoes[chaveAtual] = document.getElementById("cad-observacao").value.trim();
+                }
                 document.querySelectorAll(".erp-tab").forEach(t => t.classList.remove("active"));
                 tab.classList.add("active");
                 document.getElementById("panel-os").style.display = idx === 0 ? "" : "none";
@@ -4340,6 +4371,13 @@
 
         document.querySelectorAll(".item-tab").forEach((tab, idx) => {
             tab.addEventListener("click", () => {
+                // Ao sair da aba Observação do item, salva no cache automaticamente
+                const itemTabAtiva = document.querySelector(".item-tab.active");
+                const idxItemAtiva = itemTabAtiva ? Array.from(document.querySelectorAll(".item-tab")).indexOf(itemTabAtiva) : -1;
+                if (idxItemAtiva === 1 && itemSelecionado && osSelecionada) {
+                    const chaveObs = osSelecionada.codigo + "_" + itemSelecionado.codItem;
+                    _obsItens[chaveObs] = document.getElementById("item-observacao").value.trim();
+                }
                 document.querySelectorAll(".item-tab").forEach(t => t.classList.remove("active"));
                 tab.classList.add("active");
                 _ITEM_PAINEIS.forEach((id, i) => {
@@ -4649,6 +4687,19 @@
         }
 
         async function salvarItem() {
+            // Salva automaticamente a observação do item antes de gravar
+            if (itemSelecionado && osSelecionada) {
+                const _obsChaveItem = osSelecionada.codigo + "_" + itemSelecionado.codItem;
+                const _obsValAtual = document.getElementById("item-observacao").value.trim();
+                if (_obsValAtual) _obsItens[_obsChaveItem] = _obsValAtual;
+            } else {
+                // Novo item: guarda obs pelo codItem que será preenchido
+                const _codItemNovo = document.getElementById("item-codItem").value.trim();
+                const _obsValNovo = document.getElementById("item-observacao").value.trim();
+                if (_codItemNovo && _obsValNovo && osSelecionada) {
+                    _obsItens[(osSelecionada.codigo || "__novo__") + "_" + _codItemNovo] = _obsValNovo;
+                }
+            }
             const codItem = document.getElementById("item-codItem").value.trim();
             if (!codItem) {
                 Swal.fire({ icon: "warning", title: "Atenção", text: "Informe o código do item.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
