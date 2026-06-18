@@ -561,6 +561,52 @@
             border: 1px solid rgba(220, 50, 50, .30);
         }
 
+        .item-status-badge {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .25px;
+            white-space: nowrap;
+        }
+
+        .item-status-aberto {
+            background: rgba(45, 100, 220, .18);
+            color: #7aadff;
+            border: 1px solid rgba(45, 100, 220, .35);
+        }
+
+        .item-status-andamento {
+            background: rgba(245, 185, 66, .16);
+            color: #f5b942;
+            border: 1px solid rgba(245, 185, 66, .32);
+        }
+
+        .item-status-aguardando {
+            background: rgba(180, 120, 220, .16);
+            color: #c79bf0;
+            border: 1px solid rgba(180, 120, 220, .32);
+        }
+
+        .item-status-pausado {
+            background: rgba(120, 120, 130, .14);
+            color: #9ca3af;
+            border: 1px solid rgba(120, 120, 130, .28);
+        }
+
+        .item-status-concluido {
+            background: rgba(34, 180, 100, .16);
+            color: #4cda7a;
+            border: 1px solid rgba(34, 180, 100, .32);
+        }
+
+        .item-status-cancelado {
+            background: rgba(220, 50, 50, .15);
+            color: #ff6b6b;
+            border: 1px solid rgba(220, 50, 50, .30);
+        }
+
         #painel-inferior-handle {
             position: relative;
             flex-shrink: 0;
@@ -1958,6 +2004,7 @@
                             <thead>
                                 <tr>
                                     <th>Cod. Item</th>
+                                    <th width="110px">Status</th>
                                     <th>Tipo</th>
                                     <th width="200px">Descrição</th>
                                     <th width="150px">Maquina</th>
@@ -2486,7 +2533,7 @@
 
     <div id="overlayItem" class="overlay-modal" style="display:none;"></div>
 
-    <div id="modalItem" class="erp-modal" style="display:none; width:660px;">
+    <div id="modalItem" class="erp-modal" style="display:none; width:1080px;">
         <div class="erp-titlebar" id="dragItem">
             <span id="itemTitulo">Cadastro de Item</span>
             <div class="erp-controls">
@@ -2494,156 +2541,372 @@
                 <button onclick="fecharModalItem()">✖</button>
             </div>
         </div>
-        <div class="erp-content">
-            <div class="erp-tabs">
-                <div class="erp-tab item-tab active">Item</div>
-                <div class="erp-tab item-tab">Observação</div>
-            </div>
+        <div class="erp-content" style="padding:0;">
+            <!-- ══ LAYOUT 3 COLUNAS ══ -->
+            <div class="item-modal-layout">
 
-            <div class="erp-panel" id="panel-item-dados">
-                <div class="erp-grid">
-                    <div class="campo-completo">
-                        <label>Cód. Item</label>
-                        <div class="bar-acoes"><input type="text" id="item-codItem">
-                            <div class="grupos"></div>
-                        </div>
+                <!-- ═══ COLUNA ESQUERDA: Navegação de Recursos ═══ -->
+                <div class="item-col-esq">
+                    <div class="item-col-titulo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        Recursos
                     </div>
-                    <div class="campo-completo">
-                        <label>Tipo</label>
-                        <div class="bar-acoes dropdown-container" id="item-tipo-container">
-                            <input type="text" id="item-tipo" placeholder="Tipo">
-                            <div class="grupo-botoes"><button class="btn-dropdown">▼</button></div>
-                            <div class="dropdown-menu">
-                                <div class="item">Serviço</div>
-                                <div class="item">Peça</div>
-                                <div class="item">Software</div>
-                                <div class="item">Deslocamento</div>
+                    <div class="item-rec-nav">
+                        <button class="item-rec-nav-btn" onclick="abrirRecurso('roteiro', this)">
+                            <span class="item-rec-nav-ico">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                            </span>
+                            <div class="item-rec-nav-info">
+                                <span class="item-rec-nav-label">Roteiro</span>
+                                <span class="item-rec-nav-desc">Etapas de execução</span>
+                            </div>
+                            <svg class="item-rec-nav-arrow" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                        <button class="item-rec-nav-btn" onclick="abrirRecurso('documentacao', this)">
+                            <span class="item-rec-nav-ico">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            </span>
+                            <div class="item-rec-nav-info">
+                                <span class="item-rec-nav-label">Documentação</span>
+                                <span class="item-rec-nav-desc">Links e referências</span>
+                            </div>
+                            <svg class="item-rec-nav-arrow" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                        <button class="item-rec-nav-btn" onclick="abrirRecurso('anexos', this)">
+                            <span class="item-rec-nav-ico">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            </span>
+                            <div class="item-rec-nav-info">
+                                <span class="item-rec-nav-label">Anexos</span>
+                                <span class="item-rec-nav-desc">Arquivos e imagens</span>
+                            </div>
+                            <svg class="item-rec-nav-arrow" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                                <!-- ═══ COLUNA CENTRAL: Dados do Item ═══ -->
+                <div class="item-col-centro">
+                    <div class="erp-tabs" style="border-bottom:1px solid #2e3a4e;margin-bottom:0;">
+                        <div class="erp-tab item-tab active">Item</div>
+                        <div class="erp-tab item-tab">Observação</div>
+                        <div class="erp-tab item-tab">Hrs. Trabalhadas</div>
+                        <div class="erp-tab item-tab">Pendências</div>
+                        <div class="erp-tab item-tab">Histórico</div>
+                    </div>
+
+                    <div class="erp-panel" id="panel-item-dados" style="padding:12px 12px 0;">
+                        <div class="erp-grid">
+                            <div class="campo-completo">
+                                <label>Cód. Item</label>
+                                <div class="bar-acoes"><input type="text" id="item-codItem">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Status</label>
+                                <div class="bar-acoes dropdown-container" id="item-status-container">
+                                    <input type="text" id="item-status" placeholder="Selecione..." readonly>
+                                    <div class="grupo-botoes"><button class="btn-dropdown" type="button">▼</button></div>
+                                    <div class="dropdown-menu">
+                                        <div class="item">Aberto</div>
+                                        <div class="item">Em Andamento</div>
+                                        <div class="item">Aguardando Peça</div>
+                                        <div class="item">Pausado</div>
+                                        <div class="item">Concluído</div>
+                                        <div class="item">Cancelado</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Tipo</label>
+                                <div class="bar-acoes dropdown-container" id="item-tipo-container">
+                                    <input type="text" id="item-tipo" placeholder="Tipo">
+                                    <div class="grupo-botoes"><button class="btn-dropdown">▼</button></div>
+                                    <div class="dropdown-menu">
+                                        <div class="item">Serviço</div>
+                                        <div class="item">Peça</div>
+                                        <div class="item">Software</div>
+                                        <div class="item">Deslocamento</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Descrição</label>
+                                <div class="bar-acoes"><input type="text" id="item-descricao">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Máquina</label>
+                                <div class="bar-acoes"><input type="text" id="item-maquina">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Dt. Criação <span style="color:#4a6080;font-size:10px;">(automático)</span></label>
+                                <div class="bar-acoes">
+                                    <input type="text" id="item-dtCriacao" readonly
+                                        style="cursor:not-allowed;color:#7aa3e0;background:#1a2a40;"
+                                        title="A data de criação é preenchida automaticamente e não pode ser alterada">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Dt. Solução</label>
+                                <div class="bar-acoes">
+                                    <input type="text" id="item-dtSolucao" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
+                                    <div class="grupos">
+                                        <button class="btn-limpar" title="Limpar data de solução"
+                                            onclick="document.getElementById('item-dtSolucao').value=''; if(window._fpDtSolucao) window._fpDtSolucao.clear();">✖</button>
+                                        <button class="btn-data" title="Abrir calendário"
+                                            onclick="if(window._fpDtSolucao) window._fpDtSolucao.open();">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none"
+                                                stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                                <line x1="8" y1="3" x2="8" y2="7"></line>
+                                                <line x1="16" y1="3" x2="16" y2="7"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Técnico</label>
+                                <div class="bar-acoes">
+                                    <input type="text" id="item-tecnico">
+                                    <div class="grupos">
+                                        <button class="btn-limpar" title="Limpar"
+                                            onclick="document.getElementById('item-tecnico').value=''">✖</button>
+                                        <button class="btn-busca" title="Abrir busca de técnicos"
+                                            onclick="abrirBuscaOrigemCampo('func','item-tecnico',null,false)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <circle cx="11" cy="11" r="8"></circle>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Cód. Barras</label>
+                                <div class="bar-acoes"><input type="text" id="item-codBarras">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Produto Consumido</label>
+                                <div class="bar-acoes"><input type="text" id="item-produto">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Resp. Execução</label>
+                                <div class="bar-acoes"><input type="text" id="item-respExec">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Hrs. Estimadas</label>
+                                <div class="bar-acoes"><input type="number" id="item-hrsEst" step="0.5">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Hrs. Realizadas</label>
+                                <div class="bar-acoes"><input type="number" id="item-hrsReal" step="0.5">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Valor de Serviço</label>
+                                <div class="bar-acoes" style="position:relative;">
+                                    <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                                    <input type="text" id="item-vlrServico" style="padding-left:28px;">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo">
+                                <label>Valor Total</label>
+                                <div class="bar-acoes" style="position:relative;">
+                                    <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                                    <input type="text" id="item-vlrTotal" style="padding-left:28px;">
+                                    <div class="grupos"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="campo-completo">
-                        <label>Descrição</label>
-                        <div class="bar-acoes"><input type="text" id="item-descricao">
-                            <div class="grupos"></div>
-                        </div>
-                    </div>
-                    <div class="campo-completo">
-                        <label>Máquina</label>
-                        <div class="bar-acoes"><input type="text" id="item-maquina">
-                            <div class="grupos"></div>
-                        </div>
-                    </div>
-                    <div class="campo-completo">
-                        <label>Dt. Criação <span style="color:#4a6080;font-size:10px;">(automático)</span></label>
-                        <div class="bar-acoes">
-                            <input type="text" id="item-dtCriacao" readonly
-                                style="cursor:not-allowed;color:#7aa3e0;background:#1a2a40;"
-                                title="A data de criação é preenchida automaticamente e não pode ser alterada">
-                            <div class="grupos"></div>
-                        </div>
-                    </div>
-                    <div class="campo-completo">
-                        <label>Dt. Solução</label>
-                        <div class="bar-acoes">
-                            <input type="text" id="item-dtSolucao" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
-                            <div class="grupos">
-                                <button class="btn-limpar" title="Limpar data de solução"
-                                    onclick="document.getElementById('item-dtSolucao').value=''; if(window._fpDtSolucao) window._fpDtSolucao.clear();">✖</button>
-                                <button class="btn-data" title="Abrir calendário"
-                                    onclick="if(window._fpDtSolucao) window._fpDtSolucao.open();">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none"
-                                        stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="5" width="18" height="16" rx="3"></rect>
-                                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                                        <line x1="8" y1="3" x2="8" y2="7"></line>
-                                        <line x1="16" y1="3" x2="16" y2="7"></line>
-                                    </svg>
-                                </button>
+
+                    <div class="erp-panel" id="panel-item-obs" style="display:none;padding:12px;">
+                        <div class="panel-obs-inner">
+                            <textarea id="item-observacao" class="obs-textarea" placeholder="Observação do item..."></textarea>
+                            <div class="panel-obs-acoes">
+                                <button class="btn-obs-salvar" onclick="salvarObsItem()">💾 Salvar</button>
+                                <button class="btn-obs-limpar" onclick="document.getElementById('item-observacao').value=''">🗑️ Limpar</button>
                             </div>
                         </div>
                     </div>
-                    <div class="campo-completo">
-                        <label>Técnico</label>
-                        <div class="bar-acoes">
-                            <input type="text" id="item-tecnico">
-                            <div class="grupos">
-                                <button class="btn-limpar" title="Limpar"
-                                    onclick="document.getElementById('item-tecnico').value=''">✖</button>
-                                <button class="btn-busca" title="Abrir busca de técnicos"
-                                    onclick="abrirBuscaOrigemCampo('func','item-tecnico',null,false)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <circle cx="11" cy="11" r="8"></circle>
-                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                    </svg>
-                                </button>
+
+                    <!-- ═══ Painel: Hrs. Trabalhadas ═══ -->
+                    <div class="erp-panel" id="panel-item-horas" style="display:none;padding:12px;">
+                        <div class="panel-horas-inner">
+                            <div class="horas-resumo">
+                                <div class="horas-resumo-card">
+                                    <span class="horas-resumo-label">Estimadas</span>
+                                    <span class="horas-resumo-valor" id="horas-resumo-estimadas">0h</span>
+                                </div>
+                                <div class="horas-resumo-card">
+                                    <span class="horas-resumo-label">Realizadas</span>
+                                    <span class="horas-resumo-valor" id="horas-resumo-realizadas">0h</span>
+                                </div>
+                                <div class="horas-resumo-card">
+                                    <span class="horas-resumo-label">Saldo</span>
+                                    <span class="horas-resumo-valor" id="horas-resumo-saldo">0h</span>
+                                </div>
+                            </div>
+
+                            <div class="horas-lancamento">
+                                <div class="campo-completo">
+                                    <label>Data</label>
+                                    <div class="bar-acoes">
+                                        <input type="text" id="horas-data" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
+                                        <div class="grupos">
+                                            <button class="btn-data" title="Abrir calendário" onclick="if(window._fpHorasData) window._fpHorasData.open();">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="16" y1="3" x2="16" y2="7"></line></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="campo-completo">
+                                    <label>Técnico</label>
+                                    <div class="bar-acoes">
+                                        <input type="text" id="horas-tecnico">
+                                        <div class="grupos">
+                                            <button class="btn-busca" title="Abrir busca de técnicos" onclick="abrirBuscaOrigemCampo('func','horas-tecnico',null,false)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="campo-completo">
+                                    <label>Hrs. Trabalhadas</label>
+                                    <div class="bar-acoes"><input type="number" id="horas-qtd" step="0.5" min="0" placeholder="0,0"></div>
+                                </div>
+                                <div class="campo-completo">
+                                    <label>Descrição</label>
+                                    <div class="bar-acoes"><input type="text" id="horas-descricao" placeholder="O que foi realizado..."></div>
+                                </div>
+                            </div>
+                            <div class="panel-obs-acoes">
+                                <button class="btn-obs-salvar" onclick="adicionarLancamentoHoras()">➕ Lançar</button>
+                            </div>
+
+                            <div class="horas-lista-wrap">
+                                <table class="horas-tabela">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Técnico</th>
+                                            <th>Descrição</th>
+                                            <th>Horas</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="horas-lista-corpo">
+                                        <tr id="horas-lista-vazio">
+                                            <td colspan="5" class="horas-vazio">Nenhum lançamento de horas registrado.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="campo-completo">
-                        <label>Cód. Barras</label>
-                        <div class="bar-acoes"><input type="text" id="item-codBarras">
-                            <div class="grupos"></div>
+
+                    <!-- ═══ Painel: Pendências ═══ -->
+                    <div class="erp-panel" id="panel-item-pendencias" style="display:none;padding:12px;">
+                        <div class="panel-pend-inner">
+                            <div class="pend-novo">
+                                <input type="text" id="pend-nova-descricao" placeholder="Descrever pendência...">
+                                <select id="pend-nova-prioridade" class="pend-select">
+                                    <option value="baixa">Baixa</option>
+                                    <option value="media" selected>Média</option>
+                                    <option value="alta">Alta</option>
+                                </select>
+                                <button class="btn-obs-salvar" onclick="adicionarPendencia()">➕ Adicionar</button>
+                            </div>
+
+                            <div class="pend-lista-wrap" id="pend-lista-wrap">
+                                <div class="pend-vazio" id="pend-lista-vazio">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e4060" stroke-width="1.4"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                    <span>Nenhuma pendência registrada</span>
+                                </div>
+                                <div id="pend-lista-corpo"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="campo-completo">
-                        <label>Produto Consumido</label>
-                        <div class="bar-acoes"><input type="text" id="item-produto">
-                            <div class="grupos"></div>
+
+                    <!-- ═══ Painel: Histórico ═══ -->
+                    <div class="erp-panel" id="panel-item-historico" style="display:none;padding:12px;">
+                        <div class="panel-hist-inner">
+                            <div class="hist-filtros">
+                                <button class="item-tl-filtro active" data-filtro="tudo" onclick="filtrarHistoricoItem(this,'tudo')">Tudo</button>
+                                <button class="item-tl-filtro" data-filtro="alteracao" onclick="filtrarHistoricoItem(this,'alteracao')">Alterações</button>
+                                <button class="item-tl-filtro" data-filtro="hora" onclick="filtrarHistoricoItem(this,'hora')">Horas</button>
+                                <button class="item-tl-filtro" data-filtro="pendencia" onclick="filtrarHistoricoItem(this,'pendencia')">Pendências</button>
+                            </div>
+                            <div class="hist-lista-wrap" id="hist-item-lista-wrap">
+                                <div class="hist-vazio" id="hist-item-vazio">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e4060" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    <span>Nenhum evento registrado para este item</span>
+                                </div>
+                                <div id="hist-item-lista-corpo"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="campo-completo">
-                        <label>Resp. Execução</label>
-                        <div class="bar-acoes"><input type="text" id="item-respExec">
-                            <div class="grupos"></div>
+
+                    <div class="erp-footer">
+                        <button class="btn-footer-salvar" onclick="salvarItem()">💾 Salvar</button>
+                    </div>
+                </div>
+
+                <!-- ═══ COLUNA DIREITA: Histórico / Timeline ═══ -->
+                <div class="item-col-dir">
+                    <!-- Header com filtros -->
+                    <div class="item-tl-header">
+                        <div class="item-col-titulo" style="border-bottom:none;padding-bottom:6px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            Histórico
+                        </div>
+                        <div class="item-tl-filtros">
+                            <button class="item-tl-filtro active" data-filtro="tudo" onclick="filtrarTimeline(this,'tudo')">Tudo</button>
+                            <button class="item-tl-filtro" data-filtro="acao" onclick="filtrarTimeline(this,'acao')">Ações</button>
+                            <button class="item-tl-filtro" data-filtro="nota" onclick="filtrarTimeline(this,'nota')">Notas</button>
                         </div>
                     </div>
-                    <div class="campo-completo">
-                        <label>Hrs. Estimadas</label>
-                        <div class="bar-acoes"><input type="number" id="item-hrsEst" step="0.5">
-                            <div class="grupos"></div>
+
+                    <!-- Lista de eventos -->
+                    <div class="item-timeline-wrap" id="item-timeline-wrap">
+                        <div class="item-tl-vazio" id="item-tl-vazio">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e4060" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <span>Nenhum evento registrado</span>
                         </div>
+                        <div id="item-timeline-lista"></div>
                     </div>
-                    <div class="campo-completo">
-                        <label>Hrs. Realizadas</label>
-                        <div class="bar-acoes"><input type="number" id="item-hrsReal" step="0.5">
-                            <div class="grupos"></div>
-                        </div>
-                    </div>
-                    <div class="campo-completo">
-                        <label>Valor de Serviço</label>
-                        <div class="bar-acoes" style="position:relative;">
-                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
-                            <input type="text" id="item-vlrServico" style="padding-left:28px;">
-                            <div class="grupos"></div>
-                        </div>
-                    </div>
-                    <div class="campo-completo">
-                        <label>Valor Total</label>
-                        <div class="bar-acoes" style="position:relative;">
-                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
-                            <input type="text" id="item-vlrTotal" style="padding-left:28px;">
-                            <div class="grupos"></div>
+
+                    <!-- Input de nota no rodapé -->
+                    <div class="item-tl-footer">
+                        <textarea id="tl-evento-texto" class="item-tl-nota-input" placeholder="Adicionar nota ou observação..." rows="2"></textarea>
+                        <div class="item-tl-footer-acoes">
+                            <button class="item-tl-btn-cancelar" onclick="document.getElementById('tl-evento-texto').value=''">Cancelar</button>
+                            <button class="item-tl-btn-registrar" onclick="adicionarEventoTimeline('nota')">Registrar</button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="erp-panel" id="panel-item-obs" style="display:none;">
-                <div class="panel-obs-inner">
-                    <textarea id="item-observacao" class="obs-textarea" placeholder="Observação do item..."></textarea>
-                    <div class="panel-obs-acoes">
-                        <button class="btn-obs-salvar" onclick="salvarObsItem()">💾 Salvar</button>
-                        <button class="btn-obs-limpar" onclick="document.getElementById('item-observacao').value=''">🗑️
-                            Limpar</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="erp-footer">
-                <button class="btn-footer-salvar" onclick="salvarItem()">💾 Salvar</button>
-            </div>
+            </div><!-- fim .item-modal-layout -->
         </div>
     </div>
 
@@ -3211,6 +3474,18 @@
         }
 
         let resizeInferiorIniciado = false;
+        function _classeStatusItem(status) {
+            const mapa = {
+                "Aberto":           "item-status-aberto",
+                "Em Andamento":     "item-status-andamento",
+                "Aguardando Peça":  "item-status-aguardando",
+                "Pausado":          "item-status-pausado",
+                "Concluído":        "item-status-concluido",
+                "Cancelado":        "item-status-cancelado",
+            };
+            return mapa[status] || "item-status-aberto";
+        }
+
         function renderizarItens(itens, codigoOS) {
             const tbody = document.querySelector(".grid-inferior tbody");
             if (!tbody) return;
@@ -3229,6 +3504,7 @@
                 tr.className = "os-row";
                 tr.innerHTML = `
             <td>${it.codItem}</td>
+            <td><span class="item-status-badge ${_classeStatusItem(it.status)}">${it.status || "Aberto"}</span></td>
             <td>${it.tipo}</td>
             <td>${it.descricao}</td>
             <td>${it.maquina}</td>
@@ -3953,7 +4229,7 @@
             modalItem.style.display = "block";
             overlayItem.style.display = "block";
             modalItem.style.position = "fixed";
-            modalItem.style.width = "660px";
+            modalItem.style.width = "1080px";
             modalItem.style.height = "auto";
             modalItem.style.left = "50%";
             modalItem.style.top = "80px";
@@ -3961,8 +4237,10 @@
             itemMaximizado = false;
 
             document.querySelectorAll(".item-tab").forEach((t, i) => t.classList.toggle("active", i === 0));
-            document.getElementById("panel-item-dados").style.display = "";
-            document.getElementById("panel-item-obs").style.display = "none";
+            _ITEM_PAINEIS.forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = i === 0 ? "" : "none";
+            });
         }
 
         function abrirNovoItem() {
@@ -3979,6 +4257,7 @@
             const _mmItem = String(_hojeItem.getMonth() + 1).padStart(2, "0");
             const _yyyyItem = _hojeItem.getFullYear();
             document.getElementById("item-dtCriacao").value = `${_ddItem}/${_mmItem}/${_yyyyItem}`;
+            document.getElementById("item-status").value = "Aberto";
             if (window._fpDtSolucao) window._fpDtSolucao.clear();
             _abrirModalItem();
         }
@@ -3995,6 +4274,7 @@
             modoItemEdicao = true;
             document.getElementById("itemTitulo").textContent = "Edição de Item";
             document.getElementById("item-codItem").value = itemSelecionado.codItem || "";
+            document.getElementById("item-status").value = itemSelecionado.status || "Aberto";
             document.getElementById("item-tipo").value = itemSelecionado.tipo || "";
             document.getElementById("item-descricao").value = itemSelecionado.descricao || "";
             document.getElementById("item-maquina").value = itemSelecionado.maquina || "";
@@ -4016,6 +4296,7 @@
             const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
             document.getElementById("item-observacao").value = _obsItens[chave] || "";
             _abrirModalItem();
+            _carregarRecursosItem();
         }
 
         function fecharModalItem() {
@@ -4055,15 +4336,28 @@
             document.onmouseup = up;
         };
 
+        const _ITEM_PAINEIS = ["panel-item-dados", "panel-item-obs", "panel-item-horas", "panel-item-pendencias", "panel-item-historico"];
+
         document.querySelectorAll(".item-tab").forEach((tab, idx) => {
             tab.addEventListener("click", () => {
                 document.querySelectorAll(".item-tab").forEach(t => t.classList.remove("active"));
                 tab.classList.add("active");
-                document.getElementById("panel-item-dados").style.display = idx === 0 ? "" : "none";
-                document.getElementById("panel-item-obs").style.display = idx === 1 ? "" : "none";
+                _ITEM_PAINEIS.forEach((id, i) => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = i === idx ? "" : "none";
+                });
                 if (idx === 1 && modoItemEdicao && itemSelecionado && osSelecionada) {
                     const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
                     document.getElementById("item-observacao").value = _obsItens[chave] || "";
+                }
+                if (idx === 2) {
+                    _renderHorasItem();
+                }
+                if (idx === 3) {
+                    _renderPendenciasItem();
+                }
+                if (idx === 4) {
+                    _renderHistoricoItem("tudo");
                 }
             });
         });
@@ -4077,6 +4371,26 @@
             btn.addEventListener("click", e => { e.stopPropagation(); cont.classList.toggle("ativo"); });
             menu.querySelectorAll(".item").forEach(it => {
                 it.addEventListener("click", () => { inp.value = it.textContent; cont.classList.remove("ativo"); });
+            });
+            document.addEventListener("click", e => { if (!cont.contains(e.target)) cont.classList.remove("ativo"); });
+        })();
+
+        (function () {
+            const cont = document.getElementById("item-status-container");
+            if (!cont) return;
+            const btn = cont.querySelector(".btn-dropdown");
+            const menu = cont.querySelector(".dropdown-menu");
+            const inp = cont.querySelector("input");
+            btn.addEventListener("click", e => { e.stopPropagation(); cont.classList.toggle("ativo"); });
+            menu.querySelectorAll(".item").forEach(it => {
+                it.addEventListener("click", () => {
+                    const statusAnterior = inp.value;
+                    inp.value = it.textContent;
+                    cont.classList.remove("ativo");
+                    if (statusAnterior && statusAnterior !== it.textContent) {
+                        _registrarHistoricoItem("alteracao", `Status alterado de "${statusAnterior}" para "${it.textContent}".`);
+                    }
+                });
             });
             document.addEventListener("click", e => { if (!cont.contains(e.target)) cont.classList.remove("ativo"); });
         })();
@@ -4102,6 +4416,238 @@
             Swal.fire({ icon: "success", title: "Observação salva", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
         }
 
+        // ════════════════════════════════════════════════════════
+        //  Hrs. Trabalhadas / Pendências / Histórico do Item
+        // ════════════════════════════════════════════════════════
+
+        const _horasItens = {};       // { "OS_ITEM": [ {data, tecnico, descricao, horas}, ... ] }
+        const _pendItens  = {};       // { "OS_ITEM": [ {id, descricao, prioridade, concluida, criadaEm}, ... ] }
+        const _histItens  = {};       // { "OS_ITEM": [ {tipo, texto, data}, ... ] }
+
+        function _chaveItemAtual() {
+            if (!itemSelecionado || !osSelecionada) return null;
+            return osSelecionada.codigo + "_" + itemSelecionado.codItem;
+        }
+
+        function _registrarHistoricoItem(tipo, texto) {
+            const chave = _chaveItemAtual();
+            if (!chave) return;
+            if (!_histItens[chave]) _histItens[chave] = [];
+            const agora = new Date();
+            const dd = String(agora.getDate()).padStart(2, "0");
+            const mm = String(agora.getMonth() + 1).padStart(2, "0");
+            const yyyy = agora.getFullYear();
+            const hh = String(agora.getHours()).padStart(2, "0");
+            const min = String(agora.getMinutes()).padStart(2, "0");
+            _histItens[chave].unshift({
+                tipo,
+                texto,
+                data: `${dd}/${mm}/${yyyy} ${hh}:${min}`
+            });
+        }
+
+        // ── Hrs. Trabalhadas ─────────────────────────────────────
+
+        if (typeof flatpickr !== "undefined") {
+            window._fpHorasData = flatpickr("#horas-data", { dateFormat: "d/m/Y", locale: "pt" });
+        }
+
+        function _renderHorasItem() {
+            const chave = _chaveItemAtual();
+            const lista = chave ? (_horasItens[chave] || []) : [];
+            const corpo = document.getElementById("horas-lista-corpo");
+            if (!corpo) return;
+
+            if (lista.length === 0) {
+                corpo.innerHTML = '<tr id="horas-lista-vazio"><td colspan="5" class="horas-vazio">Nenhum lançamento de horas registrado.</td></tr>';
+            } else {
+                corpo.innerHTML = lista.map((l, i) => `
+                    <tr>
+                        <td>${l.data}</td>
+                        <td>${l.tecnico || "—"}</td>
+                        <td>${l.descricao || "—"}</td>
+                        <td>${parseFloat(l.horas).toFixed(1)}h</td>
+                        <td><button class="btn-horas-remover" title="Remover" onclick="removerLancamentoHoras(${i})">✖</button></td>
+                    </tr>
+                `).join("");
+            }
+
+            const estimadas = parseFloat(document.getElementById("item-hrsEst").value) || 0;
+            const realizadas = lista.reduce((acc, l) => acc + (parseFloat(l.horas) || 0), 0);
+            document.getElementById("horas-resumo-estimadas").textContent = estimadas.toFixed(1) + "h";
+            document.getElementById("horas-resumo-realizadas").textContent = realizadas.toFixed(1) + "h";
+            const saldo = estimadas - realizadas;
+            const saldoEl = document.getElementById("horas-resumo-saldo");
+            saldoEl.textContent = saldo.toFixed(1) + "h";
+            saldoEl.style.color = saldo < 0 ? "#ff6b6b" : "#7ee787";
+
+            // Mantém o campo "Hrs. Realizadas" do item sincronizado
+            document.getElementById("item-hrsReal").value = realizadas.toFixed(1);
+        }
+
+        function adicionarLancamentoHoras() {
+            if (!itemSelecionado || !osSelecionada) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione um item primeiro.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+            const data = document.getElementById("horas-data").value.trim();
+            const tecnico = document.getElementById("horas-tecnico").value.trim();
+            const horas = document.getElementById("horas-qtd").value.trim();
+            const descricao = document.getElementById("horas-descricao").value.trim();
+
+            if (!data || !horas) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Informe a data e a quantidade de horas.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+
+            const chave = _chaveItemAtual();
+            if (!_horasItens[chave]) _horasItens[chave] = [];
+            _horasItens[chave].push({ data, tecnico, descricao, horas: parseFloat(horas) });
+
+            _registrarHistoricoItem("hora", `Lançamento de ${parseFloat(horas).toFixed(1)}h em ${data}${tecnico ? " por " + tecnico : ""}.`);
+
+            document.getElementById("horas-data").value = "";
+            document.getElementById("horas-tecnico").value = "";
+            document.getElementById("horas-qtd").value = "";
+            document.getElementById("horas-descricao").value = "";
+            if (window._fpHorasData) window._fpHorasData.clear();
+
+            _renderHorasItem();
+            Swal.fire({ icon: "success", title: "Horas lançadas", timer: 1200, showConfirmButton: false, scrollbarPadding: false });
+        }
+
+        function removerLancamentoHoras(idx) {
+            const chave = _chaveItemAtual();
+            if (!chave || !_horasItens[chave]) return;
+            _horasItens[chave].splice(idx, 1);
+            _renderHorasItem();
+        }
+
+        // ── Pendências ───────────────────────────────────────────
+
+        function _renderPendenciasItem() {
+            const chave = _chaveItemAtual();
+            const lista = chave ? (_pendItens[chave] || []) : [];
+            const vazio = document.getElementById("pend-lista-vazio");
+            const corpo = document.getElementById("pend-lista-corpo");
+            if (!corpo) return;
+
+            if (lista.length === 0) {
+                vazio.style.display = "";
+                corpo.innerHTML = "";
+                return;
+            }
+            vazio.style.display = "none";
+
+            const cores = { alta: "#ff6b6b", media: "#f5b942", baixa: "#7ee787" };
+            const labels = { alta: "Alta", media: "Média", baixa: "Baixa" };
+
+            corpo.innerHTML = lista.map((p, i) => `
+                <div class="pend-card ${p.concluida ? "pend-concluida" : ""}">
+                    <input type="checkbox" class="pend-check" ${p.concluida ? "checked" : ""} onchange="alternarPendencia(${i})">
+                    <div class="pend-card-info">
+                        <span class="pend-card-desc">${p.descricao}</span>
+                        <span class="pend-card-meta">
+                            <span class="pend-badge" style="background:${cores[p.prioridade]}22;color:${cores[p.prioridade]};">${labels[p.prioridade]}</span>
+                            Criada em ${p.criadaEm}
+                        </span>
+                    </div>
+                    <button class="btn-horas-remover" title="Remover" onclick="removerPendencia(${i})">✖</button>
+                </div>
+            `).join("");
+        }
+
+        function adicionarPendencia() {
+            if (!itemSelecionado || !osSelecionada) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione um item primeiro.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+            const descricao = document.getElementById("pend-nova-descricao").value.trim();
+            const prioridade = document.getElementById("pend-nova-prioridade").value;
+            if (!descricao) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Descreva a pendência.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+
+            const chave = _chaveItemAtual();
+            if (!_pendItens[chave]) _pendItens[chave] = [];
+            const agora = new Date();
+            const dd = String(agora.getDate()).padStart(2, "0");
+            const mm = String(agora.getMonth() + 1).padStart(2, "0");
+            const yyyy = agora.getFullYear();
+            _pendItens[chave].push({ descricao, prioridade, concluida: false, criadaEm: `${dd}/${mm}/${yyyy}` });
+
+            _registrarHistoricoItem("pendencia", `Pendência criada: "${descricao}" (prioridade ${prioridade}).`);
+
+            document.getElementById("pend-nova-descricao").value = "";
+            document.getElementById("pend-nova-prioridade").value = "media";
+            _renderPendenciasItem();
+        }
+
+        function alternarPendencia(idx) {
+            const chave = _chaveItemAtual();
+            if (!chave || !_pendItens[chave]) return;
+            const p = _pendItens[chave][idx];
+            p.concluida = !p.concluida;
+            _registrarHistoricoItem("pendencia", `Pendência "${p.descricao}" marcada como ${p.concluida ? "concluída" : "pendente"}.`);
+            _renderPendenciasItem();
+        }
+
+        function removerPendencia(idx) {
+            const chave = _chaveItemAtual();
+            if (!chave || !_pendItens[chave]) return;
+            const p = _pendItens[chave][idx];
+            _pendItens[chave].splice(idx, 1);
+            _registrarHistoricoItem("pendencia", `Pendência "${p.descricao}" removida.`);
+            _renderPendenciasItem();
+        }
+
+        // ── Histórico do Item ────────────────────────────────────
+
+        let _filtroHistItemAtual = "tudo";
+
+        function _renderHistoricoItem(filtro) {
+            _filtroHistItemAtual = filtro || _filtroHistItemAtual;
+            const chave = _chaveItemAtual();
+            let lista = chave ? (_histItens[chave] || []) : [];
+            if (_filtroHistItemAtual !== "tudo") {
+                lista = lista.filter(e => e.tipo === _filtroHistItemAtual);
+            }
+
+            const vazio = document.getElementById("hist-item-vazio");
+            const corpo = document.getElementById("hist-item-lista-corpo");
+            if (!corpo) return;
+
+            if (lista.length === 0) {
+                vazio.style.display = "";
+                corpo.innerHTML = "";
+                return;
+            }
+            vazio.style.display = "none";
+
+            const icones = {
+                alteracao: "✏️",
+                hora: "⏱️",
+                pendencia: "📌"
+            };
+
+            corpo.innerHTML = lista.map(e => `
+                <div class="hist-card">
+                    <span class="hist-card-ico">${icones[e.tipo] || "•"}</span>
+                    <div class="hist-card-info">
+                        <span class="hist-card-texto">${e.texto}</span>
+                        <span class="hist-card-data">${e.data}</span>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function filtrarHistoricoItem(btn, filtro) {
+            document.querySelectorAll("#panel-item-historico .item-tl-filtro").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            _renderHistoricoItem(filtro);
+        }
+
         async function salvarItem() {
             const codItem = document.getElementById("item-codItem").value.trim();
             if (!codItem) {
@@ -4124,6 +4670,7 @@
                 : (document.getElementById("usuario-nome")?.textContent?.trim() || "admin");
             const novoItem = {
                 codItem: codItem,
+                status: document.getElementById("item-status").value.trim() || "Aberto",
                 tipo: document.getElementById("item-tipo").value.trim() || "—",
                 descricao: document.getElementById("item-descricao").value.trim() || "—",
                 maquina: document.getElementById("item-maquina").value.trim() || "—",
@@ -4188,6 +4735,206 @@
         function salvarOS() {
             console.warn('[salvarOS] db_real.js ainda não carregou.');
         }
+
+        // ══════════════════════════════════════════════════════
+        //  RECURSOS DO ITEM + TIMELINE
+        // ══════════════════════════════════════════════════════
+        let _itemTimeline = {};  // chave → [{tipo,categoria,titulo,texto,tags,data,hora,usuario}]
+        let _tlFiltroAtivo = 'tudo';
+
+        function _chaveItem() {
+            if (!osSelecionada || !itemSelecionado) return null;
+            return osSelecionada.codigo + '_' + itemSelecionado.codItem;
+        }
+
+        // ── Navegação de recursos (botões esquerda) ──────────
+        function abrirRecurso(nome, btn) {
+            Swal.fire({
+                title: nome.charAt(0).toUpperCase() + nome.slice(1),
+                text: 'A tela de ' + nome + ' será implementada em breve.',
+                icon: 'info',
+                confirmButtonColor: '#2d7dff',
+                scrollbarPadding: false
+            });
+        }
+
+        // ── Filtros da timeline ───────────────────────────────
+        function filtrarTimeline(btn, filtro) {
+            document.querySelectorAll('.item-tl-filtro').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            _tlFiltroAtivo = filtro;
+            const chave = _chaveItem() || '__novo__';
+            _renderTimeline(chave);
+        }
+
+        // ── Adicionar evento ──────────────────────────────────
+        function adicionarEventoTimeline(categoria) {
+            const texto = document.getElementById('tl-evento-texto').value.trim();
+            if (!texto) return;
+            const chave = _chaveItem() || '__novo__';
+            if (!_itemTimeline[chave]) _itemTimeline[chave] = [];
+            const agora = new Date();
+            const usuario = (typeof window._usuarioLogado !== 'undefined' && window._usuarioLogado)
+                ? window._usuarioLogado
+                : (document.getElementById('usuario-nome')?.textContent?.trim() || 'Sistema');
+            _itemTimeline[chave].unshift({
+                tipo: categoria === 'nota' ? 'nota' : 'info',
+                categoria,                 // 'nota' | 'acao'
+                titulo: categoria === 'nota' ? 'Nota' : 'Evento',
+                texto,
+                data: agora.toLocaleDateString('pt-BR'),
+                hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                usuario,
+                avatar: usuario.substring(0, 2).toUpperCase()
+            });
+            document.getElementById('tl-evento-texto').value = '';
+            _renderTimeline(chave);
+        }
+
+        // ── Evento automático ─────────────────────────────────
+        function _registrarEventoAuto(chave, titulo, texto, tipo, tags) {
+            if (!_itemTimeline[chave]) _itemTimeline[chave] = [];
+            const agora = new Date();
+            const usuario = (typeof window._usuarioLogado !== 'undefined' && window._usuarioLogado)
+                ? window._usuarioLogado
+                : (document.getElementById('usuario-nome')?.textContent?.trim() || 'Sistema');
+            _itemTimeline[chave].push({
+                tipo: tipo || 'acao',
+                categoria: 'acao',
+                titulo,
+                texto,
+                tags: tags || [],
+                data: agora.toLocaleDateString('pt-BR'),
+                hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                usuario,
+                avatar: usuario.substring(0, 2).toUpperCase()
+            });
+        }
+
+        // ── Config visual por tipo ────────────────────────────
+        const _tlConfig = {
+            criado:    { cor: '#22c55e', svg: '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="16" stroke="currentColor" stroke-width="2"/><line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2"/>' },
+            tecnico:   { cor: '#a855f7', svg: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8" fill="none"/>' },
+            roteiro:   { cor: '#3b82f6', svg: '<line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="1.8"/><line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" stroke-width="2.5"/><line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" stroke-width="2.5"/><line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" stroke-width="2.5"/>' },
+            nota:      { cor: '#f59e0b', svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" fill="none"/><line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="1.8"/><line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="1.8"/>' },
+            anexo:     { cor: '#06b6d4', svg: '<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="1.8" fill="none"/>' },
+            valor:     { cor: '#f59e0b', svg: '<line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" stroke-width="1.8"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="1.8" fill="none"/>' },
+            acao:      { cor: '#2d7dff', svg: '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="1.8" fill="none"/>' },
+            info:      { cor: '#2d7dff', svg: '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2.5"/>' },
+            alerta:    { cor: '#f59e0b', svg: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.8" fill="none"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2.5"/>' },
+            concluido: { cor: '#10b981', svg: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="1.8" fill="none"/><polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="1.8" fill="none"/>' },
+            problema:  { cor: '#ef4444', svg: '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="1.8"/><line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="1.8"/>' },
+        };
+
+        // ── Render ────────────────────────────────────────────
+        function _renderTimeline(chave) {
+            const lista = document.getElementById('item-timeline-lista');
+            const vazio = document.getElementById('item-tl-vazio');
+            if (!lista) return;
+            let eventos = (_itemTimeline[chave] || []).slice().reverse(); // mais antigos primeiro
+            if (_tlFiltroAtivo === 'acao') eventos = eventos.filter(e => e.categoria !== 'nota');
+            if (_tlFiltroAtivo === 'nota') eventos = eventos.filter(e => e.categoria === 'nota');
+            eventos.reverse(); // mais recentes no topo para exibição
+
+            if (!eventos.length) {
+                lista.innerHTML = '';
+                if (vazio) vazio.style.display = 'flex';
+                return;
+            }
+            if (vazio) vazio.style.display = 'none';
+
+            // Agrupa por data
+            const grupos = {};
+            eventos.forEach(ev => {
+                if (!grupos[ev.data]) grupos[ev.data] = [];
+                grupos[ev.data].push(ev);
+            });
+
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            let html = '';
+
+            Object.entries(grupos).forEach(([data, evs]) => {
+                const label = data === hoje ? `HOJE · ${data}` : data;
+                html += `<div class="item-tl-data-sep"><span>${label}</span></div>`;
+
+                evs.forEach((ev, i) => {
+                    const idxGlobal = (_itemTimeline[chave] || []).indexOf(ev);
+                    const cfg = _tlConfig[ev.tipo] || _tlConfig.acao;
+                    const tagsHtml = (ev.tags || []).map(t =>
+                        `<span class="item-tl-tag">${t}</span>`
+                    ).join('');
+
+                    // Linha extra (arquivo, progresso etc.)
+                    let extraHtml = '';
+                    if (ev.arquivo) {
+                        extraHtml = `<div class="item-tl-arquivo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4a7aaa" stroke-width="1.8"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                            <span>${ev.arquivo.nome}</span>
+                            <span class="item-tl-arquivo-meta">${ev.arquivo.meta}</span>
+                        </div>`;
+                    }
+                    if (ev.progresso !== undefined) {
+                        extraHtml += `<div class="item-tl-progresso-wrap">
+                            <div class="item-tl-progresso-bar" style="width:${ev.progresso}%"></div>
+                            <div class="item-tl-progresso-meta"><span>${ev.progressoLabel || ''}</span><span>${ev.progresso}%</span></div>
+                        </div>`;
+                    }
+
+                    html += `<div class="item-tl-evento" data-categoria="${ev.categoria || 'acao'}">
+                        <div class="item-tl-ev-linha">
+                            <div class="item-tl-ev-icone-wrap" style="--tl-cor:${cfg.cor}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="${cfg.cor}" stroke-linecap="round" stroke-linejoin="round">
+                                    ${cfg.svg}
+                                </svg>
+                            </div>
+                            <div class="item-tl-ev-corpo">
+                                <div class="item-tl-ev-topo">
+                                    <span class="item-tl-ev-titulo">${ev.titulo}</span>
+                                    <span class="item-tl-ev-avatar" title="${ev.usuario}">${ev.avatar || ev.usuario.substring(0,2).toUpperCase()}</span>
+                                    <span class="item-tl-ev-usuario">${ev.usuario}</span>
+                                    <span class="item-tl-ev-hora">${ev.hora}</span>
+                                    <button class="item-tl-ev-del" onclick="removerEventoTimeline('${chave}', ${idxGlobal})" title="Remover">✖</button>
+                                </div>
+                                <div class="item-tl-ev-texto">${ev.texto}</div>
+                                ${extraHtml}
+                                ${tagsHtml ? `<div class="item-tl-ev-tags">${tagsHtml}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            });
+
+            lista.innerHTML = html;
+        }
+
+        function removerEventoTimeline(chave, idx) {
+            if (_itemTimeline[chave]) {
+                _itemTimeline[chave].splice(idx, 1);
+                _renderTimeline(chave);
+            }
+        }
+
+        // ── Carrega ao abrir item ─────────────────────────────
+        function _carregarRecursosItem() {
+            const chave = _chaveItem();
+            if (!chave) return;
+            _tlFiltroAtivo = 'tudo';
+            document.querySelectorAll('.item-tl-filtro').forEach((b,i) => b.classList.toggle('active', i===0));
+
+            if (!_itemTimeline[chave] || !_itemTimeline[chave].length) {
+                _itemTimeline[chave] = [];
+                const item = itemSelecionado;
+                // Evento: item criado
+                _registrarEventoAuto(chave, 'Item criado', `Novo item <strong>#${item.codItem}</strong> cadastrado na OS. Tipo <em>${item.tipo || 'Serviço'}</em>, máquina: ${item.maquina || '—'}.`, 'criado', ['+\u00a0Criado', item.tipo || 'Serviço']);
+                // Evento: técnico
+                if (item.tecnico && item.tecnico !== '—') {
+                    _registrarEventoAuto(chave, 'Técnico atribuído', `Técnico <strong>${item.tecnico}</strong> atribuído automaticamente ao item.`, 'tecnico', ['Atribuição']);
+                }
+            }
+            _renderTimeline(chave);
+        }
+
     </script>
     <!-- ══ OVERLAY + MODAL FINANCEIRO ══ -->
     <div id="overlayFinanceiro"></div>
