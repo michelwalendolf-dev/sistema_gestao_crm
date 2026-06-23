@@ -1930,9 +1930,9 @@
         <div class="workspace-sistema" id="telaOS">
             <div class="barra-topo">
                 <div class="acoes-esquerda">
-                    <button onclick="abrirTelaCad()"><span>➕</span> Novo</button>
-                    <button onclick="abrirTelaEdicao()"><span>✏️</span> Editar</button>
-                    <button onclick="excluirOS()"><span>🗑️</span> Excluir</button>
+                    <button onclick="abrirTelaCad()"><span>➕</span> Nova Ordem</button>
+                    <button onclick="abrirTelaEdicao()"><span>✏️</span> Editar Ordem</button>
+                    <button onclick="excluirOS()"><span>🗑️</span> Excluir Ordem</button>
                     <button class="botao-dropdown">
                         <span>⋮</span> Mais Opções
                     </button>
@@ -1980,9 +1980,9 @@
 
                 <div class="barra-inferior">
                     <div class="acoes-esquerda">
-                        <button onclick="abrirNovoItem()">➕ Novo</button>
-                        <button onclick="abrirEditarItem()">✏️ Editar</button>
-                        <button onclick="excluirItem()">🗑️ Excluir</button>
+                        <button onclick="abrirNovoItem()">➕ Novo Item</button>
+                        <button onclick="abrirEditarItem()">✏️ Editar Item</button>
+                        <button onclick="excluirItem()">🗑️ Excluir Item</button>
                         <button class="botao-dropdown">
                             <span>⋮</span> Mais Opções
                         </button>
@@ -2261,21 +2261,21 @@
                                 <div class="usr-campo">
                                     <label>E-mail</label>
                                     <div class="bar-acoes">
-                                        <input type="text" id="usr-f-email" placeholder="email@empresa.com" disabled>
+                                        <input id="usr-f-email" placeholder="email@empresa.com" disabled type="email" inputmode="email" maxlength="100">
                                     </div>
                                 </div>
 
                                 <div class="usr-campo">
                                     <label>Login</label>
                                     <div class="bar-acoes">
-                                        <input type="text" id="usr-f-login" placeholder="Nome de usuário" disabled>
+                                        <input type="text" id="usr-f-login" placeholder="Nome de usuário" disabled maxlength="40" autocomplete="username">
                                     </div>
                                 </div>
 
                                 <div class="usr-campo">
                                     <label>Senha</label>
                                     <div class="bar-acoes">
-                                        <input type="password" id="usr-f-senha" placeholder="••••••••" disabled oninput="usr_validarForcaSenha()">
+                                        <input type="password" id="usr-f-senha" placeholder="••••••••" disabled oninput="usr_validarForcaSenha()" maxlength="100" autocomplete="new-password">
                                     </div>
                                     <span id="usr-dica-forca-senha" style="font-size:10px;color:#4a6080;margin-top:1px;line-height:1.4;">A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais (!@#$%&*).</span>
                                 </div>
@@ -2284,7 +2284,7 @@
                                     <label>Confirmar Senha</label>
                                     <div class="bar-acoes">
                                         <input type="password" id="usr-f-senha-conf" placeholder="••••••••" disabled
-                                            oninput="usr_validarSenhas()">
+                                            oninput="usr_validarSenhas()" maxlength="100" autocomplete="new-password">
                                     </div>
                                     <span id="usr-dica-senha"
                                         style="font-size:10px;color:#4a6080;margin-top:1px;"></span>
@@ -2375,7 +2375,7 @@
                         <div class="campo-completo">
                             <label>Cod. Unitário</label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-codUnit">
+                                <input type="text" id="cad-codUnit" maxlength="30">
                                 <div class="grupos">
                                 </div>
                             </div>
@@ -2383,7 +2383,7 @@
                         <div class="campo-completo">
                             <label>Cliente</label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-cliente">
+                                <input type="text" id="cad-cliente" maxlength="120">
                                 <div class="grupos">
                                     <button class="btn-limpar" title="Limpar"
                                         onclick="document.getElementById('cad-cliente').value=''">✖</button>
@@ -2402,7 +2402,7 @@
                         <div class="campo-completo">
                             <label>Técnico</label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-tecnico">
+                                <input type="text" id="cad-tecnico" maxlength="80">
                                 <div class="grupos">
                                     <button class="btn-limpar" title="Limpar"
                                         onclick="document.getElementById('cad-tecnico').value=''">✖</button>
@@ -2422,7 +2422,7 @@
                         <div class="campo-completo">
                             <label>Descrição</label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-descricao">
+                                <input type="text" id="cad-descricao" maxlength="200">
                                 <div class="grupos">
                                 </div>
                             </div>
@@ -2460,7 +2460,7 @@
                         <div class="campo-completo">
                             <label>Total de Horas</label>
                             <div class="bar-acoes ">
-                                <input type="number" id="cad-horas">
+                                <input type="number" id="cad-horas" min="0" max="9999" step="0.5">
                                 <div class="grupos">
                                 </div>
                             </div>
@@ -2468,8 +2468,18 @@
                         <div class="campo-completo">
                             <label>Resp. Execução</label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-respExec">
+                                <input type="text" id="cad-respExec" maxlength="80" placeholder="Responsável pela execução">
                                 <div class="grupos">
+                                    <button class="btn-limpar" title="Limpar" onclick="document.getElementById('cad-respExec').value=''">✖</button>
+                                    <button class="btn-busca" title="Buscar funcionário"
+                                        onclick="abrirBuscaOrigemCampo('func','cad-respExec',null,false)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -2485,7 +2495,7 @@
                         <div class="campo-completo">
                             <label>Contato</label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-contato">
+                                <input type="text" id="cad-contato" maxlength="80">
                                 <div class="grupos">
                                 </div>
                             </div>
@@ -2597,7 +2607,7 @@
                         <div class="erp-grid">
                             <div class="campo-completo">
                                 <label>Cód. Item</label>
-                                <div class="bar-acoes"><input type="text" id="item-codItem">
+                                <div class="bar-acoes"><input type="text" id="item-codItem" maxlength="30">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
@@ -2619,7 +2629,7 @@
                             <div class="campo-completo">
                                 <label>Tipo</label>
                                 <div class="bar-acoes dropdown-container" id="item-tipo-container">
-                                    <input type="text" id="item-tipo" placeholder="Tipo">
+                                    <input type="text" id="item-tipo" placeholder="Tipo" maxlength="50">
                                     <div class="grupo-botoes"><button class="btn-dropdown">▼</button></div>
                                     <div class="dropdown-menu">
                                         <div class="item">Serviço</div>
@@ -2631,13 +2641,13 @@
                             </div>
                             <div class="campo-completo">
                                 <label>Descrição</label>
-                                <div class="bar-acoes"><input type="text" id="item-descricao">
+                                <div class="bar-acoes"><input type="text" id="item-descricao" maxlength="200">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
                             <div class="campo-completo">
                                 <label>Máquina</label>
-                                <div class="bar-acoes"><input type="text" id="item-maquina">
+                                <div class="bar-acoes"><input type="text" id="item-maquina" maxlength="80">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
@@ -2673,7 +2683,7 @@
                             <div class="campo-completo">
                                 <label>Técnico</label>
                                 <div class="bar-acoes">
-                                    <input type="text" id="item-tecnico">
+                                    <input type="text" id="item-tecnico" maxlength="80">
                                     <div class="grupos">
                                         <button class="btn-limpar" title="Limpar"
                                             onclick="document.getElementById('item-tecnico').value=''">✖</button>
@@ -2691,31 +2701,42 @@
                             </div>
                             <div class="campo-completo">
                                 <label>Cód. Barras</label>
-                                <div class="bar-acoes"><input type="text" id="item-codBarras">
+                                <div class="bar-acoes"><input type="text" id="item-codBarras" maxlength="50" inputmode="numeric">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
                             <div class="campo-completo">
                                 <label>Produto Consumido</label>
-                                <div class="bar-acoes"><input type="text" id="item-produto">
+                                <div class="bar-acoes"><input type="text" id="item-produto" maxlength="120">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
                             <div class="campo-completo">
                                 <label>Resp. Execução</label>
-                                <div class="bar-acoes"><input type="text" id="item-respExec">
-                                    <div class="grupos"></div>
+                                <div class="bar-acoes"><input type="text" id="item-respExec" maxlength="80" placeholder="Responsável pela execução">
+                                    <div class="grupos">
+                                        <button class="btn-limpar" title="Limpar" onclick="document.getElementById('item-respExec').value=''">✖</button>
+                                        <button class="btn-busca" title="Buscar funcionário"
+                                            onclick="abrirBuscaOrigemCampo('func','item-respExec',null,false)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <circle cx="11" cy="11" r="8"></circle>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="campo-completo">
                                 <label>Hrs. Estimadas</label>
-                                <div class="bar-acoes"><input type="number" id="item-hrsEst" step="0.5">
+                                <div class="bar-acoes"><input type="number" id="item-hrsEst" step="0.5" min="0" max="9999">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
                             <div class="campo-completo">
                                 <label>Hrs. Realizadas</label>
-                                <div class="bar-acoes"><input type="number" id="item-hrsReal" step="0.5">
+                                <div class="bar-acoes"><input type="number" id="item-hrsReal" step="0.5" min="0" max="9999">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
@@ -2790,7 +2811,7 @@
                                 </div>
                                 <div class="campo-completo">
                                     <label>Hrs. Trabalhadas</label>
-                                    <div class="bar-acoes"><input type="number" id="horas-qtd" step="0.5" min="0" placeholder="0,0"></div>
+                                    <div class="bar-acoes"><input type="number" id="horas-qtd" step="0.5" placeholder="0,0" min="0" max="24"></div>
                                 </div>
                                 <div class="campo-completo">
                                     <label>Descrição</label>
@@ -6043,7 +6064,7 @@
                         </div>
                         <div class="campo-completo">
                             <label>CPF / CNPJ</label>
-                            <div class="bar-acoes"><input type="text" id="cli-doc" placeholder="000.000.000-00">
+                            <div class="bar-acoes"><input type="text" id="cli-doc" maxlength="18" inputmode="numeric" placeholder="000.000.000-00 ou 00.000.000/0000-00">
                                 <div class="grupos"></div>
                             </div>
                         </div>
@@ -6073,7 +6094,7 @@
                         </div>
                         <div class="campo-completo">
                             <label>RG / IE</label>
-                            <div class="bar-acoes"><input type="text" id="cli-rg">
+                            <div class="bar-acoes"><input type="text" id="cli-rg" maxlength="13" placeholder="00.000.000-0">
                                 <div class="grupos"></div>
                             </div>
                         </div>
@@ -6136,13 +6157,19 @@
                         </div>
                         <div class="campo-completo">
                             <label>Vendedor Resp.</label>
-                            <div class="bar-acoes"><input type="text" id="cli-vendedor">
-                                <div class="grupos"><button class="btn-busca"><svg xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
+                            <div class="bar-acoes"><input type="text" id="cli-vendedor" maxlength="80" placeholder="Vendedor responsável">
+                                <div class="grupos">
+                                    <button class="btn-limpar" title="Limpar" onclick="document.getElementById('cli-vendedor').value=''">✖</button>
+                                    <button class="btn-busca" title="Buscar funcionário"
+                                        onclick="abrirBuscaOrigemCampo('func','cli-vendedor',null,false)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <circle cx="11" cy="11" r="8"></circle>
                                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                        </svg></button></div>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="campo-completo campo-full">
@@ -6163,19 +6190,19 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>Telefone Fixo</label>
-                        <div class="bar-acoes"><input type="text" id="cli-tel" placeholder="(00) 0000-0000">
+                        <div class="bar-acoes"><input type="text" id="cli-tel" placeholder="(00) 0000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>Celular</label>
-                        <div class="bar-acoes"><input type="text" id="cli-cel" placeholder="(00) 00000-0000">
+                        <div class="bar-acoes"><input type="text" id="cli-cel" placeholder="(00) 00000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>WhatsApp</label>
-                        <div class="bar-acoes"><input type="text" id="cli-whatsapp" placeholder="(00) 00000-0000">
+                        <div class="bar-acoes"><input type="text" id="cli-whatsapp" placeholder="(00) 00000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6191,7 +6218,7 @@
                 <div class="erp-grid">
                     <div class="campo-completo campo-full">
                         <label>E-mail</label>
-                        <div class="bar-acoes"><input type="email" id="cli-email" placeholder="exemplo@email.com">
+                        <div class="bar-acoes"><input id="cli-email" placeholder="exemplo@email.com" type="email" inputmode="email" maxlength="100">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6209,7 +6236,7 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>CEP</label>
-                        <div class="bar-acoes"><input type="text" id="cli-cep" placeholder="00000-000">
+                        <div class="bar-acoes"><input type="text" id="cli-cep" placeholder="00000-000" maxlength="9" inputmode="numeric">
                             <div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -6221,7 +6248,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>Estado</label>
-                        <div class="bar-acoes"><input type="text" id="cli-uf" maxlength="2" placeholder="UF">
+                        <div class="bar-acoes"><input type="text" id="cli-uf" placeholder="UF" maxlength="2" style="text-transform:uppercase">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6233,7 +6260,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>N&#250;mero</label>
-                        <div class="bar-acoes"><input type="text" id="cli-num">
+                        <div class="bar-acoes"><input type="text" id="cli-num" maxlength="10" inputmode="numeric">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6271,7 +6298,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>Prazo de Pagamento (dias)</label>
-                        <div class="bar-acoes"><input type="number" id="cli-prazo" placeholder="0">
+                        <div class="bar-acoes"><input type="number" id="cli-prazo" placeholder="0" min="0" max="365" step="1">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6291,7 +6318,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>Desconto Padr&#227;o (%)</label>
-                        <div class="bar-acoes"><input type="number" id="cli-desconto" placeholder="0,00">
+                        <div class="bar-acoes"><input type="number" id="cli-desconto" placeholder="0,00" min="0" max="100" step="0.01">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6385,7 +6412,7 @@
                         </div>
                         <div class="campo-completo">
                             <label>CPF <span style="color:#e05;">*</span></label>
-                            <div class="bar-acoes"><input type="text" id="func-cpf" placeholder="000.000.000-00">
+                            <div class="bar-acoes"><input type="text" id="func-cpf" maxlength="14" inputmode="numeric" placeholder="000.000.000-00">
                                 <div class="grupos"></div>
                             </div>
                         </div>
@@ -6397,7 +6424,7 @@
                         </div>
                         <div class="campo-completo">
                             <label>RG</label>
-                            <div class="bar-acoes"><input type="text" id="func-rg">
+                            <div class="bar-acoes"><input type="text" id="func-rg" maxlength="13" placeholder="Ex: 00.000.000-0">
                                 <div class="grupos"></div>
                             </div>
                         </div>
@@ -6514,19 +6541,19 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>Telefone</label>
-                        <div class="bar-acoes"><input type="text" id="func-tel" placeholder="(00) 0000-0000">
+                        <div class="bar-acoes"><input type="text" id="func-tel" placeholder="(00) 0000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>Celular</label>
-                        <div class="bar-acoes"><input type="text" id="func-cel" placeholder="(00) 00000-0000">
+                        <div class="bar-acoes"><input type="text" id="func-cel" placeholder="(00) 00000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>WhatsApp</label>
-                        <div class="bar-acoes"><input type="text" id="func-whatsapp" placeholder="(00) 00000-0000">
+                        <div class="bar-acoes"><input type="text" id="func-whatsapp" placeholder="(00) 00000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6541,7 +6568,7 @@
                 <div class="erp-grid">
                     <div class="campo-completo campo-full">
                         <label>E-mail</label>
-                        <div class="bar-acoes"><input type="email" id="func-email" placeholder="exemplo@email.com">
+                        <div class="bar-acoes"><input type="email" id="func-email" placeholder="exemplo@email.com" maxlength="100">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6553,7 +6580,7 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>CEP</label>
-                        <div class="bar-acoes"><input type="text" id="func-cep" placeholder="00000-000">
+                        <div class="bar-acoes"><input type="text" id="func-cep" placeholder="00000-000" maxlength="9" inputmode="numeric">
                             <div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -6565,7 +6592,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>Estado</label>
-                        <div class="bar-acoes"><input type="text" id="func-uf" maxlength="2" placeholder="UF">
+                        <div class="bar-acoes"><input type="text" id="func-uf" placeholder="UF" maxlength="2" style="text-transform:uppercase">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6577,7 +6604,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>N&#250;mero</label>
-                        <div class="bar-acoes"><input type="text" id="func-num">
+                        <div class="bar-acoes"><input type="text" id="func-num" maxlength="10" inputmode="numeric">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6653,25 +6680,25 @@
                     </div>
                     <div class="campo-completo">
                         <label>Carga Hor&#225;ria (h/sem)</label>
-                        <div class="bar-acoes"><input type="number" id="func-carga" placeholder="44">
+                        <div class="bar-acoes"><input type="number" id="func-carga" placeholder="44" min="0" max="60" step="1">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>PIS / PASEP</label>
-                        <div class="bar-acoes"><input type="text" id="func-pis">
+                        <div class="bar-acoes"><input type="text" id="func-pis" maxlength="14" inputmode="numeric" placeholder="000.00000.00-0">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>CTPS N&#250;mero</label>
-                        <div class="bar-acoes"><input type="text" id="func-ctps">
+                        <div class="bar-acoes"><input type="text" id="func-ctps" maxlength="8" inputmode="numeric">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>CTPS S&#233;rie</label>
-                        <div class="bar-acoes"><input type="text" id="func-ctps-serie">
+                        <div class="bar-acoes"><input type="text" id="func-ctps-serie" maxlength="6" inputmode="numeric">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6752,7 +6779,7 @@
                         </div>
                         <div class="campo-completo">
                             <label>CNPJ / CPF <span style="color:#e05;">*</span></label>
-                            <div class="bar-acoes"><input type="text" id="forn-doc" placeholder="00.000.000/0000-00">
+                            <div class="bar-acoes"><input type="text" id="forn-doc" maxlength="18" inputmode="numeric" placeholder="00.000.000/0000-00">
                                 <div class="grupos"></div>
                             </div>
                         </div>
@@ -6770,13 +6797,13 @@
                         </div>
                         <div class="campo-completo">
                             <label>Inscri&#231;&#227;o Estadual</label>
-                            <div class="bar-acoes"><input type="text" id="forn-ie">
+                            <div class="bar-acoes"><input type="text" id="forn-ie" maxlength="14" inputmode="numeric">
                                 <div class="grupos"></div>
                             </div>
                         </div>
                         <div class="campo-completo">
                             <label>Inscri&#231;&#227;o Municipal</label>
-                            <div class="bar-acoes"><input type="text" id="forn-im">
+                            <div class="bar-acoes"><input type="text" id="forn-im" maxlength="11" inputmode="numeric">
                                 <div class="grupos"></div>
                             </div>
                         </div>
@@ -6851,19 +6878,19 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>Telefone</label>
-                        <div class="bar-acoes"><input type="text" id="forn-tel" placeholder="(00) 0000-0000">
+                        <div class="bar-acoes"><input type="text" id="forn-tel" placeholder="(00) 0000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>Celular</label>
-                        <div class="bar-acoes"><input type="text" id="forn-cel" placeholder="(00) 00000-0000">
+                        <div class="bar-acoes"><input type="text" id="forn-cel" placeholder="(00) 00000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
                     <div class="campo-completo">
                         <label>WhatsApp</label>
-                        <div class="bar-acoes"><input type="text" id="forn-whatsapp" placeholder="(00) 00000-0000">
+                        <div class="bar-acoes"><input type="text" id="forn-whatsapp" placeholder="(00) 00000-0000" maxlength="15" inputmode="tel">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6879,7 +6906,7 @@
                 <div class="erp-grid">
                     <div class="campo-completo campo-full">
                         <label>E-mail</label>
-                        <div class="bar-acoes"><input type="email" id="forn-email" placeholder="exemplo@email.com">
+                        <div class="bar-acoes"><input type="email" id="forn-email" placeholder="exemplo@email.com" maxlength="100">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6897,7 +6924,7 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>CEP</label>
-                        <div class="bar-acoes"><input type="text" id="forn-cep" placeholder="00000-000">
+                        <div class="bar-acoes"><input type="text" id="forn-cep" placeholder="00000-000" maxlength="9" inputmode="numeric">
                             <div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -6909,7 +6936,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>Estado</label>
-                        <div class="bar-acoes"><input type="text" id="forn-uf" maxlength="2" placeholder="UF">
+                        <div class="bar-acoes"><input type="text" id="forn-uf" placeholder="UF" maxlength="2" style="text-transform:uppercase">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6921,7 +6948,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>N&#250;mero</label>
-                        <div class="bar-acoes"><input type="text" id="forn-num">
+                        <div class="bar-acoes"><input type="text" id="forn-num" maxlength="10" inputmode="numeric">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6951,7 +6978,7 @@
                 <div class="erp-grid">
                     <div class="campo-completo">
                         <label>Prazo de Pagamento (dias)</label>
-                        <div class="bar-acoes"><input type="number" id="forn-prazo" placeholder="0">
+                        <div class="bar-acoes"><input type="number" id="forn-prazo" placeholder="0" min="0" max="365" step="1">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -6978,7 +7005,7 @@
                     </div>
                     <div class="campo-completo">
                         <label>Desconto Padr&#227;o (%)</label>
-                        <div class="bar-acoes"><input type="number" id="forn-desconto" placeholder="0,00">
+                        <div class="bar-acoes"><input type="number" id="forn-desconto" placeholder="0,00" min="0" max="100" step="0.01">
                             <div class="grupos"></div>
                         </div>
                     </div>
@@ -7327,7 +7354,7 @@
                         <label class="bo-filtro-label">CPF / CNPJ</label>
                         <div class="bar-acoes">
                             <input type="text" id="bo-f-doc" placeholder="000.000.000-00"
-                                oninput="filtrarBuscaOrigem()">
+                                oninput="filtrarBuscaOrigem()" maxlength="18" inputmode="numeric">
                             <div class="grupos">
                                 <button onclick="limparCampo('bo-f-doc')">✖</button>
                                 <button class="btn-busca" onclick="filtrarBuscaOrigem()">
@@ -7346,7 +7373,7 @@
                         <label class="bo-filtro-label">Telefone</label>
                         <div class="bar-acoes">
                             <input type="text" id="bo-f-tel" placeholder="(00) 00000-0000"
-                                oninput="filtrarBuscaOrigem()">
+                                oninput="filtrarBuscaOrigem()" maxlength="15" inputmode="tel">
                             <div class="grupos">
                                 <button onclick="limparCampo('bo-f-tel')">✖</button>
                                 <button class="btn-busca" onclick="filtrarBuscaOrigem()">
@@ -7364,7 +7391,7 @@
                     <div class="bo-filtro-grupo">
                         <label class="bo-filtro-label">E-mail</label>
                         <div class="bar-acoes">
-                            <input type="text" id="bo-f-email" placeholder="email@..." oninput="filtrarBuscaOrigem()">
+                            <input type="text" id="bo-f-email" placeholder="email@..." oninput="filtrarBuscaOrigem()" inputmode="email" maxlength="100">
                             <div class="grupos">
                                 <button onclick="limparCampo('bo-f-email')">✖</button>
                                 <button class="btn-busca" onclick="filtrarBuscaOrigem()">
@@ -9882,6 +9909,151 @@
             window._fpFuncAdm  = flatpickr('#func-admissao',  Object.assign({}, fpCfg));
             window._fpFuncDem  = flatpickr('#func-demissao',  Object.assign({}, fpCfg));
         });
+    </script>
+
+
+    <!-- ══ MÁSCARAS DE CAMPOS ══ -->
+    <script>
+    (function () {
+        'use strict';
+
+        /* ── helpers ── */
+        function onlyDigits(v) { return v.replace(/\D/g, ''); }
+
+        function applyMask(id, fn) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('input', function (e) {
+                var pos = el.selectionStart;
+                var old = el.value;
+                var masked = fn(old);
+                el.value = masked;
+                // mantém cursor razoável
+                var diff = masked.length - old.length;
+                el.setSelectionRange(pos + diff, pos + diff);
+            });
+            // aplica ao carregar se já tiver valor
+            if (el.value) el.value = fn(el.value);
+        }
+
+        /* ── máscaras ── */
+        function maskCPF(v) {
+            v = onlyDigits(v).slice(0, 11);
+            if (v.length <= 3)  return v;
+            if (v.length <= 6)  return v.slice(0,3) + '.' + v.slice(3);
+            if (v.length <= 9)  return v.slice(0,3) + '.' + v.slice(3,6) + '.' + v.slice(6);
+            return v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9);
+        }
+
+        function maskCNPJ(v) {
+            v = onlyDigits(v).slice(0, 14);
+            if (v.length <= 2)  return v;
+            if (v.length <= 5)  return v.slice(0,2)+'.'+v.slice(2);
+            if (v.length <= 8)  return v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5);
+            if (v.length <= 12) return v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8);
+            return v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8,12)+'-'+v.slice(12);
+        }
+
+        function maskCPFouCNPJ(v) {
+            var d = onlyDigits(v);
+            return d.length <= 11 ? maskCPF(v) : maskCNPJ(v);
+        }
+
+        function maskTel(v) {
+            // suporta fixo (10) e celular (11 dígitos)
+            v = onlyDigits(v).slice(0, 11);
+            if (v.length === 0) return '';
+            if (v.length <= 2)  return '(' + v;
+            if (v.length <= 6)  return '(' + v.slice(0,2) + ') ' + v.slice(2);
+            if (v.length <= 10) return '(' + v.slice(0,2) + ') ' + v.slice(2,6) + '-' + v.slice(6);
+            return '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
+        }
+
+        function maskCEP(v) {
+            v = onlyDigits(v).slice(0, 8);
+            if (v.length <= 5) return v;
+            return v.slice(0,5) + '-' + v.slice(5);
+        }
+
+        function maskRG(v) {
+            // Formata no padrão XX.XXX.XXX-D (SP); aceita letras finais como X
+            var d = v.replace(/[^0-9Xx]/gi, '').slice(0, 9);
+            if (d.length <= 2) return d;
+            if (d.length <= 5) return d.slice(0,2) + '.' + d.slice(2);
+            if (d.length <= 8) return d.slice(0,2) + '.' + d.slice(2,5) + '.' + d.slice(5);
+            return d.slice(0,2) + '.' + d.slice(2,5) + '.' + d.slice(5,8) + '-' + d.slice(8);
+        }
+
+        function maskPIS(v) {
+            v = onlyDigits(v).slice(0, 11);
+            if (v.length <= 3)  return v;
+            if (v.length <= 8)  return v.slice(0,3)+'.'+v.slice(3);
+            if (v.length <= 10) return v.slice(0,3)+'.'+v.slice(3,8)+'.'+v.slice(8);
+            return v.slice(0,3)+'.'+v.slice(3,8)+'.'+v.slice(8,10)+'-'+v.slice(10);
+        }
+
+        function maskUF(v) {
+            return v.replace(/[^a-zA-Z]/g,'').toUpperCase().slice(0,2);
+        }
+
+        function maskOnlyLetters(v) {
+            return v.replace(/[^a-zA-ZÀ-ÿ\s'-]/g,'');
+        }
+
+        /* ── bloqueia digitação de não-numérico (para campos numeric) ── */
+        function numericOnly(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        /* ── aplicações ── */
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // ── Clientes ──
+            applyMask('cli-doc',      maskCPFouCNPJ);
+            applyMask('cli-rg',       maskRG);
+            applyMask('cli-tel',      maskTel);
+            applyMask('cli-cel',      maskTel);
+            applyMask('cli-whatsapp', maskTel);
+            applyMask('cli-cep',      maskCEP);
+            applyMask('cli-uf',       maskUF);
+            numericOnly('cli-num');
+
+            // ── Funcionários ──
+            applyMask('func-cpf',        maskCPF);
+            applyMask('func-rg',         maskRG);
+            applyMask('func-tel',        maskTel);
+            applyMask('func-cel',        maskTel);
+            applyMask('func-whatsapp',   maskTel);
+            applyMask('func-cep',        maskCEP);
+            applyMask('func-uf',         maskUF);
+            applyMask('func-pis',        maskPIS);
+            numericOnly('func-num');
+            numericOnly('func-ctps');
+            numericOnly('func-ctps-serie');
+
+            // ── Fornecedores ──
+            applyMask('forn-doc',      maskCNPJ);   // fornecedor = sempre CNPJ
+            applyMask('forn-tel',      maskTel);
+            applyMask('forn-cel',      maskTel);
+            applyMask('forn-whatsapp', maskTel);
+            applyMask('forn-cep',      maskCEP);
+            applyMask('forn-uf',       maskUF);
+            numericOnly('forn-num');
+            numericOnly('forn-ie');
+            numericOnly('forn-im');
+
+            // ── Busca Origem ──
+            applyMask('bo-f-doc', maskCPFouCNPJ);
+            applyMask('bo-f-tel', maskTel);
+        });
+
+    })();
     </script>
 
 </body>
