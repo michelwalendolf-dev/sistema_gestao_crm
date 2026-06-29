@@ -111,8 +111,21 @@
 
     // Converte item do banco → objeto da tela
     function dbItemParaTela(it) {
+        function parseJsonArray(v) {
+            if (Array.isArray(v)) return v;
+            if (typeof v === 'string' && v.trim() !== '') {
+                try {
+                    const parsed = JSON.parse(v);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    return [];
+                }
+            }
+            return [];
+        }
         return {
             codItem: it.cod_item || '',
+            status: it.status || 'Aberto',
             tipo: it.tipo || '—',
             descricao: it.descricao || '—',
             maquina: it.maquina || '—',
@@ -129,6 +142,9 @@
             vlrTotal: fmtMoeda(it.vlr_total || 0),
             quantidade: it.quantidade || 1,
             valor_unit: it.valor_unit || 0,
+            historico: parseJsonArray(it.historico),
+            pendencias: parseJsonArray(it.pendencias),
+            lancamentosHoras: parseJsonArray(it.lancamentos_horas),
         };
     }
 
@@ -140,6 +156,7 @@
         }
         return {
             cod_item: it.codItem || '',
+            status: it.status || 'Aberto',
             tipo: it.tipo !== '—' ? it.tipo : '',
             descricao: it.descricao !== '—' ? it.descricao : '',
             maquina: it.maquina !== '—' ? it.maquina : '',
@@ -156,6 +173,9 @@
             vlr_total: parseMoeda(it.vlrTotal),
             quantidade: it.quantidade || 1,
             valor_unit: it.valor_unit || 0,
+            historico: Array.isArray(it.historico) ? it.historico : [],
+            pendencias: Array.isArray(it.pendencias) ? it.pendencias : [],
+            lancamentos_horas: Array.isArray(it.lancamentosHoras) ? it.lancamentosHoras : [],
         };
     }
 

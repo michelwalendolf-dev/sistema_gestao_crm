@@ -7,6 +7,12 @@
 //  ⚠️  MIGRAÇÃO NECESSÁRIA NO SUPABASE (executar uma vez):
 //  ALTER TABLE ordens_servico
 //    ADD COLUMN IF NOT EXISTS cod_unitario TEXT DEFAULT '';
+//
+//  ALTER TABLE os_itens
+//    ADD COLUMN IF NOT EXISTS historico         JSONB DEFAULT '[]'::jsonb,
+//    ADD COLUMN IF NOT EXISTS pendencias        JSONB DEFAULT '[]'::jsonb,
+//    ADD COLUMN IF NOT EXISTS lancamentos_horas JSONB DEFAULT '[]'::jsonb,
+//    ADD COLUMN IF NOT EXISTS timeline_eventos  JSONB DEFAULT '[]'::jsonb;
 // ============================================================
 
 require_once __DIR__ . '/config.php';
@@ -219,25 +225,30 @@ if ($acao === 'criar') {
 
         foreach ($itens as $item) {
             $db->insert('os_itens', [
-                'os_id'          => $osId,
-                'cod_item'       => trim($item['cod_item']       ?? ''),
-                'tipo'           => trim($item['tipo']           ?? ''),
-                'descricao'      => trim($item['descricao']      ?? ''),
-                'maquina'        => trim($item['maquina']        ?? ''),
-                'dt_criacao'     => trim($item['dt_criacao']     ?? ''),
-                'dt_solucao'     => trim($item['dt_solucao']     ?? ''),
-                'tecnico'        => trim($item['tecnico']        ?? ''),
-                'cod_barras'     => trim($item['cod_barras']     ?? ''),
-                'produto'        => trim($item['produto']        ?? ''),
-                'resp_execucao'  => trim($item['resp_execucao']  ?? ''),
-                'cadastrado_por' => trim($item['cadastrado_por'] ?? ''),
-                'hrs_estimadas'  => (float)($item['hrs_estimadas'] ?? 0),
-                'hrs_realizadas' => (float)($item['hrs_realizadas'] ?? 0),
-                'vlr_servico'    => (float)($item['vlr_servico']   ?? 0),
-                'vlr_total'      => (float)($item['vlr_total']     ?? 0),
-                'quantidade'     => (int)  ($item['quantidade']    ?? 1),
-                'valor_unit'     => (float)($item['valor_unit']    ?? 0),
-                'valor_total'    => (float)($item['vlr_total']     ?? 0),
+                'os_id'             => $osId,
+                'cod_item'          => trim($item['cod_item']       ?? ''),
+                'status'            => trim($item['status']          ?? 'Aberto'),
+                'tipo'              => trim($item['tipo']           ?? ''),
+                'descricao'         => trim($item['descricao']      ?? ''),
+                'maquina'           => trim($item['maquina']        ?? ''),
+                'dt_criacao'        => trim($item['dt_criacao']     ?? ''),
+                'dt_solucao'        => trim($item['dt_solucao']     ?? ''),
+                'tecnico'           => trim($item['tecnico']        ?? ''),
+                'cod_barras'        => trim($item['cod_barras']     ?? ''),
+                'produto'           => trim($item['produto']        ?? ''),
+                'resp_execucao'     => trim($item['resp_execucao']  ?? ''),
+                'cadastrado_por'    => trim($item['cadastrado_por'] ?? ''),
+                'hrs_estimadas'     => (float)($item['hrs_estimadas'] ?? 0),
+                'hrs_realizadas'    => (float)($item['hrs_realizadas'] ?? 0),
+                'vlr_servico'       => (float)($item['vlr_servico']   ?? 0),
+                'vlr_total'         => (float)($item['vlr_total']     ?? 0),
+                'quantidade'        => (int)  ($item['quantidade']    ?? 1),
+                'valor_unit'        => (float)($item['valor_unit']    ?? 0),
+                'valor_total'       => (float)($item['vlr_total']     ?? 0),
+                'historico'         => json_encode($item['historico']         ?? [], JSON_UNESCAPED_UNICODE),
+                'pendencias'        => json_encode($item['pendencias']        ?? [], JSON_UNESCAPED_UNICODE),
+                'lancamentos_horas' => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
+                'timeline_eventos'  => json_encode($item['timelineEventos']   ?? [], JSON_UNESCAPED_UNICODE),
             ]);
         }
 
@@ -310,36 +321,49 @@ if ($acao === 'atualizar') {
             $db->update('ordens_servico', $data, ['id' => "eq.$id"]);
         }
 
-        // ── Atualiza itens (substitui todos) ──────────────────
+        // ── Atualiza itens (substitui todos, com segurança) ───
         if ($itensJson !== null) {
             $itens = json_decode($itensJson, true) ?: [];
 
-            // Deleta os itens antigos
-            $db->delete('os_itens', ['os_id' => "eq.$id"]);
+            // Guarda IDs antigos antes de inserir os novos
+            $itensAntigosOS = $db->select('os_itens', ['os_id' => "eq.$id"], 'id');
+            $idsAntigosOS = array_column($itensAntigosOS, 'id');
 
-            // Insere os novos
+            // Insere os novos primeiro
             foreach ($itens as $item) {
                 $db->insert('os_itens', [
-                    'os_id'          => $id,
-                    'cod_item'       => trim($item['cod_item']       ?? ''),
-                    'tipo'           => trim($item['tipo']           ?? ''),
-                    'descricao'      => trim($item['descricao']      ?? ''),
-                    'maquina'        => trim($item['maquina']        ?? ''),
-                    'dt_criacao'     => trim($item['dt_criacao']     ?? ''),
-                    'dt_solucao'     => trim($item['dt_solucao']     ?? ''),
-                    'tecnico'        => trim($item['tecnico']        ?? ''),
-                    'cod_barras'     => trim($item['cod_barras']     ?? ''),
-                    'produto'        => trim($item['produto']        ?? ''),
-                    'resp_execucao'  => trim($item['resp_execucao']  ?? ''),
-                    'cadastrado_por' => trim($item['cadastrado_por'] ?? ''),
-                    'hrs_estimadas'  => (float)($item['hrs_estimadas'] ?? 0),
-                    'hrs_realizadas' => (float)($item['hrs_realizadas'] ?? 0),
-                    'vlr_servico'    => (float)($item['vlr_servico']   ?? 0),
-                    'vlr_total'      => (float)($item['vlr_total']     ?? 0),
-                    'quantidade'     => (int)  ($item['quantidade']    ?? 1),
-                    'valor_unit'     => (float)($item['valor_unit']    ?? 0),
-                    'valor_total'    => (float)($item['vlr_total']     ?? 0),
+                    'os_id'             => $id,
+                    'cod_item'          => trim($item['cod_item']       ?? ''),
+                    'status'            => trim($item['status']          ?? 'Aberto'),
+                    'tipo'              => trim($item['tipo']           ?? ''),
+                    'descricao'         => trim($item['descricao']      ?? ''),
+                    'maquina'           => trim($item['maquina']        ?? ''),
+                    'dt_criacao'        => trim($item['dt_criacao']     ?? ''),
+                    'dt_solucao'        => trim($item['dt_solucao']     ?? ''),
+                    'tecnico'           => trim($item['tecnico']        ?? ''),
+                    'cod_barras'        => trim($item['cod_barras']     ?? ''),
+                    'produto'           => trim($item['produto']        ?? ''),
+                    'resp_execucao'     => trim($item['resp_execucao']  ?? ''),
+                    'cadastrado_por'    => trim($item['cadastrado_por'] ?? ''),
+                    'hrs_estimadas'     => (float)($item['hrs_estimadas'] ?? 0),
+                    'hrs_realizadas'    => (float)($item['hrs_realizadas'] ?? 0),
+                    'vlr_servico'       => (float)($item['vlr_servico']   ?? 0),
+                    'vlr_total'         => (float)($item['vlr_total']     ?? 0),
+                    'quantidade'        => (int)  ($item['quantidade']    ?? 1),
+                    'valor_unit'        => (float)($item['valor_unit']    ?? 0),
+                    'valor_total'       => (float)($item['vlr_total']     ?? 0),
+                    'historico'         => json_encode($item['historico']         ?? [], JSON_UNESCAPED_UNICODE),
+                    'pendencias'        => json_encode($item['pendencias']        ?? [], JSON_UNESCAPED_UNICODE),
+                    'lancamentos_horas' => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
+                    'timeline_eventos'  => json_encode($item['timelineEventos']   ?? [], JSON_UNESCAPED_UNICODE),
                 ]);
+            }
+
+            // Só remove os antigos depois que os novos foram gravados com sucesso
+            if (!empty($idsAntigosOS)) {
+                foreach (array_chunk($idsAntigosOS, 30) as $chunk) {
+                    $db->delete('os_itens', ['id' => 'in.(' . implode(',', $chunk) . ')']);
+                }
             }
         }
 
@@ -350,7 +374,7 @@ if ($acao === 'atualizar') {
 
     } catch (RuntimeException $e) {
         error_log('[OS:atualizar] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar OS.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar OS: ' . $e->getMessage()]);
     }
     exit;
 }
@@ -481,30 +505,52 @@ if ($acao === 'atualizar_itens') {
         $itensJson = $_POST['itens'] ?? '[]';
         $itens = json_decode($itensJson, true) ?: [];
 
-        $db->delete('os_itens', ['os_id' => "eq.$id"]);
+        // Guarda os IDs dos itens atuais (antes de inserir os novos),
+        // para poder removê-los só depois que os novos forem gravados.
+        $itensAntigos = $db->select('os_itens', ['os_id' => "eq.$id"], 'id');
+        $idsAntigos = array_column($itensAntigos, 'id');
 
+        // ── Insere os NOVOS itens primeiro. Só apaga os antigos depois
+        //    de confirmar que todos os novos foram inseridos com sucesso.
+        //    Isso evita perder dados caso algum insert falhe (ex: coluna
+        //    inexistente no Supabase / migração pendente).
         foreach ($itens as $item) {
             $db->insert('os_itens', [
-                'os_id'          => $id,
-                'cod_item'       => trim($item['cod_item']       ?? ''),
-                'tipo'           => trim($item['tipo']           ?? ''),
-                'descricao'      => trim($item['descricao']      ?? ''),
-                'maquina'        => trim($item['maquina']        ?? ''),
-                'dt_criacao'     => trim($item['dt_criacao']     ?? ''),
-                'dt_solucao'     => trim($item['dt_solucao']     ?? ''),
-                'tecnico'        => trim($item['tecnico']        ?? ''),
-                'cod_barras'     => trim($item['cod_barras']     ?? ''),
-                'produto'        => trim($item['produto']        ?? ''),
-                'resp_execucao'  => trim($item['resp_execucao']  ?? ''),
-                'cadastrado_por' => trim($item['cadastrado_por'] ?? ''),
-                'hrs_estimadas'  => (float)($item['hrs_estimadas'] ?? 0),
-                'hrs_realizadas' => (float)($item['hrs_realizadas'] ?? 0),
-                'vlr_servico'    => (float)($item['vlr_servico']   ?? 0),
-                'vlr_total'      => (float)($item['vlr_total']     ?? 0),
-                'quantidade'     => (int)  ($item['quantidade']    ?? 1),
-                'valor_unit'     => (float)($item['valor_unit']    ?? 0),
-                'valor_total'    => (float)($item['vlr_total']     ?? 0),
+                'os_id'             => $id,
+                'cod_item'          => trim($item['cod_item']       ?? ''),
+                'status'            => trim($item['status']          ?? 'Aberto'),
+                'tipo'              => trim($item['tipo']           ?? ''),
+                'descricao'         => trim($item['descricao']      ?? ''),
+                'maquina'           => trim($item['maquina']        ?? ''),
+                'dt_criacao'        => trim($item['dt_criacao']     ?? ''),
+                'dt_solucao'        => trim($item['dt_solucao']     ?? ''),
+                'tecnico'           => trim($item['tecnico']        ?? ''),
+                'cod_barras'        => trim($item['cod_barras']     ?? ''),
+                'produto'           => trim($item['produto']        ?? ''),
+                'resp_execucao'     => trim($item['resp_execucao']  ?? ''),
+                'cadastrado_por'    => trim($item['cadastrado_por'] ?? ''),
+                'hrs_estimadas'     => (float)($item['hrs_estimadas'] ?? 0),
+                'hrs_realizadas'    => (float)($item['hrs_realizadas'] ?? 0),
+                'vlr_servico'       => (float)($item['vlr_servico']   ?? 0),
+                'vlr_total'         => (float)($item['vlr_total']     ?? 0),
+                'quantidade'        => (int)  ($item['quantidade']    ?? 1),
+                'valor_unit'        => (float)($item['valor_unit']    ?? 0),
+                'valor_total'       => (float)($item['vlr_total']     ?? 0),
+                'historico'         => json_encode($item['historico']         ?? [], JSON_UNESCAPED_UNICODE),
+                'pendencias'        => json_encode($item['pendencias']        ?? [], JSON_UNESCAPED_UNICODE),
+                'lancamentos_horas' => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
+                'timeline_eventos'  => json_encode($item['timelineEventos']   ?? [], JSON_UNESCAPED_UNICODE),
             ]);
+        }
+
+        // Só agora remove os registros antigos (que ficaram "duplicados"
+        // com os recém-inseridos durante a janela acima).
+        // Para diferenciar antigo de novo, marcamos os IDs já existentes
+        // antes do insert e deletamos somente esses.
+        if (!empty($idsAntigos)) {
+            foreach (array_chunk($idsAntigos, 30) as $chunk) {
+                $db->delete('os_itens', ['id' => 'in.(' . implode(',', $chunk) . ')']);
+            }
         }
 
         $numeroOs = $exists[0]['numero_os'];
@@ -514,7 +560,7 @@ if ($acao === 'atualizar_itens') {
 
     } catch (RuntimeException $e) {
         error_log('[OS:atualizar_itens] ' . $e->getMessage());
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar itens.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar itens. Nada foi alterado: ' . $e->getMessage()]);
     }
     exit;
 }

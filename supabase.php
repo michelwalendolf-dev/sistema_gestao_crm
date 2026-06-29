@@ -17,8 +17,6 @@ class Supabase
         $this->key = $useServiceKey ? SUPABASE_SERVICE_KEY : SUPABASE_ANON_KEY;
     }
 
-    // ── Método genérico de requisição ───────────────────────
-
     private function request(
         string $method,
         string $endpoint,
@@ -26,20 +24,19 @@ class Supabase
         array $extraHeaders = []
     ): array {
         $headers = array_merge([
-            'apikey: '             . $this->key,
+            'apikey: '               . $this->key,
             'Authorization: Bearer ' . $this->key,
             'Content-Type: application/json',
             'Accept: application/json',
         ], $extraHeaders);
 
-        // file_get_contents precisa de headers no formato HTTP
         $httpHeaders = implode("\r\n", $headers);
 
         $options = [
             'http' => [
                 'method'        => strtoupper($method),
                 'header'        => $httpHeaders,
-                'ignore_errors' => true,   // retorna o body mesmo em erro HTTP
+                'ignore_errors' => true,
                 'timeout'       => 15,
             ],
         ];
@@ -56,7 +53,6 @@ class Supabase
             throw new RuntimeException("Falha na requisição para: $fullUrl");
         }
 
-        // Extrai o status HTTP do cabeçalho de resposta
         $statusCode = 0;
         if (isset($http_response_header) && is_array($http_response_header)) {
             foreach ($http_response_header as $h) {
@@ -74,8 +70,6 @@ class Supabase
         ];
     }
 
-    // ── SELECT ───────────────────────────────────────────────
-
     public function select(string $table, array $filters = [], string $select = '*'): array
     {
         $query  = http_build_query(array_merge(['select' => $select], $filters));
@@ -91,8 +85,6 @@ class Supabase
         return $result['data'] ?? [];
     }
 
-    // ── INSERT ───────────────────────────────────────────────
-
     public function insert(string $table, array $data, bool $returnData = true): array
     {
         $extraHeaders = $returnData ? ['Prefer: return=representation'] : [];
@@ -107,8 +99,6 @@ class Supabase
 
         return $result['data'] ?? [];
     }
-
-    // ── UPDATE ───────────────────────────────────────────────
 
     public function update(string $table, array $data, array $filters): array
     {
@@ -130,8 +120,6 @@ class Supabase
         return $result['data'] ?? [];
     }
 
-    // ── DELETE ───────────────────────────────────────────────
-
     public function delete(string $table, array $filters): void
     {
         $query  = http_build_query($filters);
@@ -144,8 +132,6 @@ class Supabase
             );
         }
     }
-
-    // ── RPC ──────────────────────────────────────────────────
 
     public function rpc(string $functionName, array $params = []): mixed
     {

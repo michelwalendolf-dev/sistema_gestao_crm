@@ -2,19 +2,14 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Login - IluminusTech</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - IluminusTech</title>
     <!-- hCaptcha DESATIVADO em desenvolvimento local (requer HTTPS)
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="assets/css/login.css">
-    <link rel="icon" type="image/png" href="assets\icon.png">
-    <style>
-        .link-recuperar {
-            color: #ffffff !important;
-        }
-    </style>
+    <link rel="icon" type="image/png" href="assets/icon.png">
 </head>
 <body>
 <div class="container">
@@ -27,27 +22,21 @@
                 <input type="text" name="usuario" placeholder="Usuário" maxlength="40" autocomplete="username">
             </div>
             <div class="input-group password-group">
-                <input type="password" id="senha" name="senha" placeholder="Senha">
-                <button type="button"
-                        class="toggle-password"
+                <input type="password" id="senha" name="senha" placeholder="Senha" autocomplete="current-password">
+                <button type="button" class="toggle-password"
                         onmousedown="mostrarSenha()"
                         onmouseup="esconderSenha()"
                         onmouseleave="esconderSenha()">👁</button>
             </div>
             <!-- hCaptcha DESATIVADO em desenvolvimento local (requer HTTPS)
             <div class="captcha-container">
-                <div id="captchaBox"
-                    class="h-captcha"
-                    data-sitekey="1900febc-5eba-4cba-a6e2-f7644518c20e">
-                </div>
+                <div id="captchaBox" class="h-captcha" data-sitekey="1900febc-5eba-4cba-a6e2-f7644518c20e"></div>
             </div>
             -->
             <button type="submit" class="btn">Entrar</button>
         </form>
         <div class="forgot">
-            <a href="views/recuperar.html" class="link-recuperar">
-                Esqueci minha senha
-            </a>
+            <a href="views/recuperar.html" class="link-recuperar">Esqueci minha senha</a>
         </div>
         <div class="cookies">
             Usamos cookies apenas para segurança, sem compartilhamento de informações privadas.
@@ -55,40 +44,6 @@
         </div>
     </div>
 </div>
-<style>
-#loginOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    background: rgba(5, 15, 28, 0.82);
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    backdrop-filter: blur(3px);
-}
-
-#loginOverlay .spinner {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    border: 4px solid rgba(255, 255, 255, 0.08);
-    border-top-color: #2d7dff;
-    animation: spinLogin 0.7s linear infinite;
-    box-shadow: 0 0 18px rgba(45, 125, 255, 0.35);
-}
-
-#loginOverlay p {
-    color: #7aa3cc;
-    font-size: 13px;
-    letter-spacing: 0.6px;
-}
-
-@keyframes spinLogin {
-    to { transform: rotate(360deg); }
-}
-</style>
 
 <div id="loginOverlay">
     <div class="spinner"></div>
@@ -99,9 +54,8 @@
 const form = document.getElementById("loginForm");
 const overlay = document.getElementById("loginOverlay");
 
-form.addEventListener("submit", async function(e){
+form.addEventListener("submit", async function(e) {
     e.preventDefault();
-
     overlay.style.display = "flex";
 
     const resposta = await fetch("login.php", {
@@ -112,7 +66,7 @@ form.addEventListener("submit", async function(e){
 
     const resultado = await resposta.json();
 
-    if(resultado.sucesso){
+    if (resultado.sucesso) {
         window.location.href = "sistema.html";
         return;
     }
@@ -125,17 +79,12 @@ form.addEventListener("submit", async function(e){
         html: resultado.mensagem,
         confirmButtonText: "Ok",
         scrollbarPadding: false,
-        confirmButtonColor: "#2d7dff"
+        confirmButtonColor: "#2c2c2c"
     });
 });
-</script>
-<script>
-function mostrarSenha(){
-    document.getElementById("senha").type = "text";
-}
-function esconderSenha(){
-    document.getElementById("senha").type = "password";
-}
+
+function mostrarSenha() { document.getElementById("senha").type = "text"; }
+function esconderSenha() { document.getElementById("senha").type = "password"; }
 </script>
 </body>
 </html>

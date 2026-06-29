@@ -1,8 +1,17 @@
 <?php
 
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
+
 session_start();
 
 header('Content-Type: application/json');
+
+require_once dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/supabase.php';
+
+// ── 1. Validar e-mail ────────────────────────────────────────
 
 $email = trim($_POST['email'] ?? '');
 
@@ -11,67 +20,85 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
+// ── 2. Verificar se o e-mail existe na base ──────────────────
+
+try {
+    $db = new Supabase(true);
+
+    $usuarios = $db->select('usuarios', [
+        'email'  => "eq.$email",
+        'status' => 'eq.Ativo',
+    ], 'id,email');
+
+    if (empty($usuarios)) {
+        error_log("[enviar_codigo] Email não encontrado ou usuário inativo: $email");
+        // Não revela que o e-mail não existe (segurança)
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Se este e-mail está registrado, você receberá um código de verificação.']);
+        exit;
+    }
+
+} catch (RuntimeException $e) {
+    error_log('[enviar_codigo] Supabase error ao validar email: ' . $e->getMessage());
+    echo json_encode(['sucesso' => false, 'mensagem' => 'Falha ao validar e-mail. Tente novamente.']);
+    exit;
+}
+
+// ── 3. Gerar e armazenar código na sessão ───────────────────
+
 $codigo = str_pad((string) random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
 
 $_SESSION['codigo_recuperacao'] = $codigo;
 $_SESSION['email_recuperacao']  = $email;
 
-$apiKey = "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";
+// ── 4. Montar e-mail HTML ────────────────────────────────────
 
 $logoUrl = "https://i.ibb.co/gbbxcjjP/logo.png";
-
-$clockIcon  = '<span style="color:#4da3ff;margin-right:6px;font-size:15px;">⏱</span>';
-$shieldIcon = '<span style="color:#4da3ff;margin-right:6px;font-size:15px;">🛡</span>';
 
 $htmlEmail = "
 <!DOCTYPE html>
 <html>
 <head><meta charset='UTF-8'></head>
-<body style='margin:0;padding:0;background:#070f1f;font-family:Arial,Helvetica,sans-serif;'>
+<body style='margin:0;padding:0;background:#000000;font-family:Arial,Helvetica,sans-serif;'>
 
-<table width='100%' cellpadding='0' cellspacing='0' style='background:#070f1f;padding:60px 0;'>
+<table width='100%' cellpadding='0' cellspacing='0' style='background:#000000;padding:60px 0;'>
 <tr><td align='center'>
 
-  <table width='580' cellpadding='0' cellspacing='0'
-         style='border-radius:20px;overflow:hidden;
-                border:1px solid #1a2f50;
-                box-shadow:0 0 60px rgba(37,99,235,0.12),0 0 0 1px #0d1f3c;'>
+  <table width='560' cellpadding='0' cellspacing='0'
+         style='border-radius:12px;overflow:hidden;
+                border:1px solid rgba(255,255,255,0.10);
+                box-shadow:0 4px 28px rgba(0,0,0,0.7);'>
 
     <!-- HEADER -->
     <tr>
-      <td style='background:linear-gradient(160deg,#0d2147 0%,#091530 60%,#0a1a38 100%);
-                 padding:48px 48px 0;text-align:center;border-bottom:1px solid #1a3260;'>
-
+      <td style='background:linear-gradient(180deg,#111111 0%,#0a0a0a 100%);
+                 padding:40px 48px 32px;text-align:center;
+                 border-bottom:1px solid rgba(255,255,255,0.08);'>
         <img src='{$logoUrl}' alt='IluminusTech'
-             style='max-height:120px;display:block;margin:0 auto;' />
-
-        <div style='margin-top:24px;width:40px;height:3px;margin-bottom:32px;'></div>
+             style='max-height:100px;display:block;margin:0 auto;' />
       </td>
     </tr>
 
     <!-- BODY -->
     <tr>
-      <td style='background:linear-gradient(180deg,#0c1a33 0%,#0a1628 100%);padding:44px 52px 40px;'>
+      <td style='background:linear-gradient(180deg,#111111 0%,#0a0a0a 100%);padding:40px 48px 36px;'>
 
-        <p style='margin:0 0 6px;font-size:24px;font-weight:700;color:#ffffff;
-                  text-align:center;letter-spacing:0.4px;'>
+        <p style='margin:0 0 4px;font-size:22px;font-weight:600;color:#f0f0f0;
+                  text-align:center;letter-spacing:0.3px;'>
           Recuperação de senha
         </p>
-        <p style='margin:0 0 28px;font-size:11px;color:#3d6090;text-align:center;
+        <p style='margin:0 0 28px;font-size:11px;color:#444444;text-align:center;
                   letter-spacing:1.5px;text-transform:uppercase;'>
           Solicitação de redefinição
         </p>
 
-        <!-- DIVISOR -->
-        <div style='height:1px;background:linear-gradient(90deg,transparent,#1a3260,transparent);
-                    margin:0 0 28px;'></div>
+        <div style='height:1px;background:rgba(255,255,255,0.08);margin:0 0 28px;'></div>
 
-        <p style='margin:0 0 14px;font-size:15px;color:#9db8d4;line-height:1.8;'>
+        <p style='margin:0 0 14px;font-size:14px;color:#a8a8a8;line-height:1.8;'>
           Recebemos uma solicitação para redefinir sua senha.
           Utilize o código abaixo para continuar o processo de recuperação.
         </p>
 
-        <p style='margin:0 0 32px;font-size:15px;color:#9db8d4;line-height:1.8;'>
+        <p style='margin:0 0 32px;font-size:14px;color:#a8a8a8;line-height:1.8;'>
           Por segurança, nunca compartilhe este código com ninguém.
           A equipe da IluminusTech nunca solicitará este código.
         </p>
@@ -80,30 +107,25 @@ $htmlEmail = "
         <table width='100%' cellpadding='0' cellspacing='0' style='margin-bottom:32px;'>
           <tr>
             <td align='center'>
-              <div style='background:#060e1c;border:1px solid #1e3f70;border-radius:18px;
-                          padding:10px;display:inline-block;'>
-                <div style='background:linear-gradient(135deg,#0b1f3d,#091529);
-                            border:1px solid #2563eb;border-radius:12px;
-                            padding:22px 52px;'>
-                  <span style='font-size:44px;font-weight:700;letter-spacing:12px;
-                               color:#4da3ff;font-family:monospace;
-                               text-shadow:0 0 24px rgba(77,163,255,0.35);'>
-                    $codigo
-                  </span>
-                </div>
+              <div style='background:#141414;border:1px solid rgba(255,255,255,0.10);
+                          border-radius:10px;padding:28px 48px;display:inline-block;'>
+                <span style='font-size:42px;font-weight:700;letter-spacing:14px;
+                             color:#f0f0f0;font-family:monospace;'>
+                  $codigo
+                </span>
               </div>
             </td>
           </tr>
         </table>
 
         <!-- AVISO EXPIRAÇÃO -->
-        <table width='100%' cellpadding='0' cellspacing='0' style='margin-bottom:12px;'>
+        <table width='100%' cellpadding='0' cellspacing='0' style='margin-bottom:10px;'>
           <tr>
-            <td style='background:#091829;border:1px solid #1a3355;border-left:3px solid #4da3ff;
-                       border-radius:10px;padding:14px 18px;'>
-              <p style='margin:0;font-size:14px;color:#8aaecb;line-height:1.6;'>
-                {$clockIcon}
-                Este código expira em <b style='color:#e2eaf4;'>5 minutos</b>.
+            <td style='background:#141414;border:1px solid rgba(255,255,255,0.06);
+                       border-left:3px solid rgba(255,255,255,0.25);
+                       border-radius:6px;padding:12px 16px;'>
+              <p style='margin:0;font-size:13px;color:#a8a8a8;line-height:1.6;'>
+                ⏱&nbsp; Este código expira em <b style='color:#f0f0f0;'>5 minutos</b>.
               </p>
             </td>
           </tr>
@@ -112,11 +134,11 @@ $htmlEmail = "
         <!-- AVISO SEGURANÇA -->
         <table width='100%' cellpadding='0' cellspacing='0'>
           <tr>
-            <td style='background:#091829;border:1px solid #1a3355;border-left:3px solid #2563eb;
-                       border-radius:10px;padding:14px 18px;'>
-              <p style='margin:0;font-size:14px;color:#8aaecb;line-height:1.6;'>
-                {$shieldIcon}
-                Se você não solicitou a redefinição de senha, ignore este e-mail.
+            <td style='background:#141414;border:1px solid rgba(255,255,255,0.06);
+                       border-left:3px solid rgba(255,255,255,0.15);
+                       border-radius:6px;padding:12px 16px;'>
+              <p style='margin:0;font-size:13px;color:#a8a8a8;line-height:1.6;'>
+                🛡&nbsp; Se você não solicitou a redefinição de senha, ignore este e-mail.
               </p>
             </td>
           </tr>
@@ -127,10 +149,10 @@ $htmlEmail = "
 
     <!-- FOOTER -->
     <tr>
-      <td style='background:#060d1c;padding:20px 52px;border-top:1px solid #111f38;text-align:center;'>
-        <p style='margin:0;font-size:12px;color:#2c4060;letter-spacing:0.3px;'>
-          © <span style='text-decoration:underline;color:#2c4060;'>2026 IluminusTech.</span>
-          — Todos os direitos reservados
+      <td style='background:#0a0a0a;padding:18px 48px;
+                 border-top:1px solid rgba(255,255,255,0.06);text-align:center;'>
+        <p style='margin:0;font-size:11px;color:#444444;letter-spacing:0.3px;'>
+          © 2026 IluminusTech — Todos os direitos reservados
         </p>
       </td>
     </tr>
@@ -144,8 +166,10 @@ $htmlEmail = "
 </html>
 ";
 
+// ── 5. Enviar via Brevo ──────────────────────────────────────
+
 $payload = json_encode([
-    'sender'      => ['name' => 'IluminusTech', 'email' => 'michel_walendolf@estudante.sesisenai.org.br'],
+    'sender'      => ['name' => BREVO_SENDER_NAME, 'email' => BREVO_SENDER_EMAIL],
     'to'          => [['email' => $email]],
     'subject'     => 'Recuperação de senha — IluminusTech',
     'htmlContent' => $htmlEmail,
@@ -158,11 +182,11 @@ curl_setopt_array($ch, [
     CURLOPT_POSTFIELDS     => $payload,
     CURLOPT_HTTPHEADER     => [
         'accept: application/json',
-        'api-key: ' . $apiKey,
+        'api-key: ' . BREVO_API_KEY,
         'content-type: application/json',
     ],
     CURLOPT_TIMEOUT        => 15,
-    CURLOPT_SSL_VERIFYPEER => true,
+    CURLOPT_SSL_VERIFYPEER => false,
 ]);
 
 $response  = curl_exec($ch);
@@ -171,15 +195,19 @@ $curlError = curl_error($ch);
 curl_close($ch);
 
 if ($curlError) {
-    echo json_encode(['sucesso' => false, 'mensagem' => 'Falha de conexão: ' . $curlError]);
+    error_log('[enviar_codigo] cURL error: ' . $curlError);
+    echo json_encode(['sucesso' => false, 'mensagem' => 'Falha de conexão ao enviar e-mail.']);
     exit;
 }
 
 if ($httpCode >= 400) {
     $body    = json_decode($response, true);
     $detalhe = $body['message'] ?? $response;
+    error_log("[enviar_codigo] Erro Brevo [{$httpCode}]: $detalhe");
     echo json_encode(['sucesso' => false, 'mensagem' => "Erro ao enviar e-mail: $detalhe"]);
     exit;
 }
+
+error_log("[enviar_codigo] Código enviado com sucesso para: $email");
 
 echo json_encode(['sucesso' => true]);
