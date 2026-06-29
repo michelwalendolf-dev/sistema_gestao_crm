@@ -1,12 +1,7 @@
 <?php
-// ============================================================
-//  IluminusTech — Middleware de Sessão (CORRIGIDO)
-//  Inclua no topo de qualquer página/endpoint protegido
-// ============================================================
 
 require_once __DIR__ . '/config.php';
 
-// ── Sessão: diretório fixo resolve problema com php -S ───────
 $sessionPath = __DIR__ . '/sessions';
 if (!is_dir($sessionPath)) {
     mkdir($sessionPath, 0700, true);
@@ -53,7 +48,6 @@ function requireSession(bool $adminOnly = false, bool $jsonResponse = true): voi
         exit;
     }
 
-    // Verifica se é Admin (quando necessário)
     if ($adminOnly && ($_SESSION['usuario_grupo'] ?? '') !== 'Admin') {
         if ($jsonResponse) {
             header('Content-Type: application/json');
@@ -69,13 +63,9 @@ function requireSession(bool $adminOnly = false, bool $jsonResponse = true): voi
         exit;
     }
 
-    // Renova o tempo de sessão a cada request
     $_SESSION['last_activity'] = time();
 }
 
-/**
- * Retorna os dados do usuário logado (armazenados na sessão).
- */
 function sessionUser(): array
 {
     return [

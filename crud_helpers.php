@@ -1,5 +1,4 @@
 <?php
-// Helpers compartilhados para CRUD → Supabase
 
 function parseDateBr(?string $v): ?string
 {

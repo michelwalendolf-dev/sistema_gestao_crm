@@ -6,17 +6,11 @@ require __DIR__ . '/vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-// ============================================================
-//  Dependências — mesmas que os.php usa
-// ============================================================
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
 require_once __DIR__ . '/session_check.php';
 requireSession(true);
 
-// ============================================================
-//  Parâmetro obrigatório: ?id=<UUID da OS>
-// ============================================================
 $osId = trim($_GET['id'] ?? '');
 if (empty($osId)) {
     ob_end_clean();
@@ -24,9 +18,6 @@ if (empty($osId)) {
     die('Erro: informe o id da OS. Ex: index.php?id=<uuid>');
 }
 
-// ============================================================
-//  Busca OS + itens usando a mesma classe Supabase do os.php
-// ============================================================
 try {
     $db    = new Supabase();
     $rows  = $db->select('ordens_servico', ['id' => "eq.$osId"], '*');
@@ -47,9 +38,6 @@ try {
     die('Erro ao buscar OS: ' . htmlspecialchars($e->getMessage()));
 }
 
-// ============================================================
-//  Helpers de formatação
-// ============================================================
 function fmtData(?string $v): string {
     if (!$v) return '';
     if (str_contains($v, '/')) return $v;
@@ -65,9 +53,6 @@ function safe(?string $v, string $fb = ''): string {
     return $v !== '' ? htmlspecialchars($v, ENT_QUOTES, 'UTF-8') : $fb;
 }
 
-// ============================================================
-//  Monta placeholders
-// ============================================================
 $dados = [
     'numero'        => safe($os['numero_os']        ?? ''),
     'cod_unitario'  => safe($os['cod_unitario']      ?? ''),
@@ -95,9 +80,6 @@ $dados = [
     'valor'         => fmtMoeda($os['valor_total']   ?? 0),
 ];
 
-// ============================================================
-//  Tabela de itens → {{itens_tabela}}
-// ============================================================
 if (!empty($itens)) {
     $rows = '';
     foreach ($itens as $i => $it) {
@@ -127,17 +109,11 @@ if (!empty($itens)) {
     $dados['itens_tabela'] = '<p class="sem-itens">Nenhum item registrado nesta OS.</p>';
 }
 
-// ============================================================
-//  Logo
-// ============================================================
 $logoPath = __DIR__ . '/assets/logo.png';
 $logo = file_exists($logoPath)
     ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
     : '';
 
-// ============================================================
-//  Carrega e preenche o template HTML
-// ============================================================
 $templatePath = __DIR__ . '/index.html';
 if (!file_exists($templatePath)) {
     ob_end_clean();
@@ -150,9 +126,6 @@ foreach ($dados as $k => $v) {
 }
 $html = str_replace('{{logo}}', $logo, $html);
 
-// ============================================================
-//  Gera o PDF
-// ============================================================
 $erroCapturado = ob_get_clean();
 if (!empty(trim($erroCapturado))) {
     http_response_code(500);

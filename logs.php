@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-//  IluminusTech — logs.php
-//  Consulta e limpa logs de auditoria (tabela "logs_sistema")
-//  Somente Admin pode acessar
-// ============================================================
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
@@ -21,9 +16,6 @@ $acao = trim($_POST['acao'] ?? '');
 $db   = new Supabase();
 $user = sessionUser();
 
-// ════════════════════════════════════════════════════════════
-//  LISTAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'listar') {
 
     if ($user['grupo'] !== 'Admin') {
@@ -48,7 +40,6 @@ if ($acao === 'listar') {
             'id,usuario_id,acao,descricao,ip,user_agent,created_at'
         );
 
-        // Enriquece com nome do usuário via join manual (PostgREST não tem JOIN fácil sem view)
         $idsUnicos = array_unique(array_filter(array_column($rows, 'usuario_id')));
         $mapaUsuarios = [];
 
@@ -61,7 +52,6 @@ if ($acao === 'listar') {
                         $mapaUsuarios[$u['id']] = $u['nome'];
                     }
                 } catch (RuntimeException $e) {
-                    // não crítico
                 }
             }
         }
@@ -80,9 +70,6 @@ if ($acao === 'listar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  REGISTRAR  (endpoint público para o frontend chamar)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'registrar') {
 
     $acaoLog    = trim($_POST['acao_log']    ?? '');
@@ -110,9 +97,6 @@ if ($acao === 'registrar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  LIMPAR  (somente Admin)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'limpar') {
 
     if ($user['grupo'] !== 'Admin') {
@@ -120,7 +104,6 @@ if ($acao === 'limpar') {
         exit;
     }
 
-    // Limpa logs com mais de N dias (padrão: 90)
     $dias = max(1, (int)($_POST['dias'] ?? 90));
     $corte = date('c', strtotime("-$dias days"));
 
@@ -135,7 +118,4 @@ if ($acao === 'limpar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  Ação desconhecida
-// ════════════════════════════════════════════════════════════
 echo json_encode(['sucesso' => false, 'mensagem' => "Ação desconhecida: $acao"]);

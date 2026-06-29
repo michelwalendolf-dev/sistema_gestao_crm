@@ -11,8 +11,6 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php';
 require_once dirname(__DIR__) . '/supabase.php';
 
-// ── 1. Validar sessão e código ───────────────────────────────
-
 $email            = $_SESSION['email_recuperacao']  ?? '';
 $codigoVerificado = $_SESSION['codigo_verificado']  ?? false;
 
@@ -20,8 +18,6 @@ if (!$codigoVerificado || !$email) {
     echo json_encode(['sucesso' => false, 'mensagem' => 'Sessão inválida. Inicie o processo novamente.']);
     exit;
 }
-
-// ── 2. Validar senhas ────────────────────────────────────────
 
 $senha     = $_POST['senha']     ?? '';
 $confirmar = $_POST['confirmar'] ?? '';
@@ -45,16 +41,11 @@ if (!preg_match($regexForca, $senha)) {
     exit;
 }
 
-// ── 3. Fazer hash da senha ───────────────────────────────────
-
 $senhaHash = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 12]);
 
-// ── 4. VALIDAR que o email existe e ATUALIZAR ────────────────
-
 try {
-    $db = new Supabase(true); // useServiceKey para UPDATE
+    $db = new Supabase(true);
     
-    // Primeiro: verifica se o email existe e está ativo
     $usuarios = $db->select('usuarios', [
         'email'  => "eq.$email",
         'status' => 'eq.Ativo',
@@ -69,7 +60,6 @@ try {
         exit;
     }
     
-    // Segundo: atualiza a senha do usuário
     $db->update(
         'usuarios',
         ['senha_hash' => $senhaHash],
@@ -86,8 +76,6 @@ try {
     ]);
     exit;
 }
-
-// ── 5. Limpar sessão ─────────────────────────────────────────
 
 unset($_SESSION['codigo_recuperacao'], $_SESSION['codigo_verificado'], $_SESSION['email_recuperacao']);
 

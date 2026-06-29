@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-//  IluminusTech — clientes.php
-//  CRUD de clientes (tabela "clientes")
-// ============================================================
-
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 ini_set('log_errors', 1);
@@ -26,9 +21,6 @@ $acao = trim($_POST['acao'] ?? '');
 $db   = new Supabase();
 $user = sessionUser();
 
-// ════════════════════════════════════════════════════════════
-//  LISTAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'listar') {
     try {
         $filtros = ['order' => 'nome.asc'];
@@ -54,9 +46,6 @@ if ($acao === 'listar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  BUSCAR (um cliente)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'buscar') {
     $id = trim($_POST['id'] ?? '');
     if (!$id) {
@@ -78,9 +67,6 @@ if ($acao === 'buscar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  CRIAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'criar') {
     $nome = trim($_POST['nome'] ?? '');
     if (!$nome) {
@@ -94,7 +80,6 @@ if ($acao === 'criar') {
         exit;
     }
 
-    // Mapeia tipo: campo cli-tipo (Física/Jurídica) → tipo_pessoa (F/J)
     $tipoRaw  = trim($_POST['tipo'] ?? '');
     $tipoPessoa = (stripos($tipoRaw, 'J') !== false || stripos($tipoRaw, 'urid') !== false) ? 'J' : 'F';
 
@@ -120,7 +105,6 @@ if ($acao === 'criar') {
         'cidade'          => trim($_POST['cidade']        ?? '') ?: null,
     ];
 
-    // Remove nulls — deixa o banco usar os defaults
     $data = array_filter($data, fn($v) => $v !== null);
 
     try {
@@ -133,9 +117,6 @@ if ($acao === 'criar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  ATUALIZAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'atualizar') {
     $id = trim($_POST['id'] ?? '');
     if (!$id) {
@@ -143,7 +124,6 @@ if ($acao === 'atualizar') {
         exit;
     }
 
-    // Mapeamento: campo POST → coluna real
     $mapa = [
         'nome'        => 'nome',
         'fantasia'    => 'razao_social',
@@ -176,13 +156,11 @@ if ($acao === 'atualizar') {
         }
     }
 
-    // tipo_pessoa
     if (isset($_POST['tipo'])) {
         $t = trim($_POST['tipo']);
         $data['tipo_pessoa'] = (stripos($t, 'J') !== false || stripos($t, 'urid') !== false) ? 'J' : 'F';
     }
 
-    // ativo (boolean)
     if (isset($_POST['status'])) {
         $data['ativo'] = trim($_POST['status']) !== 'Inativo';
     }
@@ -204,9 +182,6 @@ if ($acao === 'atualizar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  EXCLUIR (soft delete)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'excluir') {
     $id = trim($_POST['id'] ?? '');
     if (!$id) {

@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <style>
-/* ── Auditoria: thead fixo + sem scrollbar desnecessária ── */
+
 .auditoria-area {
     display: flex;
     flex: 1;
@@ -20,7 +20,7 @@
 .auditoria-grid {
     flex: 1;
     min-width: 0;
-    overflow: hidden;          /* sem scroll no container */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -37,11 +37,11 @@
     display: table;
     width: 100%;
     table-layout: fixed;
-    flex-shrink: 0;             /* cabeçalho nunca encolhe */
+    flex-shrink: 0;
 }
 .tabela-auditoria tbody {
     display: block;
-    overflow-y: auto;           /* scroll apenas no corpo */
+    overflow-y: auto;
     flex: 1;
     min-height: 0;
     scrollbar-width: thin;
@@ -52,7 +52,6 @@
     table-layout: fixed;
 }
 
-/* ── Auditoria: painel de detalhe ── */
 .auditoria-descricao {
     display: flex;
     flex-direction: column;
@@ -96,7 +95,6 @@
     color: var(--accent, #4a9eff);
     border: 1px solid currentColor;
 }
-/* Reutiliza as cores dos badges já existentes */
 .aud-detalhe-badge.aud-badge-logout    { color:#e74c3c; border-color:#e74c3c; background:#e74c3c18; }
 .aud-detalhe-badge.aud-badge-login     { color:#2ecc71; border-color:#2ecc71; background:#2ecc7118; }
 .aud-detalhe-badge.aud-badge-inclusão,
@@ -298,13 +296,11 @@
                 <button class="btn-lista" id="btnLista"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
             </div>
             <div class="dropdown-sistema" id="dropdownSistema">
-                <!-- <a href="#" class="btn-dropdown">Administração</a> -->
                 <div class="btn-dropdown-submenu-wrap">
                     <a href="#" class="btn-dropdown btn-dropdown-has-sub" id="btnOrigens">Origens</a>
                 </div>
                 <a href="#" class="btn-dropdown">Financeiro</a>
                 <a href="#" class="btn-dropdown" onclick="abrirRelatorios(); return false;">Relatórios</a>
-                <!-- <a href="#" class="btn-dropdown">Configurações Técnicas</a> -->
             </div>
         </div>
         <div class="footer-left">
@@ -424,9 +420,6 @@
                 </div>
             </div>
 
-            <!-- ══════════════════════════════════════════
-     MODAL USUÁRIOS — abre igual ao modal de edição
-══════════════════════════════════════════ -->
             <div class="overlay-modal" id="overlayUsuarios" style="display:none; z-index:10800;"></div>
 
             <div class="erp-modal" id="modalUsuarios"
@@ -462,10 +455,8 @@
                         </div>
                     </div>
 
-                    <!-- 3 painéis -->
                     <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
 
-                        <!-- PAINEL ESQUERDO: FILTRO -->
                         <div class="usr-filtro">
                             <div class="usr-painel-header">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
@@ -508,7 +499,6 @@
                             </div>
                         </div>
 
-                        <!-- PAINEL CENTRAL: LISTAGEM -->
                         <div
                             style="flex:1;display:flex;flex-direction:column;min-width:0;background:#111111;border-right:1px solid #737373;">
                             <div
@@ -533,10 +523,8 @@
                             </div>
                         </div>
 
-                        <!-- PAINEL DIREITO: FORMULÁRIO -->
                         <div class="usr-form-wrap">
 
-                            <!-- Overlay de bloqueio -->
                             <div class="usr-form-bloqueio" id="usr-form-bloqueio">
                                 <div style="font-size:12px;color:#6b6b6b;text-align:center;line-height:1.6;">
                                     Selecione um usuário e clique em<br>
@@ -721,13 +709,13 @@
                                 <button class="usr-btn-salvar" onclick="usr_salvar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
                             </div>
 
-                        </div><!-- /usr-form-wrap -->
-                    </div><!-- /3-paineis -->
-                </div><!-- /#telaUsuarios --
-        </div><!-- /3-paineis -->
-            </div><!-- /erp-content -->
+                        </div>
+                    </div>
+                </div>
+        </div>
+            </div>
 
-        </div><!-- /#modalUsuarios -->
+        </div>
 
 
     </div>
@@ -936,10 +924,8 @@
             </div>
         </div>
         <div class="erp-content" style="padding:0;">
-            <!-- ══ LAYOUT 3 COLUNAS ══ -->
             <div class="item-modal-layout">
 
-                <!-- ═══ COLUNA ESQUERDA: Navegação de Recursos ═══ -->
                 <div class="item-col-esq">
                     <div class="item-col-titulo">
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -979,7 +965,6 @@
                     </div>
                 </div>
 
-                                <!-- ═══ COLUNA CENTRAL: Dados do Item ═══ -->
                 <div class="item-col-centro">
                     <div class="erp-tabs" style="border-bottom:1px solid #2e3a4e;margin-bottom:0;">
                         <div class="erp-tab item-tab active">Item</div>
@@ -1154,7 +1139,6 @@
                         </div>
                     </div>
 
-                    <!-- ═══ Painel: Hrs. Trabalhadas ═══ -->
                     <div class="erp-panel" id="panel-item-horas" style="display:none;padding:12px;">
                         <div class="panel-horas-inner">
                             <div class="horas-resumo">
@@ -1229,7 +1213,6 @@
                         </div>
                     </div>
 
-                    <!-- ═══ Painel: Pendências ═══ -->
                     <div class="erp-panel" id="panel-item-pendencias" style="display:none;padding:12px;">
                         <div class="panel-pend-inner">
                             <div class="pend-novo">
@@ -1252,7 +1235,6 @@
                         </div>
                     </div>
 
-                    <!-- ═══ Painel: Histórico ═══ -->
                     <div class="erp-panel" id="panel-item-historico" style="display:none;padding:12px;">
                         <div class="panel-hist-inner">
                             <div class="hist-filtros">
@@ -1276,9 +1258,7 @@
                     </div>
                 </div>
 
-                <!-- ═══ COLUNA DIREITA: Histórico / Timeline ═══ -->
                 <div class="item-col-dir">
-                    <!-- Header com filtros -->
                     <div class="item-tl-header">
                         <div class="item-col-titulo" style="border-bottom:none;padding-bottom:6px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
@@ -1291,7 +1271,6 @@
                         </div>
                     </div>
 
-                    <!-- Lista de eventos -->
                     <div class="item-timeline-wrap" id="item-timeline-wrap">
                         <div class="item-tl-vazio" id="item-tl-vazio">
                             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e4060" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -1300,7 +1279,6 @@
                         <div id="item-timeline-lista"></div>
                     </div>
 
-                    <!-- Input de nota no rodapé -->
                     <div class="item-tl-footer">
                         <textarea id="tl-evento-texto" class="item-tl-nota-input" placeholder="Adicionar nota ou observação..." rows="2"></textarea>
                         <div class="item-tl-footer-acoes">
@@ -1310,7 +1288,7 @@
                     </div>
                 </div>
 
-            </div><!-- fim .item-modal-layout -->
+            </div>
         </div>
     </div>
 
@@ -1621,7 +1599,6 @@
                 else if (id === "dataFim") calendarioFim.open();
             };
 
-            // Calendários de Início / Término da Auditoria
             window._fpAudInicio = flatpickr("#aud-dtInicio", {
                 dateFormat: "d/m/Y",
                 allowInput: false,
@@ -1639,13 +1616,11 @@
                 }
             });
 
-            // Calendário para Dt. Prevista da OS (modal Nova/Editar OS)
             window._fpDtPrevista = flatpickr("#cad-dtPrevista", {
                 dateFormat: "d/m/Y",
                 allowInput: false,
                 disableMobile: true,
                 onOpen: function() {
-                    // Define data mínima como a data de criação da OS
                     var dtCriacaoStr = document.getElementById("cad-dtCriacao").value.trim();
                     if (dtCriacaoStr) {
                         var parts = dtCriacaoStr.split("/");
@@ -1662,13 +1637,11 @@
                 }
             });
 
-            // Calendário para Dt. Solução do Item (modal Item)
             window._fpDtSolucao = flatpickr("#item-dtSolucao", {
                 dateFormat: "d/m/Y",
                 allowInput: false,
                 disableMobile: true,
                 onOpen: function() {
-                    // Define data mínima como a data de criação do item
                     var dtCriacaoStr = document.getElementById("item-dtCriacao").value.trim();
                     if (dtCriacaoStr) {
                         var parts = dtCriacaoStr.split("/");
@@ -1687,7 +1660,7 @@
         });
     </script>
     <script>
-        const dadosOS = []; // populado via os.php
+        const dadosOS = [];
         const grupoAberto = new Map();
         const grupoToggle = new Map();
         const grupoLinhas = new Map();
@@ -1778,16 +1751,13 @@
             tr.classList.add("row-selecionada");
         }
 
-        // Deseleciona ao clicar fora das linhas
         document.addEventListener("click", function(e) {
-            // Grid principal
             const gridPrincipal = document.querySelector(".grid-principal");
             if (gridPrincipal && !e.target.closest(".os-row") && gridPrincipal.contains(e.target)) {
                 document.querySelectorAll(".grid-principal .os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
                 osSelecionada = null;
                 window.osSelecionada = null;
             }
-            // Grid inferior (itens)
             const gridInferior = document.querySelector(".grid-inferior");
             if (gridInferior && !e.target.closest(".os-row") && gridInferior.contains(e.target)) {
                 document.querySelectorAll(".grid-inferior .os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
@@ -1796,12 +1766,10 @@
             }
         });
 
-        window._dadosOS = []; // populado via os.php
+        window._dadosOS = [];
 
-        window._dadosItens = {}; // populado via os.php
+        window._dadosItens = {};
 
-        // ── DB real: implementado em db_real.js (carregado no fim do body)
-        // As funções abaixo são placeholders substituídos pelo db_real.js
         var DB = {
             async buscarOS(filtros = {}) { return []; },
             async buscarItensPorOS(osId) { return []; },
@@ -1838,7 +1806,6 @@
                 if (descricao && !row.descricao?.toLowerCase().includes(descricao)) return false;
 
                 if (status && status !== 'todos') {
-                    // Normaliza o status do banco para as 4 categorias do frontend
                     const mapStatus = {
                         'aberta':           'pré-ordem',
                         'pré-ordem':        'pré-ordem',
@@ -1876,7 +1843,6 @@
             aplicarFiltros();
         }
 
-        // carregarOS real → implementado em db_real.js
         async function carregarOS() {
             console.warn('[carregarOS] db_real.js ainda não carregou.');
         }
@@ -1975,11 +1941,9 @@
             document.querySelectorAll(".os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
             tr.classList.add("row-selecionada");
             osSelecionada = osObj;
-            window.osSelecionada = osObj; // Sincroniza com db_real.js que usa window.osSelecionada
+            window.osSelecionada = osObj;
 
-            // forcarBanco=true: ignora cache para sempre mostrar itens atualizados do banco
             const itens = await DB.buscarItensPorOS(osObj.codigo, true);
-            // Garante que o cache de itens também fica sincronizado
             window._dadosItens = window._dadosItens || {};
             window._dadosItens[osObj.codigo] = itens;
             renderizarItens(itens, osObj.codigo);
@@ -2159,7 +2123,6 @@
             itemSelecionado = null;
             trItemSelecionado = null;
 
-            // ── Persiste exclusão no banco imediatamente ──
             if (osSelecionada && osSelecionada.id) {
                 try {
                     const listaAtual = window._dadosItens[osSelecionada.codigo] || [];
@@ -2169,7 +2132,6 @@
                         id: osSelecionada.id,
                         itens: JSON.stringify(listaDb)
                     });
-                    // Recarrega cache do banco
                     const itensAtualizados = await window.DB.buscarItensPorOS(osSelecionada.codigo, true);
                     window._dadosItens[osSelecionada.codigo] = itensAtualizados;
                     renderizarItens(itensAtualizados, osSelecionada.codigo);
@@ -2310,7 +2272,6 @@
         btnSair.addEventListener("click", async function (e) {
             e.preventDefault();
 
-            // 1. Solicita confirmação ao backend
             const resConfirm = await fetch("sistema.php", {
                 method: "POST",
                 body: new URLSearchParams({ acao: "logout_confirm" })
@@ -2329,7 +2290,6 @@
                 return;
             }
 
-            // 2. Exibe SweetAlert de confirmação
             const swalResult = await Swal.fire({
                 icon: "question",
                 title: confirm.titulo,
@@ -2345,7 +2305,6 @@
             });
 
             if (swalResult.isConfirmed) {
-                // 3. Efetiva o logout no backend (destrói sessão PHP)
                 await fetch("sistema.php", {
                     method: "POST",
                     body: new URLSearchParams({ acao: "logout" })
@@ -2377,20 +2336,17 @@
         }
 
         async function abrirTelaCad() {
-            // ── Limpa a OS selecionada para garantir modo CRIAÇÃO ──
             osSelecionada = null;
             window.osSelecionada = null;
 
             document.getElementById("erpTitulo").textContent = "Cadastro de Ordem de Serviço";
             document.querySelectorAll("#erpModal input").forEach(i => i.value = "");
-            // Preenche data de criação com a data atual
             const hoje = new Date();
             const dd = String(hoje.getDate()).padStart(2, "0");
             const mm = String(hoje.getMonth() + 1).padStart(2, "0");
             const yyyy = hoje.getFullYear();
             document.getElementById("cad-dtCriacao").value = `${dd}/${mm}/${yyyy}`;
             if (window._fpDtPrevista) window._fpDtPrevista.clear();
-            // Busca e exibe próximo número de OS (somente leitura)
             const cadCodigo = document.getElementById("cad-codigo");
             cadCodigo.value = "";
             cadCodigo.readOnly = true;
@@ -2417,7 +2373,6 @@
                 });
                 return;
             }
-            // Sincroniza com window para que db_real.js detecte modo edição corretamente
             window.osSelecionada = osSelecionada;
             document.getElementById("erpTitulo").textContent = "Edição de Ordem de Serviço";
             document.getElementById("cad-codigo").value = osSelecionada.codigo || "";
@@ -2581,9 +2536,9 @@
             };
         };
 
-        var _dadosAuditoria = []; // populado via logs.php
+        var _dadosAuditoria = [];
 
-        let audDadosFiltrados = []; // populado via logs.php
+        let audDadosFiltrados = [];
         let audResizeIniciado = false;
         let audItemSelecionado = null;
 
@@ -2622,7 +2577,6 @@
             if (!tbody) return;
             tbody.innerHTML = "";
 
-            // Limpa painel ao re-renderizar
             _mostrarDetalheAuditoria(null);
             audItemSelecionado = null;
 
@@ -2655,12 +2609,11 @@
             const usuario  = inputs[3] ? inputs[3].value.trim().toLowerCase() : "";
             const pesquisa = inputs[6] ? inputs[6].value.trim().toLowerCase() : "";
 
-            // Filtros de data via flatpickr
             const fpIni = window._fpAudInicio;
             const fpFim = window._fpAudTermino;
             const dtIni = fpIni && fpIni.selectedDates[0] ? fpIni.selectedDates[0] : null;
             const dtFim = fpFim && fpFim.selectedDates[0] ? fpFim.selectedDates[0] : null;
-            if (dtFim) dtFim.setHours(23, 59, 59, 999); // inclui o dia inteiro
+            if (dtFim) dtFim.setHours(23, 59, 59, 999);
 
             audDadosFiltrados = _dadosAuditoria.filter(r => {
                 if (evento  && !r.evento.toLowerCase().includes(evento))   return false;
@@ -2692,7 +2645,6 @@
         abrirAuditoria = function () {
             _abrirAudOrig();
             renderizarAuditoria(audDadosFiltrados);
-            // Carrega logs automaticamente ao abrir o modal
             if (typeof carregarLogsAuditoria === 'function') {
                 carregarLogsAuditoria();
             }
@@ -2705,11 +2657,10 @@
     <script>
 
         const _observacoes = {};
-        window._observacoes = _observacoes; // exposto para db_real.js
+        window._observacoes = _observacoes;
 
         document.querySelectorAll(".erp-tab").forEach((tab, idx) => {
             tab.addEventListener("click", () => {
-                // Ao sair da aba Observação, salva automaticamente no cache
                 const tabAtiva = document.querySelector(".erp-tab.active");
                 const idxAtiva = Array.from(document.querySelectorAll(".erp-tab")).indexOf(tabAtiva);
                 if (idxAtiva === 1) {
@@ -2753,7 +2704,6 @@
             const chave = document.getElementById("cad-codigo").value.trim();
             if (chave) document.getElementById("cad-observacao").value = _observacoes[chave] || "";
 
-            // Recarrega itens do banco ao abrir edição para garantir dados atualizados
             if (osSelecionada && osSelecionada.codigo) {
                 try {
                     const itens = await DB.buscarItensPorOS(osSelecionada.codigo, true);
@@ -2859,7 +2809,6 @@
                 Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione um item para editar.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
                 return;
             }
-            // Garante que o cache está carregado antes de editar
             const _chaveOSEdit = osSelecionada.codigo || "__novo__";
             if (!window._dadosItens) window._dadosItens = {};
             if (!window._dadosItens[_chaveOSEdit] || window._dadosItens[_chaveOSEdit].length === 0) {
@@ -2894,7 +2843,6 @@
             document.getElementById("item-vlrTotal").value = (itemSelecionado.vlrTotal || "").replace(/R\$\s*/g, "").trim();
             const chave = osSelecionada.codigo + "_" + itemSelecionado.codItem;
             document.getElementById("item-observacao").value = _obsItens[chave] || "";
-            // Repovoa histórico, pendências e horas a partir do que veio do banco
             _histItens[chave] = Array.isArray(itemSelecionado.historico) ? itemSelecionado.historico : [];
             _pendItens[chave] = Array.isArray(itemSelecionado.pendencias) ? itemSelecionado.pendencias : [];
             _horasItens[chave] = Array.isArray(itemSelecionado.lancamentosHoras) ? itemSelecionado.lancamentosHoras : [];
@@ -2943,7 +2891,6 @@
 
         document.querySelectorAll(".item-tab").forEach((tab, idx) => {
             tab.addEventListener("click", () => {
-                // Ao sair da aba Observação do item, salva no cache automaticamente
                 const itemTabAtiva = document.querySelector(".item-tab.active");
                 const idxItemAtiva = itemTabAtiva ? Array.from(document.querySelectorAll(".item-tab")).indexOf(itemTabAtiva) : -1;
                 if (idxItemAtiva === 1 && itemSelecionado && osSelecionada) {
@@ -3026,13 +2973,9 @@
             Swal.fire({ icon: "success", title: "Observação salva", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
         }
 
-        // ════════════════════════════════════════════════════════
-        //  Hrs. Trabalhadas / Pendências / Histórico do Item
-        // ════════════════════════════════════════════════════════
-
-        const _horasItens = {};       // { "OS_ITEM": [ {data, tecnico, descricao, horas}, ... ] }
-        const _pendItens  = {};       // { "OS_ITEM": [ {id, descricao, prioridade, concluida, criadaEm}, ... ] }
-        const _histItens  = {};       // { "OS_ITEM": [ {tipo, texto, data}, ... ] }
+        const _horasItens = {};
+        const _pendItens  = {};
+        const _histItens  = {};
 
         function _chaveItemAtual() {
             if (!itemSelecionado || !osSelecionada) return null;
@@ -3057,8 +3000,6 @@
             _histItens[chave].unshift(entrada);
             _adicionarHistoricoNaTimeline(chave, entrada);
         }
-
-        // ── Hrs. Trabalhadas ─────────────────────────────────────
 
         if (typeof flatpickr !== "undefined") {
             window._fpHorasData = flatpickr("#horas-data", { dateFormat: "d/m/Y", locale: "pt" });
@@ -3134,8 +3075,6 @@
             _horasItens[chave].splice(idx, 1);
             _renderHorasItem();
         }
-
-        // ── Pendências ───────────────────────────────────────────
 
         function _renderPendenciasItem() {
             const chave = _chaveItemAtual();
@@ -3214,8 +3153,6 @@
             _renderPendenciasItem();
         }
 
-        // ── Histórico do Item ────────────────────────────────────
-
         let _filtroHistItemAtual = "tudo";
 
         function _renderHistoricoItem(filtro) {
@@ -3261,13 +3198,11 @@
         }
 
         async function salvarItem() {
-            // Salva automaticamente a observação do item antes de gravar
             if (itemSelecionado && osSelecionada) {
                 const _obsChaveItem = osSelecionada.codigo + "_" + itemSelecionado.codItem;
                 const _obsValAtual = document.getElementById("item-observacao").value.trim();
                 if (_obsValAtual) _obsItens[_obsChaveItem] = _obsValAtual;
             } else {
-                // Novo item: guarda obs pelo codItem que será preenchido
                 const _codItemNovo = document.getElementById("item-codItem").value.trim();
                 const _obsValNovo = document.getElementById("item-observacao").value.trim();
                 if (_codItemNovo && _obsValNovo && osSelecionada) {
@@ -3279,7 +3214,6 @@
                 Swal.fire({ icon: "warning", title: "Atenção", text: "Informe o código do item.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
                 return;
             }
-            // Data de criação: usa a preenchida ou coloca hoje
             let dtCriacaoItem = document.getElementById("item-dtCriacao").value.trim();
             if (!dtCriacaoItem) {
                 const hoje = new Date();
@@ -3289,7 +3223,6 @@
                 dtCriacaoItem = `${dd}/${mm}/${yyyy}`;
                 document.getElementById("item-dtCriacao").value = dtCriacaoItem;
             }
-            // Pega o nome do usuário logado (exposto pelo db_real.js ou session)
             const usuarioLogado = (typeof window._usuarioLogado !== "undefined" && window._usuarioLogado)
                 ? window._usuarioLogado
                 : (document.getElementById("usuario-nome")?.textContent?.trim() || "admin");
@@ -3316,17 +3249,10 @@
                 lancamentosHoras: _horasItens[_chaveAtualItem] || [],
             };
 
-            // Usa o código da OS selecionada ou "__novo__" para OS ainda não salva
             const _chaveOS = osSelecionada.codigo || "__novo__";
 
-            // ── Garante que o cache de itens está populado antes de modificar ──
-            // Se o cache estiver vazio/indefinido E for edição, recarrega do banco
-            // para não perder os outros itens existentes ao fazer delete+insert no backend.
             if (!window._dadosItens) window._dadosItens = {};
-            // Recarrega do banco sempre que o cache estiver vazio e a OS já existir,
-            // tanto para edição quanto para um item novo numa OS que já tem outros itens —
-            // o backend faz delete+insert de TODOS os itens, então perder o cache aqui
-            // apaga os itens existentes ao salvar.
+
             if ((!window._dadosItens[_chaveOS] || window._dadosItens[_chaveOS].length === 0)) {
                 if (osSelecionada && osSelecionada.id) {
                     try {
@@ -3339,17 +3265,14 @@
             }
             if (!window._dadosItens[_chaveOS]) window._dadosItens[_chaveOS] = [];
 
-            // Usa sempre window._dadosItens como fonte de verdade
             const lista = window._dadosItens[_chaveOS];
 
             if (modoItemEdicao) {
-                // Compara com o codItem original do item selecionado (não o do form, que pode ter sido editado)
                 const codItemOriginal = itemSelecionado ? String(itemSelecionado.codItem) : String(codItem);
                 const idx = lista.findIndex(i => String(i.codItem) === codItemOriginal);
                 if (idx !== -1) lista[idx] = novoItem;
                 else lista.push(novoItem);
             } else {
-                // Novo item: verifica se já não existe para evitar duplicata
                 const jaExiste = lista.findIndex(i => String(i.codItem) === String(codItem));
                 if (jaExiste !== -1) {
                     Swal.fire({ icon: "warning", title: "Atenção", text: `Já existe um item com o código ${codItem} nesta OS.`, confirmButtonColor: "#2d7dff", scrollbarPadding: false });
@@ -3358,11 +3281,9 @@
                 lista.push(novoItem);
             }
 
-            // ── Mostra loading no botão Salvar ──
             const _btnSalvarItem = document.querySelector('#modalItem .btn-footer-salvar');
             if (_btnSalvarItem) { _btnSalvarItem.disabled = true; _btnSalvarItem.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg> Salvando...'; }
 
-            // ── Persiste itens no banco via ação dedicada atualizar_itens ──
             let _persistOk = true;
             let _persistErroMsg = '';
             if (osSelecionada && osSelecionada.id) {
@@ -3378,7 +3299,6 @@
                         _persistOk = false;
                         _persistErroMsg = resultado.mensagem || 'Erro ao salvar no banco.';
                     }
-                    // Recarrega do banco para garantir consistência
                     const itensAtualizados = await window.DB.buscarItensPorOS(_chaveOS, true);
                     window._dadosItens[_chaveOS] = itensAtualizados;
                     renderizarItens(itensAtualizados, _chaveOS);
@@ -3396,22 +3316,18 @@
 
             if (!_persistOk) {
                 Swal.fire({ icon: "error", title: "Erro ao salvar item", text: _persistErroMsg, confirmButtonColor: "#2d7dff", scrollbarPadding: false });
-                return; // mantém o modal aberto para o usuário não perder os dados digitados
+                return;
             }
 
             fecharModalItem();
             Swal.fire({ icon: "success", title: modoItemEdicao ? "Item atualizado" : "Item salvo", timer: 1500, showConfirmButton: false, scrollbarPadding: false });
         }
 
-        // salvarOS real → implementado em db_real.js
         function salvarOS() {
             console.warn('[salvarOS] db_real.js ainda não carregou.');
         }
 
-        // ══════════════════════════════════════════════════════
-        //  RECURSOS DO ITEM + TIMELINE
-        // ══════════════════════════════════════════════════════
-        let _itemTimeline = {};  // chave → [{tipo,categoria,titulo,texto,tags,data,hora,usuario}]
+        let _itemTimeline = {};
         let _tlFiltroAtivo = 'tudo';
 
         function _chaveItem() {
@@ -3419,7 +3335,6 @@
             return osSelecionada.codigo + '_' + itemSelecionado.codItem;
         }
 
-        // ── Navegação de recursos (botões esquerda) ──────────
         function abrirRecurso(nome, btn) {
             if (nome === 'anexos') {
                 if (typeof window.abrirAnexos === 'function') {
@@ -3436,7 +3351,6 @@
             });
         }
 
-        // ── Filtros da timeline ───────────────────────────────
         function filtrarTimeline(btn, filtro) {
             document.querySelectorAll('.item-tl-filtro').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -3445,7 +3359,6 @@
             _renderTimeline(chave);
         }
 
-        // ── Adicionar evento ──────────────────────────────────
         function adicionarEventoTimeline(categoria) {
             const texto = document.getElementById('tl-evento-texto').value.trim();
             if (!texto) return;
@@ -3457,7 +3370,7 @@
                 : (document.getElementById('usuario-nome')?.textContent?.trim() || 'Sistema');
             _itemTimeline[chave].unshift({
                 tipo: categoria === 'nota' ? 'nota' : 'info',
-                categoria,                 // 'nota' | 'acao'
+                categoria,
                 titulo: categoria === 'nota' ? 'Nota' : 'Evento',
                 texto,
                 data: agora.toLocaleDateString('pt-BR'),
@@ -3469,7 +3382,6 @@
             _renderTimeline(chave);
         }
 
-        // ── Evento automático ─────────────────────────────────
         function _historicoParaTimeline(entrada) {
             const mapTipo = {
                 alteracao: { tipo: 'acao', titulo: 'Alteração', tags: ['Alteração'] },
@@ -3550,10 +3462,10 @@
             const lista = document.getElementById('item-timeline-lista');
             const vazio = document.getElementById('item-tl-vazio');
             if (!lista) return;
-            let eventos = (_itemTimeline[chave] || []).slice().reverse(); // mais antigos primeiro
+            let eventos = (_itemTimeline[chave] || []).slice().reverse();
             if (_tlFiltroAtivo === 'acao') eventos = eventos.filter(e => e.categoria !== 'nota');
             if (_tlFiltroAtivo === 'nota') eventos = eventos.filter(e => e.categoria === 'nota');
-            eventos.reverse(); // mais recentes no topo para exibição
+            eventos.reverse();
 
             if (!eventos.length) {
                 lista.innerHTML = '';
@@ -3562,7 +3474,6 @@
             }
             if (vazio) vazio.style.display = 'none';
 
-            // Agrupa por data
             const grupos = {};
             eventos.forEach(ev => {
                 if (!grupos[ev.data]) grupos[ev.data] = [];
@@ -3583,7 +3494,6 @@
                         `<span class="item-tl-tag">${t}</span>`
                     ).join('');
 
-                    // Linha extra (arquivo, progresso etc.)
                     let extraHtml = '';
                     if (ev.arquivo) {
                         extraHtml = `<div class="item-tl-arquivo">
@@ -3634,7 +3544,6 @@
             }
         }
 
-        // ── Carrega ao abrir item ─────────────────────────────
         function _carregarRecursosItem() {
             const chave = _chaveItem();
             if (!chave) return;
@@ -3644,9 +3553,7 @@
             if (!_itemTimeline[chave] || !_itemTimeline[chave].length) {
                 _itemTimeline[chave] = [];
                 const item = itemSelecionado;
-                // Evento: item criado
                 _registrarEventoAuto(chave, 'Item criado', `Novo item <strong>#${item.codItem}</strong> cadastrado na OS. Tipo <em>${item.tipo || 'Serviço'}</em>, máquina: ${item.maquina || '—'}.`, 'criado', ['+\u00a0Criado', item.tipo || 'Serviço']);
-                // Evento: técnico
                 if (item.tecnico && item.tecnico !== '—') {
                     _registrarEventoAuto(chave, 'Técnico atribuído', `Técnico <strong>${item.tecnico}</strong> atribuído automaticamente ao item.`, 'tecnico', ['Atribuição']);
                 }
@@ -3656,7 +3563,6 @@
         }
 
     </script>
-    <!-- ══ OVERLAY + MODAL FINANCEIRO ══ -->
     <div id="overlayFinanceiro"></div>
 
     <div id="modalFinanceiro">
@@ -3718,10 +3624,8 @@
 
                 <div class="fin-chart-area">
                     <div class="fin-charts-top">
-                        <!-- Gráfico de Linhas -->
                         <div class="fin-chart-line-wrap">
                             <div class="fin-chart-header" style="flex-direction:column;align-items:flex-start;gap:6px;">
-                                <!-- Linha 1: título + período -->
                                 <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
                                     <span class="fin-chart-title">Evolução por Status</span>
                                     <div class="fin-chart-filtros">
@@ -3734,7 +3638,6 @@
                                             onclick="finFiltrarPeriodo(this)">12m</button>
                                     </div>
                                 </div>
-                                <!-- Linha 2: filtro status + toggle séries -->
                                 <div
                                     style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:6px;">
                                     <div class="fin-chart-filtros">
@@ -3770,7 +3673,6 @@
                             </div>
                         </div>
 
-                        <!-- Gráfico Donut -->
                         <div class="fin-chart-donut-wrap">
                             <div class="fin-chart-title">Distribuição por Status</div>
                             <div class="fin-donut-metric-row">
@@ -3795,7 +3697,6 @@
                         </div>
                     </div>
 
-                    <!-- Barras -->
                     <div class="fin-bars-section">
                         <div class="fin-bars-metric-row">
                             <div class="fin-bars-title">VALOR POR STATUS</div>
@@ -3845,17 +3746,14 @@
     </div>
 
     <script>
-        // Normaliza status do banco (feminino/variações) para as 4 categorias do financeiro
         function finNormalizarStatus(st) {
             const map = {
-                // valores do banco (os.php)
                 "Aberta":           "Aberto",
                 "Em andamento":     "Aberto",
                 "Aguardando peça":  "Aberto",
                 "Concluída":        "Fechado",
                 "Entregue":         "Fechado",
                 "Cancelada":        "Cancelado",
-                // valores do frontend (já normalizados)
                 "Pré-Ordem":  "Pré-Ordem",
                 "Aberto":     "Aberto",
                 "Fechado":    "Fechado",
@@ -3882,10 +3780,8 @@
         let _finSeriesAtivas = [true, true, true, true];
         let _finGruposCache = null;
 
-        // _finDadosMensais é recalculado dinamicamente em finCalcDadosMensais()
         let _finDadosMensais = { labels: [], preOrdem: [], aberto: [], fechado: [], cancelado: [] };
 
-        // Calcula os últimos N meses de labels e dados reais a partir de _dadosOS
         function finCalcDadosMensais(dados, n) {
             const mesesPT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
             const hoje = new Date();
@@ -3894,21 +3790,19 @@
                 const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
                 buckets.push({
                     ano: d.getFullYear(),
-                    mes: d.getMonth(),           // 0-based
+                    mes: d.getMonth(),
                     label: mesesPT[d.getMonth()],
                     preOrdem: 0, aberto: 0, fechado: 0, cancelado: 0,
                 });
             }
 
             dados.forEach(os => {
-                // dtCriacao vem como "DD/MM/AAAA" (fmtData do db_real.js)
                 const raw = os.dtCriacao || "";
                 let ano, mes;
                 if (raw.includes("/")) {
                     const p = raw.split("/");
                     ano = parseInt(p[2]); mes = parseInt(p[1]) - 1;
                 } else if (raw.includes("-")) {
-                    // fallback ISO
                     const p = raw.substring(0, 7).split("-");
                     ano = parseInt(p[0]); mes = parseInt(p[1]) - 1;
                 } else { return; }
@@ -3935,7 +3829,6 @@
         async function abrirFinanceiro() {
             document.getElementById("overlayFinanceiro").style.display = "block";
             document.getElementById("modalFinanceiro").style.display = "flex";
-            // Garante dados frescos antes de renderizar
             if (typeof carregarOS === "function") {
                 await carregarOS();
             }
@@ -4021,7 +3914,6 @@
             document.getElementById("kpi-cancelado").innerText = grupos["Cancelado"].qtd;
             document.getElementById("kpi-cancelado-val").innerText = fmt(grupos["Cancelado"].total);
 
-            // Recalcula dados históricos reais a partir das OS (substitui os valores hardcoded)
             _finDadosMensais = finCalcDadosMensais(dados, 12);
 
             finRenderizarLista(dados);
@@ -4231,7 +4123,6 @@
         </div>
 
         <div class="anexos-corpo">
-            <!-- Lista esquerda -->
             <div class="anexos-coluna-lista" id="anexosColLista">
                 <div class="anexos-col-header">
                     ARQUIVOS <span class="anexos-badge-count" id="anexosBadge">0</span>
@@ -4837,7 +4728,6 @@
                 </div>
             </div>
 
-            <!-- ABA CONTATO -->
             <div class="erp-panel" id="painel-cli-contato" style="display:none;">
                 <div class="cad-secao-titulo">Telefones</div>
                 <div class="erp-grid">
@@ -4884,7 +4774,6 @@
                 </div>
             </div>
 
-            <!-- ABA ENDERE&#199;O -->
             <div class="erp-panel" id="painel-cli-end" style="display:none;">
                 <div class="erp-grid">
                     <div class="campo-completo">
@@ -4938,7 +4827,6 @@
                 </div>
             </div>
 
-            <!-- ABA FINANCEIRO -->
             <div class="erp-panel" id="painel-cli-fin" style="display:none;">
                 <div class="erp-grid">
                     <div class="campo-completo">
@@ -5003,7 +4891,6 @@
         </div>
     </div>
 
-    <!-- ═══════════════ MODAL CADASTRO DE FUNCION&#193;RIOS ═══════════════ -->
     <div class="overlay-modal" id="overlayFuncionarios" style="display:none;"></div>
     <div class="erp-modal" id="modalFuncionarios" style="display:none; width:780px;">
         <div class="erp-titlebar" id="dragFuncionarios">
@@ -5188,7 +5075,6 @@
                 </div>
             </div>
 
-            <!-- ABA CONTATO -->
             <div class="erp-panel" id="painel-func-contato" style="display:none;">
                 <div class="cad-secao-titulo">Telefones</div>
                 <div class="erp-grid">
@@ -5228,7 +5114,6 @@
                 </div>
             </div>
 
-            <!-- ABA ENDERE&#199;O -->
             <div class="erp-panel" id="painel-func-end" style="display:none;">
                 <div class="erp-grid">
                     <div class="campo-completo">
@@ -5282,7 +5167,6 @@
                 </div>
             </div>
 
-            <!-- ABA CONTRATO -->
             <div class="erp-panel" id="painel-func-contrato" style="display:none;">
                 <div class="erp-grid">
                     <div class="campo-completo">
@@ -5368,7 +5252,6 @@
         </div>
     </div>
 
-    <!-- ═══════════════ MODAL CADASTRO DE FORNECEDORES ═══════════════ -->
     <div class="overlay-modal" id="overlayFornecedores" style="display:none;"></div>
     <div class="erp-modal" id="modalFornecedores" style="display:none; width:780px;">
         <div class="erp-titlebar" id="dragFornecedores">
@@ -5405,7 +5288,6 @@
                 </div>
             </div>
 
-            <!-- ABA DADOS -->
             <div class="erp-panel" id="painel-forn-dados">
                 <div class="painel-com-foto">
                     <div class="foto-perfil-wrap">
@@ -5525,7 +5407,6 @@
                 </div>
             </div>
 
-            <!-- ABA CONTATO -->
             <div class="erp-panel" id="painel-forn-contato" style="display:none;">
                 <div class="cad-secao-titulo">Telefones</div>
                 <div class="erp-grid">
@@ -5572,7 +5453,6 @@
                 </div>
             </div>
 
-            <!-- ABA ENDERE&#199;O -->
             <div class="erp-panel" id="painel-forn-end" style="display:none;">
                 <div class="erp-grid">
                     <div class="campo-completo">
@@ -5626,7 +5506,6 @@
                 </div>
             </div>
 
-            <!-- ABA FINANCEIRO -->
             <div class="erp-panel" id="painel-forn-fin" style="display:none;">
                 <div class="erp-grid">
                     <div class="campo-completo">
@@ -5690,7 +5569,6 @@
         </div>
     </div>
 
-    <!-- ═══════════════ JS DOS MODAIS DE CADASTRO ═══════════════ -->
     <script>
         (function () {
 
@@ -5710,7 +5588,7 @@
                 ativarDrag(modal, modal.querySelector('.erp-titlebar'));
                 if (typeof initDropdownsModal === 'function') setTimeout(initDropdownsModal, 50);
             }
-            window.abrirModal = abrirModal; // expõe globalmente para outros IIFEs
+            window.abrirModal = abrirModal;
 
             window.fecharModal = function (modalId, overlayId) {
                 const modal = document.getElementById(modalId);
@@ -5775,7 +5653,6 @@
                     dc.dataset.init = '1';
                     const input = dc.querySelector('input');
                     const menu = dc.querySelector('.dropdown-menu');
-                    // Usa position:absolute (definido no CSS), não sobrescreve com fixed
                     if (menu) {
                         menu.style.position = '';
                         menu.style.zIndex = '9999';
@@ -5789,13 +5666,11 @@
                     function abrirDropdown(e) {
                         e.stopPropagation();
                         const jaAtivo = dc.classList.contains('ativo');
-                        // Fecha todos os outros dropdowns de cadastro e rebaixa seus pais
                         document.querySelectorAll(seletores).forEach(function(other) {
                             other.classList.remove('ativo');
                             const pai = other.closest('.campo-completo');
                             if (pai) pai.style.zIndex = '';
                         });
-                        // Abre este apenas se estava fechado e eleva o campo-pai
                         if (!jaAtivo) {
                             dc.classList.add('ativo');
                             if (campoPai) campoPai.style.zIndex = '9999';
@@ -5812,7 +5687,6 @@
                         });
                     });
                 });
-                // Fecha ao clicar fora — rebaixa todos os pais também
                 document.addEventListener('click', function() {
                     document.querySelectorAll(seletores).forEach(dc => {
                         dc.classList.remove('ativo');
@@ -5957,7 +5831,6 @@
 
         <div class="bo-body">
 
-            <!-- PAINEL ESQUERDO — FILTROS -->
             <div class="bo-filtros">
                 <div class="bo-filtros-header">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -6091,9 +5964,7 @@
                 </div>
             </div>
 
-            <!-- PAINEL DIREITO — LISTA -->
             <div class="bo-lista-wrap">
-                <!-- barra de ações da lista -->
                 <div class="bo-lista-toolbar">
                     <span class="bo-lista-count" id="bo-count">0 registro(s)</span>
                     <div style="display:flex; gap:4px; margin-left:auto;">
@@ -6105,12 +5976,10 @@
                     </div>
                 </div>
 
-                <!-- tabela -->
                 <div class="bo-table-wrap">
                     <table class="bo-table" id="bo-table">
                         <thead>
                             <tr id="bo-thead-row">
-                                <!-- colunas injetadas via JS conforme tipo -->
                             </tr>
                         </thead>
                         <tbody id="bo-tbody">
@@ -6125,7 +5994,6 @@
 
         </div>
 
-        <!-- FOOTER -->
         <div class="bo-footer">
             <span class="bo-footer-sel" id="bo-footer-sel">Nenhum registro selecionado</span>
             <button class="btn-footer-salvar" id="bo-btn-ok" onclick="selecionarOrigem()" disabled>&#10003;
@@ -6338,15 +6206,11 @@
                 fecharModal('modalBuscaOrigem', 'overlayBuscaOrigem');
             };
 
-
-            // abrirBuscaOrigemCampo — abre o modal de busca e ao confirmar,
-            // coloca o nome selecionado no campo alvo
             window.abrirBuscaOrigemCampo = function (tipo, campoAlvoId, valorInicial, isFiltroPrincipal) {
                 window._buscaOrigemCampoAlvo = campoAlvoId;
                 window._buscaOrigemIsFiltroPrincipal = isFiltroPrincipal;
                 window._buscaOrigemTipoAtual = tipo;
 
-                // Se valorInicial é uma função, trata como callback de seleção
                 var _callback = (typeof valorInicial === 'function') ? valorInicial : null;
                 var _filtroInicial = (typeof valorInicial === 'string') ? valorInicial : null;
 
@@ -6361,7 +6225,6 @@
                     if (isFiltroPrincipal && typeof aplicarFiltros === 'function') aplicarFiltros();
                 });
 
-                // Preenche filtro inicial se houver string de busca
                 if (_filtroInicial) {
                     setTimeout(function () {
                         var inp = document.getElementById('bo-f-nome');
@@ -7285,10 +7148,8 @@
         </div>
     </div>
 
-    <!-- Overlay do modal de filtros (z-index acima da tela de relatórios) -->
     <div id="overlayFiltrosRelat"></div>
 
-    <!-- Modal de filtros -->
     <div id="modalFiltrosRelat">
         <div class="filtros-relat-titlebar" id="dragFiltrosRelat">
             <div class="filtros-relat-titlebar-titulo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Filtros do Relatório</div>
@@ -7540,30 +7401,23 @@
                 document.getElementById('overlayFiltrosRelat').style.display = 'block';
                 document.getElementById('modalFiltrosRelat').style.display = 'flex';
                 
-                // [OK] NOVA FUNCIONALIDADE: Preencher filtros com dados da OS selecionada
                 if (window.osSelecionada) {
                     const os = window.osSelecionada;
                     
-                    // Preencher Código OS
                     const filCodigo = document.getElementById('fil-codigo');
                     if (filCodigo) filCodigo.value = os.codigo || '';
                     
-                    // Preencher Código Unitário
                     const filCodUnit = document.getElementById('fil-codunit');
                     if (filCodUnit) filCodUnit.value = os.codUnit || '';
                     
-                    // Preencher Cliente
                     const filCliente = document.getElementById('fil-cliente');
                     if (filCliente) filCliente.value = os.cliente || '';
-                    
-                    // Preencher Técnico
+
                     const filTecnico = document.getElementById('fil-tecnico');
                     if (filTecnico) filTecnico.value = os.tecnico || '';
-                    
-                    // Preencher Status
+
                     const filStatus = document.getElementById('fil-status');
                     if (filStatus && os.status) {
-                        // Normalizar status para as categorias do frontend
                         const mapStatus = {
                             'aberta':           'pré-ordem',
                             'pré-ordem':        'pré-ordem',
@@ -7601,10 +7455,8 @@
             window.rl_abrirRelatorio = function () {
                 if (!_relatSel) return;
                 
-                // [OK] CORRIGIDO: Passar o ID da OS selecionada na URL
                 let url = _relatSel.url;
                 
-                // Se há uma OS selecionada, adiciona o ID à URL
                 if (window.osSelecionada && window.osSelecionada.id) {
                     url = url + '?id=' + encodeURIComponent(window.osSelecionada.id);
                 }
@@ -7706,7 +7558,6 @@
                 var sub = document.getElementById('submenuOrigens');
                 if (sub) sub.classList.remove('sub-visivel');
 
-                // Carrega usuários do banco ao abrir
                 if (typeof window.carregarUsuarios === 'function') {
                     window.carregarUsuarios();
                 } else {
@@ -7782,11 +7633,10 @@
                 if (ov) ov.addEventListener('click', window.usr_fechar);
             });
 
-            var _usrDados = []; // populado via usuarios.php
+            var _usrDados = [];
 
             var _usrSel = null;
             var _usrModo = null;
-            // Expõe no window para que db_real.js possa ler/escrever
             Object.defineProperty(window, '_usrDados', { get: function(){ return _usrDados; }, set: function(v){ _usrDados = v; }, configurable: true });
             Object.defineProperty(window, '_usrSel',  { get: function(){ return _usrSel;  }, set: function(v){ _usrSel  = v; }, configurable: true });
             Object.defineProperty(window, '_usrModo', { get: function(){ return _usrModo; }, set: function(v){ _usrModo = v; }, configurable: true });
@@ -7895,7 +7745,6 @@
                 _g('usr-f-suspenso').checked = u.suspensao;
                 _g('usr-f-data-saida').value = u.dataSaida || '';
                 usr_habilitar();
-                // Login não pode ser alterado após criação
                 var elLogin = _g('usr-f-login');
                 if (elLogin) { elLogin.disabled = true; elLogin.title = 'O login não pode ser alterado.'; }
             };
@@ -7908,12 +7757,10 @@
                 var dica = document.getElementById('usr-dica-senha'); if (dica) dica.textContent = '';
             };
 
-            // usr_salvar real → implementado em db_real.js
             window.usr_salvar = function () {
                 console.warn('[usr_salvar] db_real.js ainda não carregou.');
             };
 
-            // usr_excluir real → implementado em db_real.js
             window.usr_excluir = function () {
                 console.warn('[usr_excluir] db_real.js ainda não carregou.');
             };
@@ -7937,7 +7784,6 @@
                 _CAMPOS.forEach(function (id) { var el = _g(id); if (el) el.disabled = true; });
                 _BOTOES_EXTRA.forEach(function (id) { var el = _g(id); if (el) el.disabled = true; });
                 var bc = _g('usr-btn-cal-saida'); if (bc) bc.disabled = true;
-                // Fecha todos os menus abertos ao bloquear
                 ['usr-func-mais', 'usr-grupo-menu', 'usr-setor-menu'].forEach(function (id) {
                     var m = _g(id); if (m) m.style.display = 'none';
                 });
@@ -7954,7 +7800,6 @@
                 var el = _g(id); if (el && !el.disabled) el.value = '';
             };
 
-            /* ── Grupo de Acesso: dropdown customizado ── */
             window.usr_toggleGrupo = function (e) {
                 e.stopPropagation();
                 var menu = _g('usr-grupo-menu');
@@ -7987,14 +7832,12 @@
                 menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             };
 
-            /* Fecha todos os menus ao clicar fora */
             document.addEventListener('click', function () {
                 ['usr-func-mais', 'usr-grupo-menu', 'usr-setor-menu'].forEach(function (id) {
                     var m = _g(id); if (m) m.style.display = 'none';
                 });
             });
 
-            /* ── Busca de funcionário: usa modal de busca de origens se disponível ── */
             window.usr_buscarFuncionario = function () {
                 var elFunc = _g('usr-f-funcionario');
                 var elSetor = _g('usr-f-setor');
@@ -8002,7 +7845,6 @@
                 if (typeof abrirBuscaOrigemCampo === 'function') {
                     abrirBuscaOrigemCampo('func', 'usr-f-funcionario', function (item) {
                         elFunc.value = item['Nome'] || item.nome || item.label || '';
-                        // Setor não vem do modal de busca; mantém o campo para preenchimento manual
                     });
                 } else {
                     var nome = prompt('Nome do funcionário:');
@@ -8018,7 +7860,6 @@
                 _g('usr-func-mais') && (_g('usr-func-mais').style.display = 'none');
             };
 
-            /* ── Setor: dropdown customizado (igual ao Grupo de Acesso) ── */
             window.usr_toggleSetor = function (e) {
                 e.stopPropagation();
                 var menu = _g('usr-setor-menu');
@@ -8037,7 +7878,6 @@
                 }
             };
 
-            /* ── Validação de força de senha ── */
             window.usr_validarForcaSenha = function () {
                 var s1 = _g('usr-f-senha').value;
                 var dica = _g('usr-dica-forca-senha');
@@ -8062,19 +7902,16 @@
                 }
             };
 
-            /* ── Busca de setor (mantida para compatibilidade) ── */
             window.usr_buscarSetor = function () {
                 var el = _g('usr-f-setor');
                 if (!el || el.disabled) return;
                 _g('usr-setor-mais') && (_g('usr-setor-mais').style.display = 'none');
-                // Mostra dropdown inline de setores
                 var setores = ['TI', 'Financeiro', 'Técnico', 'Administrativo', 'Comercial', 'RH'];
                 var existing = document.getElementById('usr-setor-dropdown-popup');
                 if (existing) existing.remove();
                 var popup = document.createElement('div');
                 popup.id = 'usr-setor-dropdown-popup';
                 popup.style.cssText = 'position:fixed;background:#1a1a1a;border:1px solid #4a4a4a;border-radius:6px;z-index:999999;box-shadow:0 4px 20px rgba(0,0,0,0.7);min-width:180px;padding:4px 0;';
-                // Posiciona perto do campo
                 var rect = el.getBoundingClientRect();
                 popup.style.left = rect.left + 'px';
                 popup.style.top = (rect.bottom + 4) + 'px';
@@ -8117,13 +7954,11 @@
         })();
     </script>
 
-    <!-- ══ INTEGRAÇÃO REAL COM BANCO ══ -->
     <script src="assets/js/auditoria.js"></script>
     <script src="assets/js/db_real.js"></script>
     <script src="assets/js/carregarLogsAuditoria.js"></script>
 
     <script>
-        // ── Helpers ──────────────────────────────────────────────────────────
         function _gVal(id) {
             var el = document.getElementById(id);
             if (!el) return '';
@@ -8137,7 +7972,6 @@
             }
         }
 
-        // ── Corrigir limparModal para limpar o campo id oculto ────────────────
         var _origLimparModal = window.limparModal;
         window.limparModal = function (modalId) {
             _origLimparModal(modalId);
@@ -8153,7 +7987,6 @@
             }
         };
 
-        // ── salvarFuncionario ─────────────────────────────────────────────────
         window.salvarFuncionario = async function () {
             var nome = _gVal('func-nome');
             if (!nome) { _showMsg(false, 'O campo Nome Completo é obrigatório.'); return; }
@@ -8188,7 +8021,6 @@
             }
         };
 
-        // ── salvarCliente ─────────────────────────────────────────────────────
         window.salvarCliente = async function () {
             var nome = _gVal('cli-nome');
             if (!nome) { _showMsg(false, 'O campo Nome é obrigatório.'); return; }
@@ -8219,7 +8051,6 @@
             }
         };
 
-        // ── salvarFornecedor ──────────────────────────────────────────────────
         window.salvarFornecedor = async function () {
             var razao = _gVal('forn-razao');
             if (!razao) { _showMsg(false, 'O campo Razão Social é obrigatório.'); return; }
@@ -8252,7 +8083,6 @@
         };
     </script>
 
-    <!-- ══ MENU FLUTUANTE: MAIS OPÇÕES USUÁRIOS ══ -->
     <div id="usrMaisOpcMenu" style="
         display:none; position:fixed; z-index:999999;
         background:#1a1a1a; border:1px solid #737373; border-radius:4px;
@@ -8290,7 +8120,6 @@
         })();
     </script>
 
-    <!-- ══ MODAL: REDEFINIR SENHA DO USUÁRIO ══ -->
     <div class="overlay-modal" id="overlayRedefinirSenha" style="display:none;z-index:99990;"></div>
 
     <div id="modalRedefinirSenha" style="
@@ -8304,7 +8133,6 @@
         top:50%; left:50%;
         transform:translate(-50%,-50%);">
 
-        <!-- Titlebar -->
         <div id="dragRedefinirSenha" style="
             background:linear-gradient(to bottom,#222222 0px,#222222 20px,#2a2a2a 20px,#111111 110%);
             padding:6px 10px; display:flex; justify-content:space-between;
@@ -8318,7 +8146,6 @@
             </div>
         </div>
 
-        <!-- Info do usuário -->
         <div id="rds-info-bar" style="
             display:flex; align-items:center; gap:10px;
             padding:10px 14px; background:#1a1a1a;
@@ -8330,7 +8157,6 @@
             </div>
         </div>
 
-        <!-- Corpo do formulário -->
         <div style="padding:16px 16px 8px; display:flex; flex-direction:column; gap:12px;">
 
             <div style="display:flex;flex-direction:column;gap:3px;">
@@ -8369,7 +8195,6 @@
                 <span id="rds-conf-dica" style="font-size:10px;color:#6b6b6b;margin-top:1px;"></span>
             </div>
 
-            <!-- Nota informativa -->
             <div style="
                 display:flex; align-items:flex-start; gap:8px;
                 background:#1a1a1a; border:1px solid #333333;
@@ -8380,7 +8205,6 @@
             </div>
         </div>
 
-        <!-- Footer com botões -->
         <div style="
             border-top:1px solid #737373; padding:10px 14px;
             display:flex; justify-content:flex-end; gap:8px; flex-shrink:0;
@@ -8406,16 +8230,13 @@
 
     <script>
         (function () {
-            /* ── helpers internos ── */
             function _senhaForte(s) {
                 return s.length >= 8 &&
                     /[A-Z]/.test(s) && /[a-z]/.test(s) &&
                     /[0-9]/.test(s) && /[!@#$%&*]/.test(s);
             }
 
-            /* ── abrir ── */
             window.usr_abrirRedefinirSenha = function () {
-                // Fecha o menu de mais opções
                 var menu = document.getElementById('usrMaisOpcMenu');
                 if (menu) menu.style.display = 'none';
 
@@ -8438,13 +8259,11 @@
                 _ativarDragRds();
             };
 
-            /* ── fechar ── */
             window.usr_fecharRedefinirSenha = function () {
                 document.getElementById('overlayRedefinirSenha').style.display = 'none';
                 document.getElementById('modalRedefinirSenha').style.display   = 'none';
             };
 
-            /* ── validação força da senha ── */
             window.rds_validarForca = function () {
                 var s    = document.getElementById('rds-nova-senha').value;
                 var dica = document.getElementById('rds-forca');
@@ -8469,7 +8288,6 @@
                 rds_validarConf();
             };
 
-            /* ── validação confirmação ── */
             window.rds_validarConf = function () {
                 var s1   = document.getElementById('rds-nova-senha').value;
                 var s2   = document.getElementById('rds-conf-senha').value;
@@ -8479,7 +8297,6 @@
                 else           { dica.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Senhas não conferem'; dica.style.color = '#ff6b6b'; }
             };
 
-            /* ── salvar (chama usuarios.php acao=redefinir_senha) ── */
             window.usr_salvarRedefinirSenha = async function () {
                 if (!window._usrSel?.id) {
                     Swal.fire({ icon: 'error', title: 'Erro', text: 'Usuário não identificado.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
@@ -8528,7 +8345,6 @@
                 Swal.fire({ icon: 'success', title: 'Senha redefinida!', text: 'A senha de ' + (window._usrSel.nome || 'usuário') + ' foi alterada com sucesso.', timer: 2200, showConfirmButton: false, scrollbarPadding: false });
             };
 
-            /* ── drag ── */
             function _ativarDragRds() {
                 var modal  = document.getElementById('modalRedefinirSenha');
                 var handle = document.getElementById('dragRedefinirSenha');
@@ -8550,7 +8366,6 @@
                 });
             }
 
-            /* Fechar ao clicar no overlay */
             document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('overlayRedefinirSenha')
                     .addEventListener('click', window.usr_fecharRedefinirSenha);
@@ -8559,28 +8374,22 @@
         })();
     </script>
 
-    <!-- ══ FLATPICKR: CALENDÁRIOS DAS ORIGENS ══ -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var fpCfg = { dateFormat: 'd/m/Y', allowInput: false, disableMobile: true };
 
-            // Cliente — Nascimento
             window._fpCliNasc = flatpickr('#cli-nascimento', Object.assign({}, fpCfg));
 
-            // Funcionário — Nascimento, Admissão, Demissão
             window._fpFuncNasc = flatpickr('#func-nascimento', Object.assign({}, fpCfg));
             window._fpFuncAdm  = flatpickr('#func-admissao',  Object.assign({}, fpCfg));
             window._fpFuncDem  = flatpickr('#func-demissao',  Object.assign({}, fpCfg));
         });
     </script>
 
-
-    <!-- ══ MÁSCARAS DE CAMPOS ══ -->
     <script>
     (function () {
         'use strict';
 
-        /* ── helpers ── */
         function onlyDigits(v) { return v.replace(/\D/g, ''); }
 
         function applyMask(id, fn) {
@@ -8591,15 +8400,12 @@
                 var old = el.value;
                 var masked = fn(old);
                 el.value = masked;
-                // mantém cursor razoável
                 var diff = masked.length - old.length;
                 el.setSelectionRange(pos + diff, pos + diff);
             });
-            // aplica ao carregar se já tiver valor
             if (el.value) el.value = fn(el.value);
         }
 
-        /* ── máscaras ── */
         function maskCPF(v) {
             v = onlyDigits(v).slice(0, 11);
             if (v.length <= 3)  return v;
@@ -8623,7 +8429,6 @@
         }
 
         function maskTel(v) {
-            // suporta fixo (10) e celular (11 dígitos)
             v = onlyDigits(v).slice(0, 11);
             if (v.length === 0) return '';
             if (v.length <= 2)  return '(' + v;
@@ -8639,7 +8444,6 @@
         }
 
         function maskRG(v) {
-            // Formata no padrão XX.XXX.XXX-D (SP); aceita letras finais como X
             var d = v.replace(/[^0-9Xx]/gi, '').slice(0, 9);
             if (d.length <= 2) return d;
             if (d.length <= 5) return d.slice(0,2) + '.' + d.slice(2);
@@ -8663,7 +8467,6 @@
             return v.replace(/[^a-zA-ZÀ-ÿ\s'-]/g,'');
         }
 
-        /* ── bloqueia digitação de não-numérico (para campos numeric) ── */
         function numericOnly(id) {
             var el = document.getElementById(id);
             if (!el) return;
@@ -8674,10 +8477,8 @@
             });
         }
 
-        /* ── aplicações ── */
         document.addEventListener('DOMContentLoaded', function () {
 
-            // ── Clientes ──
             applyMask('cli-doc',      maskCPFouCNPJ);
             applyMask('cli-rg',       maskRG);
             applyMask('cli-tel',      maskTel);
@@ -8687,7 +8488,6 @@
             applyMask('cli-uf',       maskUF);
             numericOnly('cli-num');
 
-            // ── Funcionários ──
             applyMask('func-cpf',        maskCPF);
             applyMask('func-rg',         maskRG);
             applyMask('func-tel',        maskTel);
@@ -8700,8 +8500,7 @@
             numericOnly('func-ctps');
             numericOnly('func-ctps-serie');
 
-            // ── Fornecedores ──
-            applyMask('forn-doc',      maskCNPJ);   // fornecedor = sempre CNPJ
+            applyMask('forn-doc',      maskCNPJ);
             applyMask('forn-tel',      maskTel);
             applyMask('forn-cel',      maskTel);
             applyMask('forn-whatsapp', maskTel);
@@ -8711,7 +8510,6 @@
             numericOnly('forn-ie');
             numericOnly('forn-im');
 
-            // ── Busca Origem ──
             applyMask('bo-f-doc', maskCPFouCNPJ);
             applyMask('bo-f-tel', maskTel);
         });

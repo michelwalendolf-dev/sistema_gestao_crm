@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-//  IluminusTech — debug_login.php v2
-//  SOMENTE PARA DIAGNÓSTICO — remova após resolver
-// ============================================================
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -10,18 +6,14 @@ header('Content-Type: text/plain; charset=utf-8');
 
 $erros = [];
 
-// ── 1. Verifica allow_url_fopen ──────────────────────────────
 $allowFopen = ini_get('allow_url_fopen');
 $erros[] = "allow_url_fopen: " . ($allowFopen ? 'ON' : 'OFF (PROBLEMA!)');
 
-// ── 2. Verifica cURL ─────────────────────────────────────────
 $erros[] = "cURL disponível: " . (function_exists('curl_init') ? 'SIM' : 'NÃO');
 
-// ── 3. Carrega config ────────────────────────────────────────
 require_once __DIR__ . '/config.php';
 $erros[] = "SUPABASE_URL: " . SUPABASE_URL;
 
-// ── 4. Faz requisição manual ao Supabase ─────────────────────
 $url = rtrim(SUPABASE_URL, '/') . '/rest/v1/usuarios?select=id,login&limit=1';
 $key = SUPABASE_SERVICE_KEY;
 

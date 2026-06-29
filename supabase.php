@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-//  IluminusTech — Cliente Supabase (PostgREST + RPC)
-//  Usa file_get_contents (sem dependência de cURL)
-// ============================================================
 
 require_once __DIR__ . '/config.php';
 

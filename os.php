@@ -31,13 +31,9 @@ $acao = trim($_POST['acao'] ?? '');
 $db   = new Supabase();
 $user = sessionUser();
 
-// ════════════════════════════════════════════════════════════
-//  LISTAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'listar') {
 
     try {
-        // Filtros opcionais
         $filtros = ['order' => 'created_at.desc'];
 
         $status = trim($_POST['status'] ?? '');
@@ -54,7 +50,6 @@ if ($acao === 'listar') {
             'valor_total,data_prevista,total_horas,resp_execucao,observacoes,created_at,updated_at'
         );
 
-        // Filtro de busca em memória (nome do cliente ou número da OS)
         if ($busca !== '') {
             $buscaLower = mb_strtolower($busca);
             $rows = array_values(array_filter($rows, function ($r) use ($buscaLower) {
@@ -63,7 +58,6 @@ if ($acao === 'listar') {
             }));
         }
 
-        // Resumo dos itens/serviços de cada OS (para filtros no frontend)
         if (!empty($rows)) {
             $idsUnicos = array_unique(array_filter(array_column($rows, 'id')));
             $resumoPorOs = [];
@@ -90,7 +84,6 @@ if ($acao === 'listar') {
                         $resumoPorOs[$oid] = trim(($resumoPorOs[$oid] ?? '') . ' ' . $texto);
                     }
                 } catch (RuntimeException $e) {
-                    // não crítico para listagem
                 }
             }
 
@@ -109,9 +102,6 @@ if ($acao === 'listar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  BUSCAR (uma OS + seus itens)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'buscar') {
 
     $id = trim($_POST['id'] ?? '');
@@ -138,12 +128,8 @@ if ($acao === 'buscar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  CRIAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'criar') {
 
-    // ── Campos obrigatórios ──────────────────────────────────
     $cliente    = trim($_POST['cliente']    ?? '');
     $telefone   = trim($_POST['telefone']   ?? '');
     $equipamento = trim($_POST['equipamento'] ?? '');
@@ -154,7 +140,6 @@ if ($acao === 'criar') {
         exit;
     }
 
-    // ── Campos opcionais ─────────────────────────────────────
     $tecnico      = trim($_POST['tecnico']      ?? $user['nome']);
     $status       = trim($_POST['status']       ?? 'Aberta');
     $observacoes  = trim($_POST['observacoes']  ?? '');
@@ -172,14 +157,11 @@ if ($acao === 'criar') {
     $resp_execucao = trim($_POST['resp_execucao']  ?? '');
     $cod_unitario  = trim($_POST['cod_unitario']   ?? '');
 
-    // ── Número sequencial da OS ──────────────────────────────
-    // Busca o maior numero_os já cadastrado (padrão: inteiro puro)
     try {
         $ultimaOS = $db->select('ordens_servico', ['order' => 'numero_os_seq.desc', 'limit' => '1'], 'numero_os_seq');
         if (!empty($ultimaOS) && isset($ultimaOS[0]['numero_os_seq'])) {
             $proximoNum = (int)$ultimaOS[0]['numero_os_seq'] + 1;
         } else {
-            // fallback: conta registros existentes
             $todos = $db->select('ordens_servico', [], 'id');
             $proximoNum = count($todos) + 1;
         }
@@ -219,7 +201,6 @@ if ($acao === 'criar') {
         $inserted = $db->insert('ordens_servico', $osData);
         $osId = $inserted[0]['id'] ?? null;
 
-        // ── Itens da OS (enviados como JSON no campo "itens") ─
         $itensJson = $_POST['itens'] ?? '[]';
         $itens = json_decode($itensJson, true) ?: [];
 
@@ -252,7 +233,6 @@ if ($acao === 'criar') {
             ]);
         }
 
-        // ── Log ───────────────────────────────────────────────
         registrarLog($db, $user['id'], 'OS criada', "OS $numero_os criada para o cliente $cliente.");
 
         echo json_encode(['sucesso' => true, 'id' => $osId, 'numero_os' => $numero_os]);
@@ -264,9 +244,6 @@ if ($acao === 'criar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  ATUALIZAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'atualizar') {
 
     $id = trim($_POST['id'] ?? '');
@@ -275,7 +252,6 @@ if ($acao === 'atualizar') {
         exit;
     }
 
-    // Busca a OS para verificar existência
     try {
         $exists = $db->select('ordens_servico', ['id' => "eq.$id"], 'id,numero_os,status');
     } catch (RuntimeException $e) {
@@ -288,7 +264,6 @@ if ($acao === 'atualizar') {
         exit;
     }
 
-    // Monta apenas os campos enviados
     $camposPermitidos = [
         'cliente', 'telefone', 'email_cliente', 'cpf_cnpj', 'endereco',
         'equipamento', 'marca', 'modelo', 'numero_serie', 'senha_equipamento',
@@ -300,13 +275,10 @@ if ($acao === 'atualizar') {
     foreach ($camposPermitidos as $campo) {
         if (isset($_POST[$campo])) {
             $val = trim($_POST[$campo]);
-            // Converte numérico
             $data[$campo] = in_array($campo, ['valor_total']) ? (float) $val : $val;
         }
     }
 
-    // Lê o JSON de itens ANTES do check empty($data),
-    // pois uma chamada pode enviar apenas os itens (sem outros campos).
     $itensJson = $_POST['itens'] ?? null;
 
     if (empty($data) && $itensJson === null) {
@@ -321,15 +293,12 @@ if ($acao === 'atualizar') {
             $db->update('ordens_servico', $data, ['id' => "eq.$id"]);
         }
 
-        // ── Atualiza itens (substitui todos, com segurança) ───
         if ($itensJson !== null) {
             $itens = json_decode($itensJson, true) ?: [];
 
-            // Guarda IDs antigos antes de inserir os novos
             $itensAntigosOS = $db->select('os_itens', ['os_id' => "eq.$id"], 'id');
             $idsAntigosOS = array_column($itensAntigosOS, 'id');
 
-            // Insere os novos primeiro
             foreach ($itens as $item) {
                 $db->insert('os_itens', [
                     'os_id'             => $id,
@@ -359,7 +328,6 @@ if ($acao === 'atualizar') {
                 ]);
             }
 
-            // Só remove os antigos depois que os novos foram gravados com sucesso
             if (!empty($idsAntigosOS)) {
                 foreach (array_chunk($idsAntigosOS, 30) as $chunk) {
                     $db->delete('os_itens', ['id' => 'in.(' . implode(',', $chunk) . ')']);
@@ -379,9 +347,6 @@ if ($acao === 'atualizar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  EXCLUIR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'excluir') {
 
     $id = trim($_POST['id'] ?? '');
@@ -390,7 +355,6 @@ if ($acao === 'excluir') {
         exit;
     }
 
-    // Apenas admins podem excluir
     if ($user['grupo'] !== 'Admin') {
         echo json_encode(['sucesso' => false, 'mensagem' => 'Sem permissão para excluir OS.']);
         exit;
@@ -418,9 +382,6 @@ if ($acao === 'excluir') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  ALTERAR STATUS (atalho rápido)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'alterar_status') {
 
     $id     = trim($_POST['id']     ?? '');
@@ -443,9 +404,6 @@ if ($acao === 'alterar_status') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  DASHBOARD — contadores por status
-// ════════════════════════════════════════════════════════════
 if ($acao === 'dashboard') {
 
     try {
@@ -483,10 +441,6 @@ if ($acao === 'dashboard') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  ATUALIZAR ITENS — substitui todos os itens de uma OS
-//  sem exigir campos da OS (cliente, equipamento, etc.)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'atualizar_itens') {
 
     $id = trim($_POST['id'] ?? '');
@@ -505,15 +459,9 @@ if ($acao === 'atualizar_itens') {
         $itensJson = $_POST['itens'] ?? '[]';
         $itens = json_decode($itensJson, true) ?: [];
 
-        // Guarda os IDs dos itens atuais (antes de inserir os novos),
-        // para poder removê-los só depois que os novos forem gravados.
         $itensAntigos = $db->select('os_itens', ['os_id' => "eq.$id"], 'id');
         $idsAntigos = array_column($itensAntigos, 'id');
 
-        // ── Insere os NOVOS itens primeiro. Só apaga os antigos depois
-        //    de confirmar que todos os novos foram inseridos com sucesso.
-        //    Isso evita perder dados caso algum insert falhe (ex: coluna
-        //    inexistente no Supabase / migração pendente).
         foreach ($itens as $item) {
             $db->insert('os_itens', [
                 'os_id'             => $id,
@@ -543,10 +491,6 @@ if ($acao === 'atualizar_itens') {
             ]);
         }
 
-        // Só agora remove os registros antigos (que ficaram "duplicados"
-        // com os recém-inseridos durante a janela acima).
-        // Para diferenciar antigo de novo, marcamos os IDs já existentes
-        // antes do insert e deletamos somente esses.
         if (!empty($idsAntigos)) {
             foreach (array_chunk($idsAntigos, 30) as $chunk) {
                 $db->delete('os_itens', ['id' => 'in.(' . implode(',', $chunk) . ')']);
@@ -565,9 +509,6 @@ if ($acao === 'atualizar_itens') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  PRÓXIMO NÚMERO DA OS — retorna o próximo número sequencial
-// ════════════════════════════════════════════════════════════
 if ($acao === 'proximo_numero') {
     try {
         $ultimaOS = $db->select('ordens_servico', ['order' => 'numero_os_seq.desc', 'limit' => '1'], 'numero_os_seq');
@@ -584,14 +525,8 @@ if ($acao === 'proximo_numero') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  Ação desconhecida
-// ════════════════════════════════════════════════════════════
 echo json_encode(['sucesso' => false, 'mensagem' => "Ação desconhecida: $acao"]);
 
-// ════════════════════════════════════════════════════════════
-//  Helper: registra log de auditoria
-// ════════════════════════════════════════════════════════════
 function registrarLog(Supabase $db, ?string $usuarioId, string $acao, string $descricao): void
 {
     try {

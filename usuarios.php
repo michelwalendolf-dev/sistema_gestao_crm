@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-//  IluminusTech — usuarios.php
-//  CRUD de usuários (tabela "usuarios")
-//  Apenas Admin pode criar / editar / excluir
-// ============================================================
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
@@ -23,12 +18,8 @@ $acao = trim($_POST['acao'] ?? '');
 $db   = new Supabase();
 $user = sessionUser();
 
-// ════════════════════════════════════════════════════════════
-//  LISTAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'listar') {
 
-    // Qualquer usuário logado pode ver a lista (ex: para escolher técnico na OS)
     try {
         $filtros = ['order' => 'nome.asc'];
 
@@ -52,9 +43,6 @@ if ($acao === 'listar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  BUSCAR (um usuário)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'buscar') {
 
     $id = trim($_POST['id'] ?? '');
@@ -78,9 +66,6 @@ if ($acao === 'buscar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  CRIAR  (somente Admin)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'criar') {
 
     if ($user['grupo'] !== 'Admin') {
@@ -105,7 +90,6 @@ if ($acao === 'criar') {
         exit;
     }
 
-    // Regra de força de senha
     $regexForca = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%&*]).{8,}$/';
     if (!preg_match($regexForca, $senha)) {
         echo json_encode([
@@ -115,7 +99,6 @@ if ($acao === 'criar') {
         exit;
     }
 
-    // Verifica se login ou e-mail já existem
     try {
         $loginExiste = $db->select('usuarios', ['login' => "eq.$login"], 'id');
         if (!empty($loginExiste)) {
@@ -155,9 +138,6 @@ if ($acao === 'criar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  ATUALIZAR  (Admin pode editar qualquer um; usuário edita si próprio)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'atualizar') {
 
     $id = trim($_POST['id'] ?? '');
@@ -166,7 +146,6 @@ if ($acao === 'atualizar') {
         exit;
     }
 
-    // Só Admin pode editar outros usuários
     if ($user['grupo'] !== 'Admin' && $user['id'] !== $id) {
         echo json_encode(['sucesso' => false, 'mensagem' => 'Sem permissão.']);
         exit;
@@ -188,7 +167,6 @@ if ($acao === 'atualizar') {
         }
     }
 
-    // Apenas Admin pode mudar grupo e status
     if ($user['grupo'] === 'Admin') {
         foreach (['grupo', 'status'] as $campo) {
             if (isset($_POST[$campo])) {
@@ -197,7 +175,6 @@ if ($acao === 'atualizar') {
         }
     }
 
-    // Troca de senha (opcional)
     $novaSenha = trim($_POST['nova_senha'] ?? '');
     if ($novaSenha !== '') {
         $regexForca = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%&*]).{8,}$/';
@@ -230,9 +207,6 @@ if ($acao === 'atualizar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  REDEFINIR SENHA  (somente Admin)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'redefinir_senha') {
 
     if ($user['grupo'] !== 'Admin') {
@@ -255,7 +229,6 @@ if ($acao === 'redefinir_senha') {
         exit;
     }
 
-    // Verifica se o usuário existe
     try {
         $rows = $db->select('usuarios', ['id' => "eq.$id"], 'id,nome,login');
         if (empty($rows)) {
@@ -284,9 +257,6 @@ if ($acao === 'redefinir_senha') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  EXCLUIR / INATIVAR  (somente Admin)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'excluir') {
 
     if ($user['grupo'] !== 'Admin') {
@@ -300,13 +270,11 @@ if ($acao === 'excluir') {
         exit;
     }
 
-    // Impede excluir a si mesmo
     if ($id === $user['id']) {
         echo json_encode(['sucesso' => false, 'mensagem' => 'Você não pode excluir sua própria conta.']);
         exit;
     }
 
-    // Soft delete: muda status para Inativo
     try {
         $db->update('usuarios', ['status' => 'Inativo', 'updated_at' => date('c')], ['id' => "eq.$id"]);
         registrarLog($db, $user['id'], 'Usuário inativado', "Usuário ID $id inativado por {$user['nome']}.");
@@ -319,9 +287,6 @@ if ($acao === 'excluir') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  PERFIL DO USUÁRIO LOGADO
-// ════════════════════════════════════════════════════════════
 if ($acao === 'perfil') {
 
     try {
@@ -339,14 +304,8 @@ if ($acao === 'perfil') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  Ação desconhecida
-// ════════════════════════════════════════════════════════════
 echo json_encode(['sucesso' => false, 'mensagem' => "Ação desconhecida: $acao"]);
 
-// ════════════════════════════════════════════════════════════
-//  Helper: log de auditoria
-// ════════════════════════════════════════════════════════════
 function registrarLog(Supabase $db, ?string $usuarioId, string $acao, string $descricao): void
 {
     try {

@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-//  IluminusTech — sistema.php
-//  Gerencia ações da área logada (ex: logout)
-// ============================================================
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/session_check.php';
@@ -16,7 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $acao = $_POST['acao'] ?? 'logout_confirm';
 
-// ── Confirmação de logout (exibe SweetAlert no frontend) ─────
 if ($acao === 'logout_confirm') {
     requireSession(true);
 
@@ -28,11 +23,9 @@ if ($acao === 'logout_confirm') {
     exit;
 }
 
-// ── Logout efetivo ────────────────────────────────────────────
 if ($acao === 'logout') {
     requireSession(true);
 
-    // Destrói a sessão completamente
     $_SESSION = [];
 
     if (ini_get('session.use_cookies')) {

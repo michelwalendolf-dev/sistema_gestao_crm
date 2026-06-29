@@ -11,16 +11,12 @@ header('Content-Type: application/json');
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/supabase.php';
 
-// ── 1. Validar e-mail ────────────────────────────────────────
-
 $email = trim($_POST['email'] ?? '');
 
 if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['sucesso' => false, 'mensagem' => 'Digite um e-mail válido.']);
     exit;
 }
-
-// ── 2. Verificar se o e-mail existe na base ──────────────────
 
 try {
     $db = new Supabase(true);
@@ -32,7 +28,6 @@ try {
 
     if (empty($usuarios)) {
         error_log("[enviar_codigo] Email não encontrado ou usuário inativo: $email");
-        // Não revela que o e-mail não existe (segurança)
         echo json_encode(['sucesso' => false, 'mensagem' => 'Se este e-mail está registrado, você receberá um código de verificação.']);
         exit;
     }
@@ -43,14 +38,10 @@ try {
     exit;
 }
 
-// ── 3. Gerar e armazenar código na sessão ───────────────────
-
 $codigo = str_pad((string) random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
 
 $_SESSION['codigo_recuperacao'] = $codigo;
 $_SESSION['email_recuperacao']  = $email;
-
-// ── 4. Montar e-mail HTML ────────────────────────────────────
 
 $logoUrl = "https://i.ibb.co/gbbxcjjP/logo.png";
 
@@ -165,8 +156,6 @@ $htmlEmail = "
 </body>
 </html>
 ";
-
-// ── 5. Enviar via Brevo ──────────────────────────────────────
 
 $payload = json_encode([
     'sender'      => ['name' => BREVO_SENDER_NAME, 'email' => BREVO_SENDER_EMAIL],

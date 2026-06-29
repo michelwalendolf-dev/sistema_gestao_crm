@@ -1,12 +1,8 @@
 <?php
-// ============================================================
-//  IluminusTech — login.php
-//  Autentica o usuário contra a tabela "usuarios" no Supabase
-// ============================================================
 
-ini_set('display_errors', 0);   // impede HTML de erro na resposta JSON
+ini_set('display_errors', 0);
 error_reporting(E_ALL);
-ini_set('log_errors', 1);       // loga erros no error_log do servidor
+ini_set('log_errors', 1);
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
@@ -22,8 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $usuario = trim($_POST['usuario'] ?? '');
 $senha   = trim($_POST['senha']   ?? '');
 $captcha = $_POST['h-captcha-response'] ?? '';
-
-// ── 1. Validação dos campos ──────────────────────────────────
 
 if ($usuario === '' && $senha === '') {
     echo json_encode([
@@ -126,8 +120,6 @@ try {
     exit;
 }
 
-// ── 4. Valida usuário e senha ────────────────────────────────
-
 if (empty($rows)) {
     echo json_encode([
         'sucesso'  => false,
@@ -139,7 +131,6 @@ if (empty($rows)) {
 
 $user = $rows[0];
 
-// password_verify é compatível com hashes bcrypt ($2a$) gerados pelo pgcrypto
 if (!password_verify($senha, $user['senha_hash'] ?? '')) {
     echo json_encode([
         'sucesso'  => false,
@@ -148,8 +139,6 @@ if (!password_verify($senha, $user['senha_hash'] ?? '')) {
     ]);
     exit;
 }
-
-// ── 5. Abre sessão ────────────────────────────────────────────
 
 $_SESSION['usuario_id']    = $user['id'];
 $_SESSION['usuario_nome']  = $user['nome'];

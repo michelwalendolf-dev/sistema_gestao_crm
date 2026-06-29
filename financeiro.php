@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-//  IluminusTech — financeiro.php
-//  CRUD de lançamentos financeiros (tabela "financeiro")
-//  Vincula entradas/saídas a OSs quando necessário
-// ============================================================
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/supabase.php';
@@ -21,15 +16,12 @@ $acao = trim($_POST['acao'] ?? '');
 $db   = new Supabase();
 $user = sessionUser();
 
-// ════════════════════════════════════════════════════════════
-//  LISTAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'listar') {
 
     try {
         $filtros = ['order' => 'data_lancamento.desc'];
 
-        $tipo = trim($_POST['tipo'] ?? '');                // 'Receita' | 'Despesa'
+        $tipo = trim($_POST['tipo'] ?? '');
         if ($tipo !== '') {
             $filtros['tipo'] = "eq.$tipo";
         }
@@ -41,8 +33,6 @@ if ($acao === 'listar') {
             $filtros['data_lancamento'] = "gte.$dataInicio";
         }
         if ($dataFim !== '') {
-            // Sobrescreve — PostgREST aceita múltiplos params com mesmo nome somente via array,
-            // então adicionamos o campo de outra forma no query string manual
             unset($filtros['data_lancamento']);
         }
 
@@ -52,7 +42,6 @@ if ($acao === 'listar') {
             'id,descricao,tipo,categoria,valor,data_lancamento,forma_pagamento,os_id,os_numero,status_pagamento,observacoes,criado_por,created_at'
         );
 
-        // Filtro de data_fim (intervalo) — feito em memória quando ambas estiverem presentes
         if ($dataInicio !== '' || $dataFim !== '') {
             $rows = array_values(array_filter($rows, function ($r) use ($dataInicio, $dataFim) {
                 $d = $r['data_lancamento'] ?? '';
@@ -62,7 +51,6 @@ if ($acao === 'listar') {
             }));
         }
 
-        // Totais
         $totalReceita = 0;
         $totalDespesa = 0;
         foreach ($rows as $r) {
@@ -85,13 +73,10 @@ if ($acao === 'listar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  CRIAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'criar') {
 
     $descricao      = trim($_POST['descricao']       ?? '');
-    $tipo           = trim($_POST['tipo']            ?? '');   // Receita | Despesa
+    $tipo           = trim($_POST['tipo']            ?? '');
     $categoria      = trim($_POST['categoria']       ?? '');
     $valor          = (float) ($_POST['valor']       ?? 0);
     $dataLancamento = trim($_POST['data_lancamento'] ?? date('Y-m-d'));
@@ -141,9 +126,6 @@ if ($acao === 'criar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  ATUALIZAR
-// ════════════════════════════════════════════════════════════
 if ($acao === 'atualizar') {
 
     $id = trim($_POST['id'] ?? '');
@@ -183,9 +165,6 @@ if ($acao === 'atualizar') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  EXCLUIR  (somente Admin)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'excluir') {
 
     if ($user['grupo'] !== 'Admin') {
@@ -211,12 +190,9 @@ if ($acao === 'excluir') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  RESUMO / DASHBOARD
-// ════════════════════════════════════════════════════════════
 if ($acao === 'resumo') {
 
-    $mes = trim($_POST['mes'] ?? date('Y-m'));  // ex: "2026-05"
+    $mes = trim($_POST['mes'] ?? date('Y-m'));
 
     try {
         $rows = $db->select(
@@ -225,7 +201,6 @@ if ($acao === 'resumo') {
             'id,tipo,valor,categoria,data_lancamento'
         );
 
-        // Filtra até o último dia do mês
         $ultimoDia = date('Y-m-t', strtotime("$mes-01"));
         $rows = array_filter($rows, fn($r) => ($r['data_lancamento'] ?? '') <= $ultimoDia);
         $rows = array_values($rows);
@@ -262,9 +237,6 @@ if ($acao === 'resumo') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  REGISTRAR RECEITA DE OS (chamado internamente por os.php)
-// ════════════════════════════════════════════════════════════
 if ($acao === 'registrar_receita_os') {
 
     $osId     = trim($_POST['os_id']     ?? '');
@@ -301,14 +273,8 @@ if ($acao === 'registrar_receita_os') {
     exit;
 }
 
-// ════════════════════════════════════════════════════════════
-//  Ação desconhecida
-// ════════════════════════════════════════════════════════════
 echo json_encode(['sucesso' => false, 'mensagem' => "Ação desconhecida: $acao"]);
 
-// ════════════════════════════════════════════════════════════
-//  Helper
-// ════════════════════════════════════════════════════════════
 function registrarLog(Supabase $db, ?string $usuarioId, string $acao, string $descricao): void
 {
     try {
