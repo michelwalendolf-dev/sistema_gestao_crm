@@ -6813,9 +6813,9 @@
                 modal.style.left = '50%';
                 modal.style.top = '80px';
                 modal.style.transform = 'translateX(-50%)';
-                modal.style.zIndex = '10500';
+                modal.style.zIndex = '11000';
                 overlay.style.display = 'block';
-                overlay.style.zIndex = '10400';
+                overlay.style.zIndex = '10950';
                 ativarDragBo();
             };
 
@@ -8598,7 +8598,7 @@
                 var u = _usrSel;
                 var t = document.getElementById('usr-form-titulo'); if (t) t.textContent = 'Editar — ' + u.nome;
                 _g('usr-f-nome').value = u.nome;
-                _g('usr-f-funcionario').value = u.funcionario;
+                _g('usr-f-funcionario').value = u.funcionario || '';
                 _g('usr-f-setor').value = u.setor;
                 _g('usr-f-grupo').value = u.grupo;
                 _g('usr-f-email').value = u.email;
@@ -8611,6 +8611,20 @@
                 usr_habilitar();
                 var elLogin = _g('usr-f-login');
                 if (elLogin) { elLogin.disabled = true; elLogin.title = 'O login não pode ser alterado.'; }
+
+                // Sincroniza o ID do funcionário vinculado (necessário para o Salvar
+                // saber qual vínculo manter) e busca o nome dele para exibir no campo,
+                // já que a listagem de usuários só traz o funcionario_id, não o nome.
+                window._origemSelecionadaId = window._origemSelecionadaId || {};
+                window._origemSelecionadaId['usr-f-funcionario'] = u.funcionarioId || '';
+                if (u.funcionarioId && typeof window.apiPost === 'function') {
+                    window.apiPost('funcionarios.php', { acao: 'buscar', id: u.funcionarioId }).then(function (data) {
+                        var nomeFunc = data && data.sucesso && data.funcionario ? (data.funcionario.nome || '') : '';
+                        var elFunc = _g('usr-f-funcionario');
+                        // só preenche se o usuário selecionado/modo não mudou enquanto a busca corria
+                        if (elFunc && _usrSel === u) elFunc.value = nomeFunc;
+                    }).catch(function (e) { console.error('[usr_abrirEdicao] busca funcionário', e); });
+                }
             };
 
             window.usr_cancelar = function () {
@@ -8658,10 +8672,14 @@
                     var el = _g(id); if (!el) return;
                     if (el.type === 'checkbox') el.checked = false; else el.value = '';
                 });
+                if (window._origemSelecionadaId) window._origemSelecionadaId['usr-f-funcionario'] = '';
             }
 
             window.usr_limparCampo = function (id) {
                 var el = _g(id); if (el && !el.disabled) el.value = '';
+                if (id === 'usr-f-funcionario' && window._origemSelecionadaId) {
+                    window._origemSelecionadaId['usr-f-funcionario'] = '';
+                }
             };
 
             window.usr_toggleGrupo = function (e) {
@@ -8717,11 +8735,46 @@
                 _g('usr-func-mais') && (_g('usr-func-mais').style.display = 'none');
             };
 
+            function usr_abrirModalFuncionarioNoTopo() {
+                if (typeof abrirModal !== 'function') return;
+                abrirModal('modalFuncionarios', 'overlayFuncionarios');
+                var modal = _g('modalFuncionarios');
+                var overlay = _g('overlayFuncionarios');
+                // O modal de Usuários abre com z-index 10900/10800 (ver #overlayUsuarios).
+                // Sem isto, o cadastro de Funcionário herda o z-index padrão (mais baixo)
+                // e some atrás do modal de Usuários.
+                if (modal) modal.style.zIndex = '11100';
+                if (overlay) overlay.style.zIndex = '11050';
+            }
+
             window.usr_abrirFuncionario = function () {
                 var nome = _g('usr-f-funcionario')?.value;
-                if (!nome) { alert('Nenhum funcionário vinculado.'); return; }
-                if (typeof abrirModal === 'function') abrirModal('modalFuncionarios', 'overlayFuncionarios');
+                if (!nome) { Swal.fire({ icon: "warning", title: "Atenção", text: "Nenhum funcionário vinculado.", confirmButtonColor: "#2d7dff", scrollbarPadding: false }); return; }
                 _g('usr-func-mais') && (_g('usr-func-mais').style.display = 'none');
+
+                var id = (window._origemSelecionadaId && window._origemSelecionadaId['usr-f-funcionario']) || '';
+
+                if (id && typeof carregarOrigemNoForm === 'function') {
+                    usr_abrirModalFuncionarioNoTopo();
+                    carregarOrigemNoForm('func', id);
+                    return;
+                }
+
+                // ID ainda não resolvido (ex.: usuário aberto direto da lista, sem
+                // passar pela busca) — tenta encontrar o funcionário pelo nome.
+                if (typeof window.resolverIdOrigemPorNome === 'function') {
+                    window.resolverIdOrigemPorNome('func', 'usr-f-funcionario', nome).then(function (idResolvido) {
+                        usr_abrirModalFuncionarioNoTopo();
+                        if (idResolvido && typeof carregarOrigemNoForm === 'function') {
+                            carregarOrigemNoForm('func', idResolvido);
+                        } else {
+                            if (typeof limparModal === 'function') limparModal('modalFuncionarios');
+                        }
+                    });
+                    return;
+                }
+
+                usr_abrirModalFuncionarioNoTopo();
             };
 
             window.usr_toggleSetor = function (e) {
@@ -9239,6 +9292,19 @@
         })();
     </script>
 
+    <style>
+        .hac-lista-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .hac-lista-scroll::-webkit-scrollbar-track {
+            background: #111111;
+        }
+        .hac-lista-scroll::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 3px;
+        }
+    </style>
+
     <div class="overlay-modal" id="overlayHistoricoAcesso" style="display:none;z-index:99990;"></div>
 
     <div id="modalHistoricoAcesso" style="
@@ -9276,7 +9342,7 @@
             </div>
         </div>
 
-        <div style="padding:10px 14px; overflow-y:auto; flex:1;">
+        <div class="hac-lista-scroll" style="padding:10px 14px; overflow-y:auto; flex:1; scrollbar-width:thin; scrollbar-color:#2a2a2a #111111;">
             <table style="width:100%; border-collapse:collapse; font-size:12px;">
                 <thead>
                     <tr style="text-align:left; color:#8a8a8a; border-bottom:1px solid #333333;">
@@ -9743,8 +9809,12 @@
                                         <input type="text" id="usr-f-funcionario" placeholder="Vínculo de funcionário"
                                             disabled>
                                         <div class="grupos">
-                                            <button class="btn-limpar" title="Limpar"
-                                                onclick="usr_limparCampo('usr-f-funcionario')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                            <button class="btn-limpar" title="Desvincular funcionário"
+                                                onclick="usr_limparCampo('usr-f-funcionario'); usr_limparCampo('usr-f-setor')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                            <div class="usr-mais-wrap" style="position:relative;">
+                                                <button class="btn-mais" title="Abrir cadastro do funcionário" id="usr-func-mais-btn"
+                                                    onclick="usr_abrirFuncionario()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
+                                            </div>
                                             <button class="btn-busca" title="Buscar funcionário"
                                                 onclick="usr_buscarFuncionario()">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -9754,15 +9824,6 @@
                                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                                                 </svg>
                                             </button>
-                                            <div class="usr-mais-wrap" style="position:relative;">
-                                                <button class="btn-mais" title="Mais opções" id="usr-func-mais-btn"
-                                                    onclick="usr_toggleMais('usr-func-mais', event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
-                                                <div class="usr-mais-menu" id="usr-func-mais" style="display:none;">
-                                                    <div onclick="usr_buscarFuncionario()">Buscar funcionário</div>
-                                                    <div onclick="usr_limparCampo('usr-f-funcionario'); usr_limparCampo('usr-f-setor')">Desvincular</div>
-                                                    <div onclick="usr_abrirFuncionario()">Abrir cadastro</div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

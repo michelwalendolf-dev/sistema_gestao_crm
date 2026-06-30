@@ -789,8 +789,15 @@
             if (senha) params.senha = senha;
         }
 
-        const funcId = window._usrSel?.funcionarioId || '';
-        if (funcId) params.funcionario_id = funcId;
+        // O ID do funcionário vinculado é mantido em window._origemSelecionadaId
+        // pelos botões de busca/limpar do campo (ver sistema.html). É essa a fonte
+        // de verdade — window._usrSel.funcionarioId só reflete o que veio do
+        // carregamento da lista e não muda quando o usuário troca o vínculo aqui.
+        const elFunc = document.getElementById('usr-f-funcionario');
+        const funcNomeAtual = elFunc?.value.trim() || '';
+        let funcId = (window._origemSelecionadaId && window._origemSelecionadaId['usr-f-funcionario']) || '';
+        if (!funcNomeAtual) funcId = ''; // campo vazio (Desvincular) -> remove o vínculo
+        params.funcionario_id = funcId;
 
         let res = { sucesso: false };
         try { res = await postUrl('usuarios.php', params); } catch (e) { }
