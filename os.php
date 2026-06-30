@@ -12,7 +12,20 @@
 //    ADD COLUMN IF NOT EXISTS historico         JSONB DEFAULT '[]'::jsonb,
 //    ADD COLUMN IF NOT EXISTS pendencias        JSONB DEFAULT '[]'::jsonb,
 //    ADD COLUMN IF NOT EXISTS lancamentos_horas JSONB DEFAULT '[]'::jsonb,
-//    ADD COLUMN IF NOT EXISTS timeline_eventos  JSONB DEFAULT '[]'::jsonb;
+//    ADD COLUMN IF NOT EXISTS timeline_eventos  JSONB DEFAULT '[]'::jsonb,
+//    ADD COLUMN IF NOT EXISTS roteiro           JSONB DEFAULT '{}'::jsonb,
+//    ADD COLUMN IF NOT EXISTS documentacao      JSONB DEFAULT '[]'::jsonb;
+//
+//  Se a coluna "roteiro" já existir como TEXT (versão anterior), migrar com:
+//    ALTER TABLE os_itens
+//      ALTER COLUMN roteiro TYPE JSONB
+//      USING (
+//        CASE
+//          WHEN roteiro IS NULL OR roteiro = '' THEN '{}'::jsonb
+//          ELSE jsonb_build_object('inspecao', roteiro)
+//        END
+//      ),
+//      ALTER COLUMN roteiro SET DEFAULT '{}'::jsonb;
 // ============================================================
 
 require_once __DIR__ . '/config.php';
@@ -20,7 +33,7 @@ require_once __DIR__ . '/supabase.php';
 require_once __DIR__ . '/session_check.php';
 
 header('Content-Type: application/json');
-requireSession(true);
+requireSession();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['sucesso' => false, 'mensagem' => 'Requisição inválida.']);
@@ -206,30 +219,34 @@ if ($acao === 'criar') {
 
         foreach ($itens as $item) {
             $db->insert('os_itens', [
-                'os_id'             => $osId,
-                'cod_item'          => trim($item['cod_item']       ?? ''),
-                'status'            => trim($item['status']          ?? 'Aberto'),
-                'tipo'              => trim($item['tipo']           ?? ''),
-                'descricao'         => trim($item['descricao']      ?? ''),
-                'maquina'           => trim($item['maquina']        ?? ''),
-                'dt_criacao'        => trim($item['dt_criacao']     ?? ''),
-                'dt_solucao'        => trim($item['dt_solucao']     ?? ''),
-                'tecnico'           => trim($item['tecnico']        ?? ''),
-                'cod_barras'        => trim($item['cod_barras']     ?? ''),
-                'produto'           => trim($item['produto']        ?? ''),
-                'resp_execucao'     => trim($item['resp_execucao']  ?? ''),
-                'cadastrado_por'    => trim($item['cadastrado_por'] ?? ''),
-                'hrs_estimadas'     => (float)($item['hrs_estimadas'] ?? 0),
-                'hrs_realizadas'    => (float)($item['hrs_realizadas'] ?? 0),
-                'vlr_servico'       => (float)($item['vlr_servico']   ?? 0),
-                'vlr_total'         => (float)($item['vlr_total']     ?? 0),
-                'quantidade'        => (int)  ($item['quantidade']    ?? 1),
-                'valor_unit'        => (float)($item['valor_unit']    ?? 0),
-                'valor_total'       => (float)($item['vlr_total']     ?? 0),
-                'historico'         => json_encode($item['historico']         ?? [], JSON_UNESCAPED_UNICODE),
-                'pendencias'        => json_encode($item['pendencias']        ?? [], JSON_UNESCAPED_UNICODE),
-                'lancamentos_horas' => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
-                'timeline_eventos'  => json_encode($item['timelineEventos']   ?? [], JSON_UNESCAPED_UNICODE),
+                'os_id'                => $osId,
+                'cod_item'             => trim($item['cod_item']               ?? ''),
+                'status'               => trim($item['status']                 ?? 'Aberto'),
+                'tipo'                 => trim($item['tipo']                  ?? ''),
+                'descricao'            => trim($item['descricao']             ?? ''),
+                'descricao_detalhada'  => trim($item['descricao_detalhada']   ?? ''),
+                'observacao'           => trim($item['observacao']            ?? ''),
+                'maquina'              => trim($item['maquina']               ?? ''),
+                'dt_criacao'           => trim($item['dt_criacao']            ?? ''),
+                'dt_solucao'           => trim($item['dt_solucao']            ?? ''),
+                'tecnico'              => trim($item['tecnico']               ?? ''),
+                'cod_barras'           => trim($item['cod_barras']            ?? ''),
+                'produto'              => trim($item['produto']               ?? ''),
+                'resp_execucao'        => trim($item['resp_execucao']         ?? ''),
+                'cadastrado_por'       => trim($item['cadastrado_por']        ?? ''),
+                'hrs_estimadas'        => (float)($item['hrs_estimadas']      ?? 0),
+                'hrs_realizadas'       => (float)($item['hrs_realizadas']     ?? 0),
+                'vlr_servico'          => (float)($item['vlr_servico']        ?? 0),
+                'vlr_total'            => (float)($item['vlr_total']          ?? 0),
+                'quantidade'           => (int)  ($item['quantidade']         ?? 1),
+                'valor_unit'           => (float)($item['valor_unit']         ?? 0),
+                'valor_total'          => (float)($item['vlr_total']          ?? 0),
+                'historico'            => json_encode($item['historico']      ?? [], JSON_UNESCAPED_UNICODE),
+                'pendencias'           => json_encode($item['pendencias']     ?? [], JSON_UNESCAPED_UNICODE),
+                'lancamentos_horas'    => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
+                'timeline_eventos'     => json_encode($item['timelineEventos'] ?? [], JSON_UNESCAPED_UNICODE),
+                'roteiro'              => is_array($item['roteiro'] ?? null) ? $item['roteiro'] : [],
+                'documentacao'         => json_encode($item['documentacao']   ?? [], JSON_UNESCAPED_UNICODE),
             ]);
         }
 
@@ -301,30 +318,34 @@ if ($acao === 'atualizar') {
 
             foreach ($itens as $item) {
                 $db->insert('os_itens', [
-                    'os_id'             => $id,
-                    'cod_item'          => trim($item['cod_item']       ?? ''),
-                    'status'            => trim($item['status']          ?? 'Aberto'),
-                    'tipo'              => trim($item['tipo']           ?? ''),
-                    'descricao'         => trim($item['descricao']      ?? ''),
-                    'maquina'           => trim($item['maquina']        ?? ''),
-                    'dt_criacao'        => trim($item['dt_criacao']     ?? ''),
-                    'dt_solucao'        => trim($item['dt_solucao']     ?? ''),
-                    'tecnico'           => trim($item['tecnico']        ?? ''),
-                    'cod_barras'        => trim($item['cod_barras']     ?? ''),
-                    'produto'           => trim($item['produto']        ?? ''),
-                    'resp_execucao'     => trim($item['resp_execucao']  ?? ''),
-                    'cadastrado_por'    => trim($item['cadastrado_por'] ?? ''),
-                    'hrs_estimadas'     => (float)($item['hrs_estimadas'] ?? 0),
-                    'hrs_realizadas'    => (float)($item['hrs_realizadas'] ?? 0),
-                    'vlr_servico'       => (float)($item['vlr_servico']   ?? 0),
-                    'vlr_total'         => (float)($item['vlr_total']     ?? 0),
-                    'quantidade'        => (int)  ($item['quantidade']    ?? 1),
-                    'valor_unit'        => (float)($item['valor_unit']    ?? 0),
-                    'valor_total'       => (float)($item['vlr_total']     ?? 0),
-                    'historico'         => json_encode($item['historico']         ?? [], JSON_UNESCAPED_UNICODE),
-                    'pendencias'        => json_encode($item['pendencias']        ?? [], JSON_UNESCAPED_UNICODE),
-                    'lancamentos_horas' => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
-                    'timeline_eventos'  => json_encode($item['timelineEventos']   ?? [], JSON_UNESCAPED_UNICODE),
+                    'os_id'                => $id,
+                    'cod_item'             => trim($item['cod_item']               ?? ''),
+                    'status'               => trim($item['status']                 ?? 'Aberto'),
+                    'tipo'                 => trim($item['tipo']                  ?? ''),
+                    'descricao'            => trim($item['descricao']             ?? ''),
+                    'descricao_detalhada'  => trim($item['descricao_detalhada']   ?? ''),
+                    'observacao'           => trim($item['observacao']            ?? ''),
+                    'maquina'              => trim($item['maquina']               ?? ''),
+                    'dt_criacao'           => trim($item['dt_criacao']            ?? ''),
+                    'dt_solucao'           => trim($item['dt_solucao']            ?? ''),
+                    'tecnico'              => trim($item['tecnico']               ?? ''),
+                    'cod_barras'           => trim($item['cod_barras']            ?? ''),
+                    'produto'              => trim($item['produto']               ?? ''),
+                    'resp_execucao'        => trim($item['resp_execucao']         ?? ''),
+                    'cadastrado_por'       => trim($item['cadastrado_por']        ?? ''),
+                    'hrs_estimadas'        => (float)($item['hrs_estimadas']      ?? 0),
+                    'hrs_realizadas'       => (float)($item['hrs_realizadas']     ?? 0),
+                    'vlr_servico'          => (float)($item['vlr_servico']        ?? 0),
+                    'vlr_total'            => (float)($item['vlr_total']          ?? 0),
+                    'quantidade'           => (int)  ($item['quantidade']         ?? 1),
+                    'valor_unit'           => (float)($item['valor_unit']         ?? 0),
+                    'valor_total'          => (float)($item['vlr_total']          ?? 0),
+                    'historico'            => json_encode($item['historico']      ?? [], JSON_UNESCAPED_UNICODE),
+                    'pendencias'           => json_encode($item['pendencias']     ?? [], JSON_UNESCAPED_UNICODE),
+                    'lancamentos_horas'    => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
+                    'timeline_eventos'     => json_encode($item['timelineEventos'] ?? [], JSON_UNESCAPED_UNICODE),
+                    'roteiro'              => is_array($item['roteiro'] ?? null) ? $item['roteiro'] : [],
+                    'documentacao'         => json_encode($item['documentacao']   ?? [], JSON_UNESCAPED_UNICODE),
                 ]);
             }
 
@@ -464,30 +485,34 @@ if ($acao === 'atualizar_itens') {
 
         foreach ($itens as $item) {
             $db->insert('os_itens', [
-                'os_id'             => $id,
-                'cod_item'          => trim($item['cod_item']       ?? ''),
-                'status'            => trim($item['status']          ?? 'Aberto'),
-                'tipo'              => trim($item['tipo']           ?? ''),
-                'descricao'         => trim($item['descricao']      ?? ''),
-                'maquina'           => trim($item['maquina']        ?? ''),
-                'dt_criacao'        => trim($item['dt_criacao']     ?? ''),
-                'dt_solucao'        => trim($item['dt_solucao']     ?? ''),
-                'tecnico'           => trim($item['tecnico']        ?? ''),
-                'cod_barras'        => trim($item['cod_barras']     ?? ''),
-                'produto'           => trim($item['produto']        ?? ''),
-                'resp_execucao'     => trim($item['resp_execucao']  ?? ''),
-                'cadastrado_por'    => trim($item['cadastrado_por'] ?? ''),
-                'hrs_estimadas'     => (float)($item['hrs_estimadas'] ?? 0),
-                'hrs_realizadas'    => (float)($item['hrs_realizadas'] ?? 0),
-                'vlr_servico'       => (float)($item['vlr_servico']   ?? 0),
-                'vlr_total'         => (float)($item['vlr_total']     ?? 0),
-                'quantidade'        => (int)  ($item['quantidade']    ?? 1),
-                'valor_unit'        => (float)($item['valor_unit']    ?? 0),
-                'valor_total'       => (float)($item['vlr_total']     ?? 0),
-                'historico'         => json_encode($item['historico']         ?? [], JSON_UNESCAPED_UNICODE),
-                'pendencias'        => json_encode($item['pendencias']        ?? [], JSON_UNESCAPED_UNICODE),
-                'lancamentos_horas' => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
-                'timeline_eventos'  => json_encode($item['timelineEventos']   ?? [], JSON_UNESCAPED_UNICODE),
+                'os_id'                => $id,
+                'cod_item'             => trim($item['cod_item']               ?? ''),
+                'status'               => trim($item['status']                 ?? 'Aberto'),
+                'tipo'                 => trim($item['tipo']                  ?? ''),
+                'descricao'            => trim($item['descricao']             ?? ''),
+                'descricao_detalhada'  => trim($item['descricao_detalhada']   ?? ''),
+                'observacao'           => trim($item['observacao']            ?? ''),
+                'maquina'              => trim($item['maquina']               ?? ''),
+                'dt_criacao'           => trim($item['dt_criacao']            ?? ''),
+                'dt_solucao'           => trim($item['dt_solucao']            ?? ''),
+                'tecnico'              => trim($item['tecnico']               ?? ''),
+                'cod_barras'           => trim($item['cod_barras']            ?? ''),
+                'produto'              => trim($item['produto']               ?? ''),
+                'resp_execucao'        => trim($item['resp_execucao']         ?? ''),
+                'cadastrado_por'       => trim($item['cadastrado_por']        ?? ''),
+                'hrs_estimadas'        => (float)($item['hrs_estimadas']      ?? 0),
+                'hrs_realizadas'       => (float)($item['hrs_realizadas']     ?? 0),
+                'vlr_servico'          => (float)($item['vlr_servico']        ?? 0),
+                'vlr_total'            => (float)($item['vlr_total']          ?? 0),
+                'quantidade'           => (int)  ($item['quantidade']         ?? 1),
+                'valor_unit'           => (float)($item['valor_unit']         ?? 0),
+                'valor_total'          => (float)($item['vlr_total']          ?? 0),
+                'historico'            => json_encode($item['historico']      ?? [], JSON_UNESCAPED_UNICODE),
+                'pendencias'           => json_encode($item['pendencias']     ?? [], JSON_UNESCAPED_UNICODE),
+                'lancamentos_horas'    => json_encode($item['lancamentos_horas'] ?? [], JSON_UNESCAPED_UNICODE),
+                'timeline_eventos'     => json_encode($item['timelineEventos'] ?? [], JSON_UNESCAPED_UNICODE),
+                'roteiro'              => is_array($item['roteiro'] ?? null) ? $item['roteiro'] : [],
+                'documentacao'         => json_encode($item['documentacao']   ?? [], JSON_UNESCAPED_UNICODE),
             ]);
         }
 

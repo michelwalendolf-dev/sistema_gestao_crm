@@ -124,6 +124,7 @@
             return [];
         }
         return {
+            id: it.id || '',
             codItem: it.cod_item || '',
             status: it.status || 'Aberto',
             tipo: it.tipo || '—',
@@ -145,6 +146,8 @@
             historico: parseJsonArray(it.historico),
             pendencias: parseJsonArray(it.pendencias),
             lancamentosHoras: parseJsonArray(it.lancamentos_horas),
+            roteiro: it.roteiro || '',
+            documentacao: parseJsonArray(it.documentacao),
         };
     }
 
@@ -176,6 +179,8 @@
             historico: Array.isArray(it.historico) ? it.historico : [],
             pendencias: Array.isArray(it.pendencias) ? it.pendencias : [],
             lancamentos_horas: Array.isArray(it.lancamentosHoras) ? it.lancamentosHoras : [],
+            roteiro: it.roteiro || '',
+            documentacao: Array.isArray(it.documentacao) ? it.documentacao : [],
         };
     }
 
@@ -288,6 +293,9 @@
     // ── carregarOS — substitui o placeholder de sistema.html ─
     window.carregarOS = async function () {
         try {
+            if (typeof window.mostrarCarregandoTabela === 'function') {
+                window.mostrarCarregandoTabela('#tbodyOS', 11, 'Carregando ordens de serviço...');
+            }
             const rows = await window.DB.buscarOS({});
             window._dadosOS = rows;
             // Preserva o cache de itens já carregados; apenas garante que o objeto existe
@@ -1083,7 +1091,7 @@
         if (count) count.textContent = rows.length + ' registro(s)';
         tbody.innerHTML = rows.map(function (row, idx) {
             const cols = boColunasLinha(row, tipo, idx);
-            return '<tr class="bo-row" data-idx="' + idx + '" data-id="' + (row.id || '') + '" onclick="selecionarLinhaBo(this)">' +
+            return '<tr class="bo-row" data-idx="' + idx + '" data-id="' + (row.id || '') + '" onclick="selecionarLinhaBo(this)" ondblclick="selecionarLinhaBo(this); selecionarOrigem();">' +
                 cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
                 '</tr>';
         }).join('');

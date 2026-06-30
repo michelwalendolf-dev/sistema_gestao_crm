@@ -7,7 +7,7 @@ require_once __DIR__ . '/session_check.php';
 require_once __DIR__ . '/crud_helpers.php';
 
 header('Content-Type: application/json');
-requireSession(true);
+requireSession();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['sucesso' => false, 'mensagem' => 'Requisição inválida.']);

@@ -152,6 +152,20 @@
     min-height: 80px;
     color: var(--text, #ccc);
 }
+.bloco-sair-relogio{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+.relogio-topo{
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-muted, #999);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+}
 </style>
 
 <body>
@@ -160,7 +174,10 @@
         <div class="user-info"> Usuário:
             <span class="user-name"></span>
         </div>
-        <a href="#" class="btn-exist" id="btnSair"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Sair</a>
+        <div class="bloco-sair-relogio">
+            <span id="relogioTopo" class="relogio-topo"></span>
+            <a href="#" class="btn-exist" id="btnSair"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Sair</a>
+        </div>
     </div>
     <div class="barra-reabrir" id="abrirMenu"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div>
     <div class="container-left">
@@ -170,9 +187,12 @@
         </div>
         <div class="barra-acoes">
             <label></label>
-            <input type="text" id="filtro-cliente" placeholder="Cliente" oninput="aplicarFiltros()">
+            <input type="text" id="filtro-cliente" placeholder="Cliente" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['filtro-cliente']=''; aplicarFiltros();">
             <div class="grupo-botoes">
                 <button onclick="limparFiltro('filtro-cliente')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                <button title="Cadastrar / Editar cliente"
+                    onclick="(function(){var id=(window._origemSelecionadaId&&window._origemSelecionadaId['filtro-cliente'])||'';if(id&&typeof carregarOrigemNoForm==='function'){abrirModal('modalClientes','overlayClientes');carregarOrigemNoForm('cli',id);}else{limparModal('modalClientes');abrirModal('modalClientes','overlayClientes');}})();"
+                    ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
                 <button class="btn-busca" title="Abrir busca de clientes"
                     onclick="abrirBuscaOrigemCampo('cli','filtro-cliente',null,true)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -181,15 +201,15 @@
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </button>
-                <button title="Cadastrar / Editar cliente"
-                    onclick="limparModal('modalClientes'); abrirModal('modalClientes','overlayClientes');"
-                    style="font-size:16px;font-weight:700;letter-spacing:1px;padding:0 5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
             </div>
         </div>
         <div class="barra-acoes">
-            <input type="text" id="filtro-tecnico" placeholder="Técnico" oninput="aplicarFiltros()">
+            <input type="text" id="filtro-tecnico" placeholder="Técnico" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['filtro-tecnico']=''; aplicarFiltros();">
             <div class="grupo-botoes">
                 <button onclick="limparFiltro('filtro-tecnico')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                <button title="Cadastrar / Editar funcionário"
+                    onclick="(function(){var id=(window._origemSelecionadaId&&window._origemSelecionadaId['filtro-tecnico'])||'';if(id&&typeof carregarOrigemNoForm==='function'){abrirModal('modalFuncionarios','overlayFuncionarios');carregarOrigemNoForm('func',id);}else{limparModal('modalFuncionarios');abrirModal('modalFuncionarios','overlayFuncionarios');}})();"
+                    ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
                 <button class="btn-busca" title="Abrir busca de técnicos"
                     onclick="abrirBuscaOrigemCampo('func','filtro-tecnico',null,true)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -371,8 +391,8 @@
 
                         <div class="dropdown-botao">
                             <a href="#" onclick="abrirAnexos('item'); return false;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Anexos</a>
-                            <a href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> Transferir</a>
-                            <a href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Copiar</a>
+                            <a href="#" onclick="transferirItem(); return false;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> Transferir</a>
+                            <a href="#" onclick="copiarItem(); return false;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Copiar</a>
                         </div>
                     </div>
                     <div class="pesquisa-direita">
@@ -420,299 +440,7 @@
                 </div>
             </div>
 
-            <div class="overlay-modal" id="overlayUsuarios" style="display:none; z-index:10800;"></div>
-
-            <div class="erp-modal" id="modalUsuarios"
-                style="display:none; width:1100px; height:680px; flex-direction:column; z-index:10900;">
-
-                <div class="erp-titlebar" id="dragUsuarios">
-                    <span>Gerenciamento de Usuários</span>
-                    <div class="erp-controls">
-                        <button onclick="usr_maximizar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></button>
-                        <button onclick="usr_fechar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                    </div>
-                </div>
-
-                <div class="erp-content"
-                    style="display:flex; flex-direction:column; flex:1; overflow:hidden; padding:0;">
-
-                    <!-- Barra de ações topo -->
-                    <div class="barra-topo">
-                        <div class="acoes-esquerda">
-                            <button onclick="usr_abrirNovo()"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> Novo</button>
-                            <button id="btnEditarUsr" onclick="usr_abrirEdicao()" disabled><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
-                                Editar</button>
-                            <button id="btnExcluirUsr" onclick="usr_excluir()" disabled><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span>
-                                Excluir</button>
-                            <button id="btnMaisOpcUsr" onclick="usr_toggleMaisOpcoes(event)"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></span> Mais Opções</button>
-                        </div>
-                        <span id="usr-status-bar"
-                            style="margin-left:auto;font-size:11px;color:#6b6b6b;padding-right:4px;">Nenhum usuário
-                            selecionado</span>
-                        <div class="pesquisa-direita" style="margin-left:0;">
-                            <input type="text" id="usr-pesquisa-topo" placeholder="Pesquisar..."
-                                oninput="usr_filtrar()">
-                        </div>
-                    </div>
-
-                    <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
-
-                        <div class="usr-filtro">
-                            <div class="usr-painel-header">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                                </svg>
-                                Filtros
-                            </div>
-                            <div class="usr-filtro-body">
-                                <div class="usr-filtro-grupo">
-                                    <span class="usr-filtro-label">Nome</span>
-                                    <div class="bar-acoes">
-                                        <input type="text" id="usr-filtro-nome" placeholder="Buscar nome…"
-                                            oninput="usr_filtrar()">
-                                    </div>
-                                </div>
-                                <div class="usr-filtro-grupo">
-                                    <span class="usr-filtro-label">Status</span>
-                                    <div class="usr-status-filtros">
-                                        <label class="usr-status-item"><input type="checkbox" checked
-                                                onchange="usr_filtrar()"> Ativo</label>
-                                        <label class="usr-status-item"><input type="checkbox" checked
-                                                onchange="usr_filtrar()"> Inativo</label>
-                                        <label class="usr-status-item"><input type="checkbox" checked
-                                                onchange="usr_filtrar()"> Suspenso</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="usr-filtro-rodape">
-                                <button class="usr-btn-limpar" onclick="usr_limparFiltros()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Limpar</button>
-                                <button class="usr-btn-buscar" onclick="usr_filtrar()">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                                        <circle cx="11" cy="11" r="8" />
-                                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                    </svg>
-                                    Buscar
-                                </button>
-                            </div>
-                        </div>
-
-                        <div
-                            style="flex:1;display:flex;flex-direction:column;min-width:0;background:#111111;border-right:1px solid #737373;">
-                            <div
-                                style="height:34px;display:flex;align-items:center;padding:0 10px;gap:6px;border-bottom:1px solid #737373;background:linear-gradient(to bottom,#222222 0px,#222222 16px,#2a2a2a 20px,#111111 130%);flex-shrink:0;">
-                                <span
-                                    style="font-size:11px;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:0.4px;">Usuários</span>
-                                <span id="usr-contador" style="font-size:11px;color:#8a8a8a;margin-left:auto;">0
-                                    registros</span>
-                            </div>
-                            <div style="flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:#2a2a2a #111111;">
-                                <table class="usr-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:80px;">Código</th>
-                                            <th>Nome</th>
-                                            <th style="width:140px;">Setor</th>
-                                            <th style="width:90px;">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="usr-tbody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="usr-form-wrap">
-
-                            <div class="usr-form-bloqueio" id="usr-form-bloqueio">
-                                <div style="font-size:12px;color:#6b6b6b;text-align:center;line-height:1.6;">
-                                    Selecione um usuário e clique em<br>
-                                    <strong style="color:#9aa5b5;">Editar</strong>, ou clique em <strong
-                                        style="color:#9aa5b5;">Novo</strong><br>
-                                    para habilitar o formulário.
-                                </div>
-                            </div>
-
-                            <div class="usr-form-header">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                    <circle cx="12" cy="7" r="4" />
-                                </svg>
-                                <span id="usr-form-titulo">Dados do Usuário</span>
-                            </div>
-
-                            <div class="usr-form-scroll">
-
-                                <div class="usr-secao-titulo">Identificação</div>
-
-                                <div class="usr-campo">
-                                    <label>Nome completo</label>
-                                    <div class="bar-acoes">
-                                        <input type="text" id="usr-f-nome" placeholder="Nome do usuário" disabled>
-                                    </div>
-                                </div>
-
-                                <div class="usr-campo">
-                                    <label>Funcionário</label>
-                                    <div class="bar-acoes">
-                                        <input type="text" id="usr-f-funcionario" placeholder="Vínculo de funcionário"
-                                            disabled>
-                                        <div class="grupos">
-                                            <button class="btn-limpar" title="Limpar"
-                                                onclick="usr_limparCampo('usr-f-funcionario')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                                            <button class="btn-busca" title="Buscar funcionário"
-                                                onclick="usr_buscarFuncionario()">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <circle cx="11" cy="11" r="8" />
-                                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                                </svg>
-                                            </button>
-                                            <div class="usr-mais-wrap" style="position:relative;">
-                                                <button class="btn-mais" title="Mais opções" id="usr-func-mais-btn"
-                                                    onclick="usr_toggleMais('usr-func-mais', event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
-                                                <div class="usr-mais-menu" id="usr-func-mais" style="display:none;">
-                                                    <div onclick="usr_buscarFuncionario()">Buscar funcionário</div>
-                                                    <div onclick="usr_limparCampo('usr-f-funcionario'); usr_limparCampo('usr-f-setor')">Desvincular</div>
-                                                    <div onclick="usr_abrirFuncionario()">Abrir cadastro</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="usr-campo">
-                                    <label>Setor</label>
-                                    <div class="bar-acoes usr-setor-container" style="position:relative;">
-                                        <input type="text" id="usr-f-setor" placeholder="Selecione..." readonly
-                                            disabled style="flex:1;cursor:pointer;"
-                                            onclick="usr_toggleSetor(event)">
-                                        <div class="grupos">
-                                            <button class="btn-dropdown" id="usr-setor-mais-btn" disabled
-                                                onclick="usr_toggleSetor(event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-                                        </div>
-                                        <div class="usr-setor-menu" id="usr-setor-menu" style="display:none;
-                                            position:absolute; top:100%; left:0; width:100%;
-                                            background:#1a1a1a; border:1px solid #737373; border-radius:4px;
-                                            z-index:9999; flex-direction:column;">
-                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('TI')">TI</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Financeiro')">Financeiro</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Técnico')">Técnico</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Administrativo')">Administrativo</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Comercial')">Comercial</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('RH')">RH</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="usr-campo">
-                                    <label>Grupo de Acesso</label>
-                                    <div class="bar-acoes usr-grupo-container" style="position:relative;">
-                                        <input type="text" id="usr-f-grupo" placeholder="Selecione..." readonly
-                                            disabled style="flex:1;cursor:pointer;"
-                                            onclick="usr_toggleGrupo(event)">
-                                        <div class="grupos">
-                                            <button class="btn-dropdown" id="usr-grupo-btn" disabled
-                                                onclick="usr_toggleGrupo(event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-                                        </div>
-                                        <div class="usr-grupo-menu" id="usr-grupo-menu" style="display:none;
-                                            position:absolute; top:100%; left:0; width:100%;
-                                            background:#1a1a1a; border:1px solid #737373; border-radius:4px;
-                                            z-index:9999; flex-direction:column;">
-                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Admin')">Admin</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Funcionário')">Funcionário</div>
-                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Técnico')">Técnico</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="usr-secao-titulo">Contato &amp; Acesso</div>
-
-                                <div class="usr-campo">
-                                    <label>E-mail</label>
-                                    <div class="bar-acoes">
-                                        <input id="usr-f-email" placeholder="email@empresa.com" disabled type="email" inputmode="email" maxlength="100">
-                                    </div>
-                                </div>
-
-                                <div class="usr-campo">
-                                    <label>Login</label>
-                                    <div class="bar-acoes">
-                                        <input type="text" id="usr-f-login" placeholder="Nome de usuário" disabled maxlength="40" autocomplete="username">
-                                    </div>
-                                </div>
-
-                                <div class="usr-campo">
-                                    <label>Senha</label>
-                                    <div class="bar-acoes">
-                                        <input type="password" id="usr-f-senha" placeholder="••••••••" disabled oninput="usr_validarForcaSenha()" maxlength="100" autocomplete="new-password">
-                                    </div>
-                                    <span id="usr-dica-forca-senha" style="font-size:10px;color:#6b6b6b;margin-top:1px;line-height:1.4;">A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais (!@#$%&*).</span>
-                                </div>
-
-                                <div class="usr-campo">
-                                    <label>Confirmar Senha</label>
-                                    <div class="bar-acoes">
-                                        <input type="password" id="usr-f-senha-conf" placeholder="••••••••" disabled
-                                            oninput="usr_validarSenhas()" maxlength="100" autocomplete="new-password">
-                                    </div>
-                                    <span id="usr-dica-senha"
-                                        style="font-size:10px;color:#6b6b6b;margin-top:1px;"></span>
-                                </div>
-
-                                <div class="usr-secao-titulo">Observações</div>
-
-                                <div class="usr-campo">
-                                    <label>Observações</label>
-                                    <textarea class="usr-obs-textarea" id="usr-f-obs"
-                                        placeholder="Anotações sobre o usuário…" disabled></textarea>
-                                </div>
-
-                                <div class="usr-secao-titulo">Situação</div>
-
-                                <div style="display:flex;align-items:center;gap:8px;padding:5px 0;">
-                                    <input type="checkbox" id="usr-f-suspenso" disabled
-                                        style="accent-color:#ff6b6b;width:14px;height:14px;cursor:pointer;">
-                                    <label for="usr-f-suspenso"
-                                        style="font-size:12px;color:#c8a0a0;cursor:pointer;user-select:none;">Usuário
-                                        Suspenso</label>
-                                </div>
-
-                                <div class="usr-campo">
-                                    <label>Data de Saída</label>
-                                    <div class="bar-acoes">
-                                        <input type="text" id="usr-f-data-saida" class="campo-data"
-                                            placeholder="dd/mm/aaaa" disabled>
-                                        <button class="btn-data" id="usr-btn-cal-saida" onclick="usr_abrirCalSaida()"
-                                            disabled>
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <rect x="3" y="5" width="18" height="16" rx="3" />
-                                                <line x1="3" y1="9" x2="21" y2="9" />
-                                                <line x1="8" y1="3" x2="8" y2="7" />
-                                                <line x1="16" y1="3" x2="16" y2="7" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div style="height:6px;"></div>
-                            </div>
-
-                            <div class="usr-form-footer">
-                                <button class="usr-btn-cancelar" onclick="usr_cancelar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancelar</button>
-                                <button class="usr-btn-salvar" onclick="usr_salvar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-        </div>
+            
             </div>
 
         </div>
@@ -757,10 +485,13 @@
                         <div class="campo-completo">
                             <label>Cliente</label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-cliente" maxlength="120">
+                                <input type="text" id="cad-cliente" maxlength="120" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['cad-cliente']='';">
                                 <div class="grupos">
                                     <button class="btn-limpar" title="Limpar"
-                                        onclick="document.getElementById('cad-cliente').value=''"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                        onclick="document.getElementById('cad-cliente').value=''; if(window._origemSelecionadaId) window._origemSelecionadaId['cad-cliente']='';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                    <button title="Cadastrar / Editar cliente"
+                                        onclick="(function(){var id=(window._origemSelecionadaId&&window._origemSelecionadaId['cad-cliente'])||'';if(id&&typeof carregarOrigemNoForm==='function'){abrirModal('modalClientes','overlayClientes');carregarOrigemNoForm('cli',id);}else{limparModal('modalClientes');abrirModal('modalClientes','overlayClientes');}})();"
+                                        ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
                                     <button class="btn-busca" title="Abrir busca de clientes"
                                         onclick="abrirBuscaOrigemCampo('cli','cad-cliente',null,false)">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -776,10 +507,13 @@
                         <div class="campo-completo">
                             <label>Técnico</label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-tecnico" maxlength="80">
+                                <input type="text" id="cad-tecnico" maxlength="80" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['cad-tecnico']='';">
                                 <div class="grupos">
                                     <button class="btn-limpar" title="Limpar"
-                                        onclick="document.getElementById('cad-tecnico').value=''"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                        onclick="document.getElementById('cad-tecnico').value=''; if(window._origemSelecionadaId) window._origemSelecionadaId['cad-tecnico']='';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                    <button title="Cadastrar / Editar funcionário"
+                                        onclick="(function(){var id=(window._origemSelecionadaId&&window._origemSelecionadaId['cad-tecnico'])||'';if(id&&typeof carregarOrigemNoForm==='function'){abrirModal('modalFuncionarios','overlayFuncionarios');carregarOrigemNoForm('func',id);}else{limparModal('modalFuncionarios');abrirModal('modalFuncionarios','overlayFuncionarios');}})();"
+                                        ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
                                     <button class="btn-busca" title="Abrir busca de técnicos"
                                         onclick="abrirBuscaOrigemCampo('func','cad-tecnico',null,false)">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -1054,10 +788,13 @@
                             <div class="campo-completo">
                                 <label>Técnico</label>
                                 <div class="bar-acoes">
-                                    <input type="text" id="item-tecnico" maxlength="80">
+                                    <input type="text" id="item-tecnico" maxlength="80" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['item-tecnico']='';">
                                     <div class="grupos">
                                         <button class="btn-limpar" title="Limpar"
-                                            onclick="document.getElementById('item-tecnico').value=''"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                            onclick="document.getElementById('item-tecnico').value=''; if(window._origemSelecionadaId) window._origemSelecionadaId['item-tecnico']='';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                        <button title="Cadastrar / Editar funcionário"
+                                            onclick="(function(){var id=(window._origemSelecionadaId&&window._origemSelecionadaId['item-tecnico'])||'';if(id&&typeof carregarOrigemNoForm==='function'){abrirModal('modalFuncionarios','overlayFuncionarios');carregarOrigemNoForm('func',id);}else{limparModal('modalFuncionarios');abrirModal('modalFuncionarios','overlayFuncionarios');}})();"
+                                            ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
                                         <button class="btn-busca" title="Abrir busca de técnicos"
                                             onclick="abrirBuscaOrigemCampo('func','item-tecnico',null,false)">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -1084,9 +821,12 @@
                             </div>
                             <div class="campo-completo">
                                 <label>Resp. Execução</label>
-                                <div class="bar-acoes"><input type="text" id="item-respExec" maxlength="80" placeholder="Responsável pela execução">
+                                <div class="bar-acoes"><input type="text" id="item-respExec" maxlength="80" placeholder="Responsável pela execução" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['item-respExec']='';">
                                     <div class="grupos">
-                                        <button class="btn-limpar" title="Limpar" onclick="document.getElementById('item-respExec').value=''"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                        <button class="btn-limpar" title="Limpar" onclick="document.getElementById('item-respExec').value=''; if(window._origemSelecionadaId) window._origemSelecionadaId['item-respExec']='';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                        <button title="Cadastrar / Editar funcionário"
+                                            onclick="(function(){var id=(window._origemSelecionadaId&&window._origemSelecionadaId['item-respExec'])||'';if(id&&typeof carregarOrigemNoForm==='function'){abrirModal('modalFuncionarios','overlayFuncionarios');carregarOrigemNoForm('func',id);}else{limparModal('modalFuncionarios');abrirModal('modalFuncionarios','overlayFuncionarios');}})();"
+                                            ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
                                         <button class="btn-busca" title="Buscar funcionário"
                                             onclick="abrirBuscaOrigemCampo('func','item-respExec',null,false)">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -1249,6 +989,59 @@
                                     <span>Nenhum evento registrado para este item</span>
                                 </div>
                                 <div id="hist-item-lista-corpo"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Painel: Roteiro de Execução ──────────────────────── -->
+                    <div class="erp-panel" id="panel-item-roteiro" style="display:none;padding:12px;">
+                        <div class="panel-roteiro-inner">
+                            <button class="roteiro-voltar" onclick="fecharRecurso()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Voltar para o item</button>
+                            <div class="roteiro-templates">
+                                <button class="roteiro-tpl-btn" id="roteiro-aba-inspecao" onclick="selecionarAbaRoteiro('inspecao')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                    Análise de Inspeção
+                                </button>
+                                <button class="roteiro-tpl-btn" id="roteiro-aba-tecnica" onclick="selecionarAbaRoteiro('tecnica')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                    Análise Técnica e Solução
+                                </button>
+                            </div>
+                            <button class="roteiro-tpl-inserir" onclick="inserirTemplateRoteiro()">+ Inserir modelo padrão nesta aba</button>
+                            <textarea id="item-roteiro" class="roteiro-textarea" placeholder="Descreva aqui o passo a passo de execução do serviço, ou clique em um dos modelos acima para inserir um template..."></textarea>
+                            <div class="panel-obs-acoes">
+                                <button class="btn-obs-limpar" onclick="limparAbaRoteiro()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Limpar</button>
+                                <button class="btn-obs-salvar" onclick="salvarRoteiroItem()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar Roteiro</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Painel: Documentação (links e referências) ───────── -->
+                    <div class="erp-panel" id="panel-item-documentacao" style="display:none;padding:12px;">
+                        <div class="panel-doc-inner">
+                            <button class="roteiro-voltar" onclick="fecharRecurso()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Voltar para o item</button>
+                            <div class="doc-novo">
+                                <div class="doc-novo-linha">
+                                    <input type="text" id="doc-novo-titulo" placeholder="Título / descrição do link...">
+                                    <select id="doc-novo-tipo" class="doc-select">
+                                        <option value="link">Link</option>
+                                        <option value="video">Vídeo</option>
+                                        <option value="drive">Google Drive</option>
+                                        <option value="manual">Manual / Datasheet</option>
+                                    </select>
+                                </div>
+                                <div class="doc-novo-linha">
+                                    <input type="url" id="doc-novo-url" placeholder="https://...">
+                                    <button class="btn-obs-salvar" onclick="adicionarDocumentacao()" style="flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Adicionar</button>
+                                </div>
+                            </div>
+
+                            <div class="doc-lista-wrap" id="doc-lista-wrap">
+                                <div class="doc-vazio" id="doc-lista-vazio">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e4060" stroke-width="1.4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                    <span>Nenhum link ou referência adicionado</span>
+                                </div>
+                                <div id="doc-lista-corpo"></div>
                             </div>
                         </div>
                     </div>
@@ -1492,6 +1285,41 @@
 
         </div>
     </div>
+
+    <script>
+        // ── Guarda de permissão (Admin) ─────────────────────────────
+        // window._grupoAtual é populado por carregarSessao() em db_real.js
+        // assim que a sessão é carregada. Usado para bloquear no front
+        // ações restritas a Admin (Financeiro, Excluir OS, Auditoria, Usuários).
+        function _exigirAdmin(nomeRecurso) {
+            if (window._grupoAtual === 'Admin') return true;
+            Swal.fire({
+                icon: 'error',
+                title: 'Acesso negado',
+                text: 'Apenas administradores podem acessar' + (nomeRecurso ? ' ' + nomeRecurso : '') + '.',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2d7dff',
+                scrollbarPadding: false
+            });
+            return false;
+        }
+        window._exigirAdmin = _exigirAdmin;
+
+        // Mantém o item "Usuários" sempre visível no menu — o bloqueio
+        // de acesso para não-admin acontece ao clicar (ver onclick do link
+        // e window.usr_abrirSeAdmin em db_real.js / _exigirAdmin acima),
+        // não escondendo a opção do menu.
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.btn-submenu-item').forEach(function (el) {
+                if (el.textContent.trim() === 'Usuários') {
+                    var obs = new MutationObserver(function () {
+                        if (el.style.display === 'none') el.style.display = '';
+                    });
+                    obs.observe(el, { attributes: true, attributeFilter: ['style'] });
+                }
+            });
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const toggleMenuSistema = document.getElementById("toggleMenu");
@@ -1660,6 +1488,23 @@
         });
     </script>
     <script>
+        function mostrarCarregandoTabela(tbodySelectorOrEl, colspan, texto) {
+            const tbody = typeof tbodySelectorOrEl === 'string'
+                ? document.querySelector(tbodySelectorOrEl)
+                : tbodySelectorOrEl;
+            if (!tbody) return;
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="${colspan}" class="tabela-loading-cell">
+                        <div class="tabela-loading-wrap">
+                            <div class="tabela-loading-spinner"></div>
+                            <p>${texto || 'Carregando...'}</p>
+                        </div>
+                    </td>
+                </tr>`;
+        }
+        window.mostrarCarregandoTabela = mostrarCarregandoTabela;
+
         const dadosOS = [];
         const grupoAberto = new Map();
         const grupoToggle = new Map();
@@ -1762,6 +1607,7 @@
             if (gridInferior && !e.target.closest(".os-row") && gridInferior.contains(e.target)) {
                 document.querySelectorAll(".grid-inferior .os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
                 itemSelecionado = null;
+                window.itemSelecionado = itemSelecionado;
                 trItemSelecionado = null;
             }
         });
@@ -1840,6 +1686,7 @@
         function limparFiltro(id) {
             const el = document.getElementById(id);
             if (el) { el.value = ""; }
+            if (window._origemSelecionadaId) window._origemSelecionadaId[id] = '';
             aplicarFiltros();
         }
 
@@ -1914,10 +1761,19 @@
                 <td>${row.valor}</td>
                 <td><span class="os-status-badge ${badgeClass}">${row.status || "—"}</span></td>`;
                     tr.addEventListener("click", () => selecionarOS(tr, row));
-                    tr.addEventListener("dblclick", async (e) => {
+                    tr.addEventListener("dblclick", (e) => {
                         e.preventDefault();
-                        await selecionarOS(tr, row);
+                        selecionarLinha(tr);
+                        osSelecionada = row;
+                        window.osSelecionada = row;
                         abrirTelaEdicao();
+                        // Carrega os itens em segundo plano, sem bloquear a abertura do modal
+                        mostrarCarregandoTabela(".grid-inferior tbody", 15, "Carregando itens...");
+                        DB.buscarItensPorOS(row.codigo, true).then(itens => {
+                            window._dadosItens = window._dadosItens || {};
+                            window._dadosItens[row.codigo] = itens;
+                            renderizarItens(itens, row.codigo);
+                        }).catch(err => console.error('[dblclick OS] Erro ao carregar itens:', err));
                     });
                     tbody.appendChild(tr);
                     trsDoGrupo.push(tr);
@@ -1943,6 +1799,7 @@
             osSelecionada = osObj;
             window.osSelecionada = osObj;
 
+            mostrarCarregandoTabela(".grid-inferior tbody", 15, "Carregando itens...");
             const itens = await DB.buscarItensPorOS(osObj.codigo, true);
             window._dadosItens = window._dadosItens || {};
             window._dadosItens[osObj.codigo] = itens;
@@ -2004,6 +1861,7 @@
                     document.querySelectorAll(".grid-inferior .os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
                     tr.classList.add("row-selecionada");
                     itemSelecionado = it;
+                    window.itemSelecionado = itemSelecionado;
                     trItemSelecionado = tr;
                 });
                 tr.addEventListener("dblclick", (e) => {
@@ -2011,6 +1869,7 @@
                     document.querySelectorAll(".grid-inferior .os-row.row-selecionada").forEach(r => r.classList.remove("row-selecionada"));
                     tr.classList.add("row-selecionada");
                     itemSelecionado = it;
+                    window.itemSelecionado = itemSelecionado;
                     trItemSelecionado = tr;
                     abrirEditarItem();
                 });
@@ -2024,6 +1883,8 @@
         }
 
         async function excluirOS() {
+            if (!_exigirAdmin('a exclusão de OS')) return;
+
             if (!osSelecionada) {
                 Swal.fire({
                     icon: "warning",
@@ -2073,6 +1934,7 @@
         }
 
         let itemSelecionado = null;
+        window.itemSelecionado = itemSelecionado;
         let trItemSelecionado = null;
 
         async function excluirItem() {
@@ -2121,6 +1983,7 @@
 
             if (trItemSelecionado) trItemSelecionado.remove();
             itemSelecionado = null;
+            window.itemSelecionado = itemSelecionado;
             trItemSelecionado = null;
 
             if (osSelecionada && osSelecionada.id) {
@@ -2144,6 +2007,308 @@
                 icon: "success",
                 title: "Item excluído",
                 timer: 1800,
+                showConfirmButton: false,
+                scrollbarPadding: false
+            });
+        }
+
+        /**
+         * Gera um código de item único dentro de uma lista, a partir de um
+         * código base. Se o código já existir, acrescenta um sufixo
+         * incremental (-2, -3, ...) até encontrar um valor livre.
+         */
+        function _gerarCodItemUnico(codBase, lista) {
+            const existentes = new Set((lista || []).map(i => String(i.codItem)));
+            if (!existentes.has(String(codBase))) return String(codBase);
+            let n = 2;
+            let candidato = `${codBase}-${n}`;
+            while (existentes.has(candidato)) {
+                n++;
+                candidato = `${codBase}-${n}`;
+            }
+            return candidato;
+        }
+
+        /**
+         * Gera o próximo código de item sequencial para uma lista de itens.
+         * Ignora sufixos como "-2", "-3" — analisa apenas a parte numérica base.
+         * Ex: lista com codItems ["1","2","3"] → retorna "4"
+         */
+        function _proximoCodItem(lista) {
+            let max = 0;
+            (lista || []).forEach(it => {
+                // Pega apenas a parte antes de qualquer "-" para ignorar sufixos de cópia
+                const base = String(it.codItem || '').split('-')[0];
+                const n = parseInt(base, 10);
+                if (!isNaN(n) && n > max) max = n;
+            });
+            return String(max + 1);
+        }
+
+        /**
+         * Persiste a lista completa de itens de uma OS no backend
+         * (os.php / acao=atualizar_itens).
+         */
+        async function _persistirItensOS(osId, lista) {
+            const listaDb = lista.map(it => typeof window.itemTelaParaDb === 'function' ? window.itemTelaParaDb(it) : it);
+            return await window.apiPost('os.php', {
+                acao: 'atualizar_itens',
+                id: osId,
+                itens: JSON.stringify(listaDb)
+            });
+        }
+
+        async function copiarItem() {
+            if (!osSelecionada) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione uma OS primeiro.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+            if (!itemSelecionado) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione um item para copiar.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+
+            const result = await Swal.fire({
+                icon: "question",
+                title: "Copiar Item",
+                html: `Deseja criar uma cópia do item <strong>${itemSelecionado.codItem}</strong> nesta mesma OS?<br><small>${itemSelecionado.descricao || ""}</small>`,
+                showCancelButton: true,
+                confirmButtonText: "Sim, copiar",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#2d7dff",
+                cancelButtonColor: "#6c757d",
+                reverseButtons: true,
+                scrollbarPadding: false
+            });
+            if (!result.isConfirmed) return;
+
+            // ── Loading imediato na tabela de itens ──
+            mostrarCarregandoTabela(".grid-inferior tbody", 15, "Copiando item...");
+
+            const chaveOS = osSelecionada.codigo || "__novo__";
+            if (!window._dadosItens) window._dadosItens = {};
+
+            // Garante que a lista de itens da OS atual está carregada
+            if (osSelecionada.id && (!window._dadosItens[chaveOS] || window._dadosItens[chaveOS].length === 0)) {
+                try {
+                    window._dadosItens[chaveOS] = await window.DB.buscarItensPorOS(chaveOS, true);
+                } catch (_e) {
+                    window._dadosItens[chaveOS] = [];
+                }
+            }
+            if (!window._dadosItens[chaveOS]) window._dadosItens[chaveOS] = [];
+
+            const lista = window._dadosItens[chaveOS];
+
+            // Novo código = próximo número sequencial da lista (ex: se há 1,2,3 → novo é 4)
+            const novoCod = _proximoCodItem(lista);
+
+            // Descrição original do item copiado (sem o sufixo de cópia anterior, se houver)
+            const descOriginal = itemSelecionado.descricao && itemSelecionado.descricao !== "—"
+                ? itemSelecionado.descricao
+                : "";
+            // Remove sufixo de cópia anterior caso exista antes de acrescentar o novo
+            const descSemSufixo = descOriginal.replace(/\s*\(Copiado do item \d+ - [^)]+\)\s*$/, "").trim();
+            const novaDesc = descSemSufixo
+                ? `${descSemSufixo} (Copiado do item ${itemSelecionado.codItem} - ${chaveOS})`
+                : `(Copiado do item ${itemSelecionado.codItem} - ${chaveOS})`;
+
+            const usuarioLogado = (typeof window._usuarioLogado !== "undefined" && window._usuarioLogado)
+                ? window._usuarioLogado
+                : (document.getElementById("usuario-nome")?.textContent?.trim() || "admin");
+
+            const hoje = new Date();
+            const dtHoje = `${String(hoje.getDate()).padStart(2, "0")}/${String(hoje.getMonth() + 1).padStart(2, "0")}/${hoje.getFullYear()}`;
+
+            const copia = {
+                ...itemSelecionado,
+                codItem: novoCod,
+                descricao: novaDesc,
+                status: "Aberto",
+                dtCriacao: dtHoje,
+                dtSolucao: "—",
+                cadastrado: usuarioLogado,
+                historico: [],
+                pendencias: [],
+                lancamentosHoras: [],
+                documentacao: [],
+            };
+
+            lista.push(copia);
+
+            let persistOk = true;
+            let erroMsg = '';
+            if (osSelecionada.id) {
+                try {
+                    const resultado = await _persistirItensOS(osSelecionada.id, lista);
+                    if (!resultado.sucesso) {
+                        persistOk = false;
+                        erroMsg = resultado.mensagem || 'Erro ao salvar no banco.';
+                    } else {
+                        const itensAtualizados = await window.DB.buscarItensPorOS(chaveOS, true);
+                        window._dadosItens[chaveOS] = itensAtualizados;
+                        renderizarItens(itensAtualizados, chaveOS);
+                    }
+                } catch (e) {
+                    console.error('[copiarItem] Erro ao persistir no banco:', e);
+                    persistOk = false;
+                    erroMsg = 'Falha de conexão ao copiar o item.';
+                }
+            } else {
+                renderizarItens(lista, chaveOS);
+            }
+
+            if (!persistOk) {
+                // Desfaz a alteração local já que não foi possível persistir
+                const idx = lista.findIndex(i => i === copia);
+                if (idx !== -1) lista.splice(idx, 1);
+                renderizarItens(lista, chaveOS);
+                Swal.fire({ icon: "error", title: "Erro ao copiar item", text: erroMsg, confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+
+            Swal.fire({
+                icon: "success",
+                title: "Item copiado",
+                html: `Cópia criada com o código <strong>${novoCod}</strong>.`,
+                timer: 2000,
+                showConfirmButton: false,
+                scrollbarPadding: false
+            });
+        }
+
+        async function transferirItem() {
+            if (!osSelecionada) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione uma OS primeiro.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+            if (!itemSelecionado) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione um item para transferir.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+
+            const todasOS = (window._dadosOS || []).filter(o => o.id && o.codigo !== osSelecionada.codigo);
+            if (todasOS.length === 0) {
+                Swal.fire({ icon: "info", title: "Nenhuma OS disponível", text: "Não há outra OS cadastrada para receber este item.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+
+            const inputOptions = {};
+            todasOS
+                .slice()
+                .sort((a, b) => String(a.codigo).localeCompare(String(b.codigo)))
+                .forEach(o => {
+                    inputOptions[o.id] = `${o.codigo} — ${o.descricao || o.cliente || ""}`.trim();
+                });
+
+            const { value: osDestinoId, isConfirmed } = await Swal.fire({
+                icon: "question",
+                title: "Transferir Item",
+                html: `Selecione a OS de destino para o item <strong>${itemSelecionado.codItem}</strong>:`,
+                input: "select",
+                inputOptions,
+                inputPlaceholder: "Selecione a OS de destino",
+                showCancelButton: true,
+                confirmButtonText: "Transferir",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#2d7dff",
+                cancelButtonColor: "#6c757d",
+                reverseButtons: true,
+                scrollbarPadding: false,
+                inputValidator: (value) => !value && "Selecione uma OS de destino."
+            });
+            if (!isConfirmed || !osDestinoId) return;
+
+            const osDestino = todasOS.find(o => String(o.id) === String(osDestinoId));
+            if (!osDestino) return;
+
+            // ── Loading imediato na tabela de itens ──
+            mostrarCarregandoTabela(".grid-inferior tbody", 15, "Transferindo item...");
+
+            const chaveOrigem = osSelecionada.codigo || "__novo__";
+            const chaveDestino = osDestino.codigo || "__novo__";
+            if (!window._dadosItens) window._dadosItens = {};
+
+            // Carrega lista de itens da OS de destino
+            try {
+                window._dadosItens[chaveDestino] = await window.DB.buscarItensPorOS(chaveDestino, true);
+            } catch (_e) {
+                window._dadosItens[chaveDestino] = window._dadosItens[chaveDestino] || [];
+            }
+            const listaDestino = window._dadosItens[chaveDestino];
+
+            // Lista de itens da OS de origem (atual)
+            if (!window._dadosItens[chaveOrigem]) window._dadosItens[chaveOrigem] = [];
+            const listaOrigem = window._dadosItens[chaveOrigem];
+
+            // Novo código = próximo número sequencial da OS de DESTINO
+            const novoCod = _proximoCodItem(listaDestino);
+            const itemTransferido = { ...itemSelecionado, codItem: novoCod };
+
+            // 1) Insere na OS de destino primeiro
+            listaDestino.push(itemTransferido);
+            try {
+                const resultadoDestino = await _persistirItensOS(osDestino.id, listaDestino);
+                if (!resultadoDestino.sucesso) {
+                    listaDestino.pop();
+                    renderizarItens(listaOrigem, chaveOrigem);
+                    Swal.fire({ icon: "error", title: "Erro ao transferir", text: resultadoDestino.mensagem || "Erro ao salvar item na OS de destino.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                    return;
+                }
+            } catch (e) {
+                console.error('[transferirItem] Erro ao persistir na OS de destino:', e);
+                listaDestino.pop();
+                renderizarItens(listaOrigem, chaveOrigem);
+                Swal.fire({ icon: "error", title: "Erro ao transferir", text: "Falha de conexão ao salvar item na OS de destino.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+
+            // 2) Remove da OS de origem (atual) somente após sucesso no destino
+            const idxOrigem = listaOrigem.findIndex(i => String(i.codItem) === String(itemSelecionado.codItem));
+            if (idxOrigem !== -1) listaOrigem.splice(idxOrigem, 1);
+
+            try {
+                const resultadoOrigem = await _persistirItensOS(osSelecionada.id, listaOrigem);
+                if (!resultadoOrigem.sucesso) {
+                    console.error('[transferirItem] Item duplicado: falha ao remover da origem:', resultadoOrigem.mensagem);
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Transferência parcial",
+                        html: `O item foi copiado para <strong>${osDestino.codigo}</strong>, mas não foi possível removê-lo desta OS automaticamente. Exclua-o manualmente.`,
+                        confirmButtonColor: "#2d7dff",
+                        scrollbarPadding: false
+                    });
+                }
+            } catch (e) {
+                console.error('[transferirItem] Erro ao persistir remoção na origem:', e);
+                Swal.fire({
+                    icon: "warning",
+                    title: "Transferência parcial",
+                    html: `O item foi copiado para <strong>${osDestino.codigo}</strong>, mas não foi possível removê-lo desta OS automaticamente. Exclua-o manualmente.`,
+                    confirmButtonColor: "#2d7dff",
+                    scrollbarPadding: false
+                });
+            }
+
+            // Atualiza tela com a lista da OS atual
+            try {
+                const itensAtualizados = await window.DB.buscarItensPorOS(chaveOrigem, true);
+                window._dadosItens[chaveOrigem] = itensAtualizados;
+                renderizarItens(itensAtualizados, chaveOrigem);
+            } catch (e) {
+                console.error('[transferirItem] Erro ao recarregar itens da OS atual:', e);
+                renderizarItens(listaOrigem, chaveOrigem);
+            }
+
+            if (trItemSelecionado) trItemSelecionado = null;
+            itemSelecionado = null;
+            window.itemSelecionado = itemSelecionado;
+
+            Swal.fire({
+                icon: "success",
+                title: "Item transferido",
+                html: `Item movido para a OS <strong>${osDestino.codigo}</strong> com o código <strong>${novoCod}</strong>.`,
+                timer: 2200,
                 showConfirmButton: false,
                 scrollbarPadding: false
             });
@@ -2267,6 +2432,19 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        (function () {
+            const relogioEl = document.getElementById('relogioTopo');
+            if (!relogioEl) return;
+            function atualizarRelogio() {
+                const agora = new Date();
+                relogioEl.textContent = agora.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            }
+            atualizarRelogio();
+            setInterval(atualizarRelogio, 1000);
+        })();
+
         const btnSair = document.getElementById("btnSair");
 
         btnSair.addEventListener("click", async function (e) {
@@ -2381,6 +2559,14 @@
             document.getElementById("cad-codUnit").value = osSelecionada.codUnit || "";
             document.getElementById("cad-cliente").value = osSelecionada.cliente || "";
             document.getElementById("cad-tecnico").value = osSelecionada.tecnico || "";
+            if (window._origemSelecionadaId) {
+                window._origemSelecionadaId['cad-cliente'] = '';
+                window._origemSelecionadaId['cad-tecnico'] = '';
+            }
+            if (typeof window.resolverIdOrigemPorNome === 'function') {
+                window.resolverIdOrigemPorNome('cli', 'cad-cliente', osSelecionada.cliente || '');
+                window.resolverIdOrigemPorNome('func', 'cad-tecnico', osSelecionada.tecnico || '');
+            }
             document.getElementById("cad-descricao").value = osSelecionada.descricao || "";
             document.getElementById("cad-dtCriacao").value = osSelecionada.dtCriacao || "";
             document.getElementById("cad-dtPrevista").value = osSelecionada.dtPrevista || "";
@@ -2406,24 +2592,22 @@
 
                 modal.dataset.prev = modal.style.cssText;
 
-                containerMain.appendChild(modal);
-
                 modal.classList.add("maximizado");
 
-                modal.style.position = "absolute";
+                modal.style.position = "fixed";
                 modal.style.top = "0";
                 modal.style.left = "0";
+                modal.style.right = "0";
+                modal.style.bottom = "0";
                 modal.style.width = "100%";
                 modal.style.height = "100%";
                 modal.style.transform = "none";
 
-                overlay.style.display = "none";
+                overlay.style.display = "block";
 
                 maximizado = true;
 
             } else {
-
-                document.body.appendChild(modal);
 
                 modal.classList.remove("maximizado");
                 modal.style.cssText = modal.dataset.prev;
@@ -2488,22 +2672,21 @@
 
                 modalAud.dataset.prev = modalAud.style.cssText;
 
-                containerMain.appendChild(modalAud);
-
-                modalAud.style.position = "absolute";
+                modalAud.style.position = "fixed";
                 modalAud.style.top = "0";
                 modalAud.style.left = "0";
+                modalAud.style.right = "0";
+                modalAud.style.bottom = "0";
                 modalAud.style.width = "100%";
                 modalAud.style.height = "100%";
                 modalAud.style.transform = "none";
 
-                overlayAud.style.display = "none";
+                overlayAud.style.display = "block";
 
                 audMax = true;
 
             } else {
 
-                document.body.appendChild(modalAud);
                 modalAud.style.cssText = modalAud.dataset.prev;
 
                 overlayAud.style.display = "block";
@@ -2643,6 +2826,7 @@
 
         const _abrirAudOrig = abrirAuditoria;
         abrirAuditoria = function () {
+            if (!_exigirAdmin('a Auditoria')) return;
             _abrirAudOrig();
             renderizarAuditoria(audDadosFiltrados);
             if (typeof carregarLogsAuditoria === 'function') {
@@ -2705,12 +2889,14 @@
             if (chave) document.getElementById("cad-observacao").value = _observacoes[chave] || "";
 
             if (osSelecionada && osSelecionada.codigo) {
-                try {
-                    const itens = await DB.buscarItensPorOS(osSelecionada.codigo, true);
-                    window._dadosItens = window._dadosItens || {};
-                    window._dadosItens[osSelecionada.codigo] = itens;
-                } catch (e) {
-                    console.error('[abrirTelaEdicao] Erro ao recarregar itens:', e);
+                window._dadosItens = window._dadosItens || {};
+                if (!window._dadosItens[osSelecionada.codigo]) {
+                    try {
+                        const itens = await DB.buscarItensPorOS(osSelecionada.codigo, true);
+                        window._dadosItens[osSelecionada.codigo] = itens;
+                    } catch (e) {
+                        console.error('[abrirTelaEdicao] Erro ao recarregar itens:', e);
+                    }
                 }
             }
         };
@@ -2768,7 +2954,7 @@
             overlayItem.style.display = "block";
             modalItem.style.position = "fixed";
             modalItem.style.width = "1080px";
-            modalItem.style.height = "auto";
+            modalItem.style.height = "640px";
             modalItem.style.left = "50%";
             modalItem.style.top = "80px";
             modalItem.style.transform = "translateX(-50%)";
@@ -2779,6 +2965,7 @@
                 const el = document.getElementById(id);
                 if (el) el.style.display = i === 0 ? "" : "none";
             });
+            if (typeof fecharRecurso === 'function') fecharRecurso();
         }
 
         function abrirNovoItem() {
@@ -2837,6 +3024,14 @@
             document.getElementById("item-codBarras").value = itemSelecionado.codBarras || "";
             document.getElementById("item-produto").value = itemSelecionado.produto || "";
             document.getElementById("item-respExec").value = itemSelecionado.respExec || "";
+            if (window._origemSelecionadaId) {
+                window._origemSelecionadaId['item-tecnico'] = '';
+                window._origemSelecionadaId['item-respExec'] = '';
+            }
+            if (typeof window.resolverIdOrigemPorNome === 'function') {
+                window.resolverIdOrigemPorNome('func', 'item-tecnico', itemSelecionado.tecnico || '');
+                window.resolverIdOrigemPorNome('func', 'item-respExec', itemSelecionado.respExec || '');
+            }
             document.getElementById("item-hrsEst").value = itemSelecionado.hrsEst || "";
             document.getElementById("item-hrsReal").value = itemSelecionado.hrsReal || "";
             document.getElementById("item-vlrServico").value = (itemSelecionado.vlrServico || "").replace(/R\$\s*/g, "").trim();
@@ -2846,6 +3041,9 @@
             _histItens[chave] = Array.isArray(itemSelecionado.historico) ? itemSelecionado.historico : [];
             _pendItens[chave] = Array.isArray(itemSelecionado.pendencias) ? itemSelecionado.pendencias : [];
             _horasItens[chave] = Array.isArray(itemSelecionado.lancamentosHoras) ? itemSelecionado.lancamentosHoras : [];
+            _roteiroItens[chave] = _normalizarRoteiro(itemSelecionado.roteiro);
+            _roteiroAbaAtiva[chave] = 'inspecao';
+            _docItens[chave] = Array.isArray(itemSelecionado.documentacao) ? itemSelecionado.documentacao : [];
             _abrirModalItem();
             _carregarRecursosItem();
         }
@@ -2857,20 +3055,19 @@
         }
 
         function maximizarModalItem() {
-            const cm = document.querySelector(".container-main");
             if (!itemMaximizado) {
                 modalItem.dataset.prev = modalItem.style.cssText;
-                cm.appendChild(modalItem);
-                modalItem.style.position = "absolute";
+                modalItem.style.position = "fixed";
                 modalItem.style.top = "0";
                 modalItem.style.left = "0";
+                modalItem.style.right = "0";
+                modalItem.style.bottom = "0";
                 modalItem.style.width = "100%";
                 modalItem.style.height = "100%";
                 modalItem.style.transform = "none";
-                overlayItem.style.display = "none";
+                overlayItem.style.display = "block";
                 itemMaximizado = true;
             } else {
-                document.body.appendChild(modalItem);
                 modalItem.style.cssText = modalItem.dataset.prev;
                 overlayItem.style.display = "block";
                 itemMaximizado = false;
@@ -2899,6 +3096,12 @@
                 }
                 document.querySelectorAll(".item-tab").forEach(t => t.classList.remove("active"));
                 tab.classList.add("active");
+                _PAINEIS_RECURSO.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = "none";
+                });
+                document.querySelectorAll('.item-rec-nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.item-col-centro .erp-tabs')[0]?.style.removeProperty('display');
                 _ITEM_PAINEIS.forEach((id, i) => {
                     const el = document.getElementById(id);
                     if (el) el.style.display = i === idx ? "" : "none";
@@ -3247,6 +3450,11 @@
                 historico: _histItens[_chaveAtualItem] || [],
                 pendencias: _pendItens[_chaveAtualItem] || [],
                 lancamentosHoras: _horasItens[_chaveAtualItem] || [],
+                roteiro: (() => {
+                    _capturarAbaRoteiroAtual();
+                    return _roteiroItens[_chaveAtualItem] || { inspecao: '', tecnica: '' };
+                })(),
+                documentacao: _docItens[_chaveAtualItem] || [],
             };
 
             const _chaveOS = osSelecionada.codigo || "__novo__";
@@ -3335,6 +3543,226 @@
             return osSelecionada.codigo + '_' + itemSelecionado.codItem;
         }
 
+        // ── Recursos do item: Roteiro / Documentação / Anexos ──────────
+        const _roteiroItens = {};      // chave -> { inspecao: '', tecnica: '' }
+        const _roteiroAbaAtiva = {};   // chave -> 'inspecao' | 'tecnica'
+        const _docItens = {};
+
+        const _ROTEIRO_ABAS = ['inspecao', 'tecnica'];
+
+        const _TEMPLATES_ROTEIRO = {
+            inspecao:
+`ANÁLISE DE INSPEÇÃO
+
+1. Inspeção visual inicial do equipamento/local
+2. Verificação de sintomas relatados pelo cliente
+3. Testes de funcionamento básico
+4. Identificação de possíveis causas do problema
+5. Registro de fotos/evidências (anexar em "Anexos")
+6. Conclusão da inspeção e próximos passos`,
+            tecnica:
+`ANÁLISE TÉCNICA E SOLUÇÃO
+
+1. Diagnóstico técnico detalhado
+2. Causa raiz identificada
+3. Solução proposta
+4. Peças/materiais necessários
+5. Execução do procedimento
+6. Testes de validação pós-execução
+7. Observações finais e recomendações`,
+        };
+
+        const _ROTEIRO_ABA_LABEL = {
+            inspecao: 'Análise de Inspeção',
+            tecnica: 'Análise Técnica e Solução',
+        };
+
+        /**
+         * Garante que o roteiro de uma chave esteja no formato { inspecao, tecnica }.
+         * Mantém compatibilidade com o formato antigo (string única), jogando o
+         * texto legado para a aba "inspecao".
+         */
+        function _normalizarRoteiro(valor) {
+            if (valor && typeof valor === 'object' && !Array.isArray(valor)) {
+                return { inspecao: valor.inspecao || '', tecnica: valor.tecnica || '' };
+            }
+            if (typeof valor === 'string' && valor.trim()) {
+                const txt = valor.trim();
+                // Dados antigos podem ter sido salvos (por bug) como uma string
+                // contendo o JSON serializado em vez do objeto puro. Tenta recuperar.
+                if (txt.startsWith('{') && txt.endsWith('}')) {
+                    try {
+                        const parsed = JSON.parse(txt);
+                        if (parsed && typeof parsed === 'object') {
+                            return { inspecao: parsed.inspecao || '', tecnica: parsed.tecnica || '' };
+                        }
+                    } catch (e) { /* não era JSON válido, trata como texto normal abaixo */ }
+                }
+                return { inspecao: txt, tecnica: '' };
+            }
+            return { inspecao: '', tecnica: '' };
+        }
+
+        /** Salva o conteúdo atual da textarea na aba que está ativa (sem persistir no servidor ainda) */
+        function _capturarAbaRoteiroAtual() {
+            const chave = _chaveItemAtual();
+            const ta = document.getElementById('item-roteiro');
+            if (!chave || !ta) return;
+            const aba = _roteiroAbaAtiva[chave] || 'inspecao';
+            if (!_roteiroItens[chave]) _roteiroItens[chave] = { inspecao: '', tecnica: '' };
+            _roteiroItens[chave][aba] = ta.value.trim();
+        }
+
+        function selecionarAbaRoteiro(tipo) {
+            if (!_ROTEIRO_ABAS.includes(tipo)) return;
+            const chave = _chaveItemAtual();
+            if (!chave) return;
+
+            // Guarda o que já estava digitado na aba anterior antes de trocar
+            _capturarAbaRoteiroAtual();
+
+            _roteiroAbaAtiva[chave] = tipo;
+            _renderRoteiroItem();
+        }
+
+        function inserirTemplateRoteiro() {
+            const chave = _chaveItemAtual();
+            const aba = chave ? (_roteiroAbaAtiva[chave] || 'inspecao') : 'inspecao';
+            const tpl = _TEMPLATES_ROTEIRO[aba];
+            if (!tpl) return;
+            const ta = document.getElementById('item-roteiro');
+            if (!ta) return;
+            const atual = ta.value.trim();
+            ta.value = atual ? (atual + '\n\n' + tpl) : tpl;
+            ta.focus();
+        }
+
+        function limparAbaRoteiro() {
+            const ta = document.getElementById('item-roteiro');
+            if (ta) ta.value = '';
+        }
+
+        function salvarRoteiroItem() {
+            if (!itemSelecionado || !osSelecionada) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione um item primeiro.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+            const chave = _chaveItemAtual();
+            const aba = _roteiroAbaAtiva[chave] || 'inspecao';
+            _capturarAbaRoteiroAtual();
+            _registrarHistoricoItem("alteracao", `Roteiro de "${_ROTEIRO_ABA_LABEL[aba]}" atualizado.`);
+            Swal.fire({ icon: "success", title: `Roteiro de "${_ROTEIRO_ABA_LABEL[aba]}" salvo`, timer: 1500, showConfirmButton: false, scrollbarPadding: false });
+        }
+
+        function _renderRoteiroItem() {
+            const chave = _chaveItemAtual();
+            const ta = document.getElementById('item-roteiro');
+            if (!ta) return;
+
+            if (!chave) {
+                ta.value = '';
+                return;
+            }
+
+            if (!_roteiroAbaAtiva[chave]) _roteiroAbaAtiva[chave] = 'inspecao';
+            const aba = _roteiroAbaAtiva[chave];
+            const dados = _roteiroItens[chave] || { inspecao: '', tecnica: '' };
+
+            ta.value = dados[aba] || '';
+
+            _ROTEIRO_ABAS.forEach(tipo => {
+                const btn = document.getElementById('roteiro-aba-' + tipo);
+                if (btn) btn.classList.toggle('active', tipo === aba);
+            });
+        }
+
+        const _DOC_ICONES = {
+            link:   '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+            video:  '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>',
+            drive:  '<path d="M7.71 3.5L1.15 15l3.43 6 6.57-11.5z"/><path d="M9.07 21h11.86l3.43-6h-11.86z"/><path d="M16.13 3.5h-6.57l6.57 11.5h6.57z"/>',
+            manual: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+        };
+        const _DOC_LABELS = { link: 'Link', video: 'Vídeo', drive: 'Google Drive', manual: 'Manual' };
+        const _DOC_CORES  = { link: '#6fa8ff', video: '#ff6b6b', drive: '#4caf50', manual: '#f5b942' };
+
+        function _renderDocumentacaoItem() {
+            const chave = _chaveItemAtual();
+            const lista = chave ? (_docItens[chave] || []) : [];
+            const vazio = document.getElementById("doc-lista-vazio");
+            const corpo = document.getElementById("doc-lista-corpo");
+            if (!corpo) return;
+
+            if (lista.length === 0) {
+                vazio.style.display = "";
+                corpo.innerHTML = "";
+                return;
+            }
+            vazio.style.display = "none";
+
+            corpo.innerHTML = lista.map((d, i) => `
+                <div class="doc-card">
+                    <span class="doc-card-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${_DOC_ICONES[d.tipo] || _DOC_ICONES.link}</svg></span>
+                    <div class="doc-card-info">
+                        <span class="doc-card-titulo">${d.titulo}</span>
+                        <a class="doc-card-link" href="${d.url}" target="_blank" rel="noopener noreferrer">${d.url}</a>
+                        <span class="doc-card-meta">
+                            <span class="doc-badge" style="background:${_DOC_CORES[d.tipo]}22;color:${_DOC_CORES[d.tipo]};">${_DOC_LABELS[d.tipo]}</span>
+                            Adicionado em ${d.criadoEm}
+                        </span>
+                    </div>
+                    <div class="doc-card-acoes">
+                        <button class="btn-horas-remover" title="Remover" onclick="removerDocumentacao(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function adicionarDocumentacao() {
+            if (!itemSelecionado || !osSelecionada) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione um item primeiro.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+            const titulo = document.getElementById("doc-novo-titulo").value.trim();
+            const url = document.getElementById("doc-novo-url").value.trim();
+            const tipo = document.getElementById("doc-novo-tipo").value;
+
+            if (!url) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Informe o link/URL.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
+                return;
+            }
+
+            const chave = _chaveItemAtual();
+            if (!_docItens[chave]) _docItens[chave] = [];
+            const agora = new Date();
+            const dd = String(agora.getDate()).padStart(2, "0");
+            const mm = String(agora.getMonth() + 1).padStart(2, "0");
+            const yyyy = agora.getFullYear();
+            _docItens[chave].push({
+                titulo: titulo || url,
+                url,
+                tipo,
+                criadoEm: `${dd}/${mm}/${yyyy}`,
+            });
+
+            _registrarHistoricoItem("alteracao", `Referência adicionada: "${titulo || url}".`);
+
+            document.getElementById("doc-novo-titulo").value = "";
+            document.getElementById("doc-novo-url").value = "";
+            document.getElementById("doc-novo-tipo").value = "link";
+            _renderDocumentacaoItem();
+        }
+
+        function removerDocumentacao(idx) {
+            const chave = _chaveItemAtual();
+            if (!chave || !_docItens[chave]) return;
+            const d = _docItens[chave][idx];
+            _docItens[chave].splice(idx, 1);
+            _registrarHistoricoItem("alteracao", `Referência removida: "${d.titulo}".`);
+            _renderDocumentacaoItem();
+        }
+
+        const _PAINEIS_RECURSO = ['panel-item-roteiro', 'panel-item-documentacao'];
+
         function abrirRecurso(nome, btn) {
             if (nome === 'anexos') {
                 if (typeof window.abrirAnexos === 'function') {
@@ -3342,13 +3770,42 @@
                 }
                 return;
             }
-            Swal.fire({
-                title: nome.charAt(0).toUpperCase() + nome.slice(1),
-                text: 'A tela de ' + nome + ' será implementada em breve.',
-                icon: 'info',
-                confirmButtonColor: '#2d7dff',
-                scrollbarPadding: false
+
+            if (nome === 'roteiro' || nome === 'documentacao') {
+                // Esconde as abas/painéis normais do item
+                document.querySelectorAll('.item-col-centro .erp-tabs')[0]?.style.setProperty('display', 'none');
+                document.querySelectorAll('.item-col-centro .erp-panel').forEach(p => {
+                    if (!_PAINEIS_RECURSO.includes(p.id)) p.style.display = 'none';
+                });
+
+                _PAINEIS_RECURSO.forEach(id => {
+                    const p = document.getElementById(id);
+                    if (p) p.style.display = (id === 'panel-item-' + nome) ? 'block' : 'none';
+                });
+
+                document.querySelectorAll('.item-rec-nav-btn').forEach(b => b.classList.remove('active'));
+                if (btn) btn.classList.add('active');
+
+                if (nome === 'roteiro') _renderRoteiroItem();
+                if (nome === 'documentacao') _renderDocumentacaoItem();
+                return;
+            }
+        }
+
+        function fecharRecurso() {
+            _PAINEIS_RECURSO.forEach(id => {
+                const p = document.getElementById(id);
+                if (p) p.style.display = 'none';
             });
+            document.querySelectorAll('.item-col-centro .erp-tabs')[0]?.style.removeProperty('display');
+            document.querySelectorAll('.item-rec-nav-btn').forEach(b => b.classList.remove('active'));
+
+            // Restaura a aba "Item" como ativa
+            document.querySelectorAll('.item-col-centro .item-tab').forEach((t, i) => {
+                t.classList.toggle('active', i === 0);
+            });
+            const panel = document.getElementById('panel-item-dados');
+            if (panel) panel.style.display = '';
         }
 
         function filtrarTimeline(btn, filtro) {
@@ -3827,6 +4284,8 @@
         }
 
         async function abrirFinanceiro() {
+            if (!_exigirAdmin('o Financeiro')) return;
+
             document.getElementById("overlayFinanceiro").style.display = "block";
             document.getElementById("modalFinanceiro").style.display = "flex";
             if (typeof carregarOS === "function") {
@@ -4176,7 +4635,8 @@
     <script>
         (function () {
 
-            const _anexosDB = {};
+            window._anexosDB = window._anexosDB || {};
+            const _anexosDB = window._anexosDB;
             let _ctxAnexos = null;
             let _idxSel = null;
             let _maxAnexos = false;
@@ -4243,7 +4703,37 @@
                 renderPreview(lista()[i]);
             }
 
-            function renderPreview(a) {
+            // Resolve uma URL utilizável (<img>/<iframe>) para o anexo:
+            // - arquivo recém-adicionado (ainda não salvo): cria um blob: URL local
+            // - arquivo já salvo no servidor: consulta anexos.php (acao=download) e usa a URL pública do Storage
+            async function obterUrlPreview(a) {
+                if (a._previewUrl) return a._previewUrl;
+
+                if (a.file) {
+                    a._previewUrl = URL.createObjectURL(a.file);
+                    return a._previewUrl;
+                }
+
+                if (a._salvo && a._id_servidor) {
+                    try {
+                        const body = new URLSearchParams();
+                        body.append('acao', 'download');
+                        body.append('id', a._id_servidor);
+                        const resp = await fetch('anexos.php', { method: 'POST', body, credentials: 'same-origin' });
+                        const data = await resp.json();
+                        if (data.sucesso && data.url) {
+                            a._previewUrl = data.url;
+                            return a._previewUrl;
+                        }
+                    } catch (e) {
+                        console.error('[Anexos:preview]', e.message);
+                    }
+                }
+
+                return null;
+            }
+
+            async function renderPreview(a) {
                 document.getElementById('anexosPreviewNome').textContent = a ? a.nome : 'Nenhum arquivo selecionado';
                 const area = document.getElementById('anexosPreviewContent');
 
@@ -4252,34 +4742,33 @@
                     return;
                 }
 
-                if (a.tipo === 'pdf') {
-                    area.innerHTML = `
-                <div class="anexos-preview-pdf">
-                    <div class="anexos-pdf-linha titulo"></div>
-                    <div class="anexos-pdf-linha full"></div>
-                    <div class="anexos-pdf-linha medio"></div>
-                    <div class="anexos-pdf-linha curto"></div>
-                    <div class="anexos-pdf-linha full"></div>
-                    <div class="anexos-pdf-linha medio"></div>
-                    <div class="anexos-pdf-linha full"></div>
-                    <div class="anexos-pdf-linha curto"></div>
-                    <div class="anexos-pdf-linha medio"></div>
-                    <div class="anexos-pdf-linha full"></div>
-                    <div class="anexos-pdf-nota">Prévia do PDF — somente leitura</div>
-                </div>`;
-                } else if (a.tipo === 'img') {
-                    const src = a.dataURL || null;
-                    area.innerHTML = `
-                <div class="anexos-preview-img-wrap">
-                    ${src
-                            ? `<img src="${src}" style="max-width:100%;max-height:320px;border-radius:3px;border:1px solid #2a3a5c;display:block;">`
+                if (a.tipo === 'pdf' || a.tipo === 'img') {
+                    area.innerHTML = `<div class="anexos-preview-carregando" style="display:flex;align-items:center;justify-content:center;height:100%;color:#3a5080;font-size:12px;">Carregando prévia...</div>`;
+
+                    const url = await obterUrlPreview(a);
+
+                    // Evita sobrescrever se o usuário já trocou de seleção enquanto carregava
+                    if (lista()[_idxSel] !== a) return;
+
+                    if (a.tipo === 'pdf') {
+                        area.innerHTML = url
+                            ? `<iframe src="${url}" style="width:100%;height:100%;min-height:420px;border:1px solid #2a3a5c;border-radius:3px;background:#fff;"></iframe>`
+                            : `<div class="anexos-preview-sem-suporte">
+                                 <div class="anexo-tipo-icon ${getIconClass(a.tipo)}" style="width:52px;height:52px;font-size:16px;">${getIconLabel(a.tipo)}</div>
+                                 <p>Não foi possível carregar a prévia do PDF.</p>
+                                 <a onclick="baixarAnexoSelecionado()">Clique para baixar o arquivo</a>
+                               </div>`;
+                    } else {
+                        area.innerHTML = url
+                            ? `<div class="anexos-preview-img-wrap">
+                                 <img src="${url}" style="max-width:100%;max-height:320px;border-radius:3px;border:1px solid #2a3a5c;display:block;">
+                                 <div style="font-size:11px;color:#3a5080;">Prévia da imagem</div>
+                               </div>`
                             : `<div class="anexos-preview-img-placeholder">
-                             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3a5080" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                             <span>${a.nome}</span>
-                           </div>`
-                        }
-                    <div style="font-size:11px;color:#3a5080;">Prévia da imagem</div>
-                </div>`;
+                                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3a5080" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                 <span>${a.nome}</span>
+                               </div>`;
+                    }
                 } else {
                     area.innerHTML = `
                 <div class="anexos-preview-sem-suporte">
@@ -4303,13 +4792,52 @@
         </div>`;
             }
 
-            function excluirIdx(i) {
-                lista().splice(i, 1);
-                if (_idxSel === i) {
+            async function excluirIdx(i) {
+                const arr = lista();
+                const a = arr[i];
+                if (!a) return;
+
+                // Se o arquivo já foi salvo no servidor, precisa excluir de lá também,
+                // senão ele só some da tela e volta ao reabrir o modal (recarregado do backend).
+                if (a._salvo && a._id_servidor) {
+                    const confirmacao = await Swal.fire({
+                        icon: 'warning',
+                        title: 'Excluir arquivo?',
+                        text: `Deseja realmente excluir "${a.nome}"? Essa ação não pode ser desfeita.`,
+                        showCancelButton: true,
+                        confirmButtonText: 'Excluir',
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonColor: '#e74c3c',
+                        scrollbarPadding: false,
+                    });
+                    if (!confirmacao.isConfirmed) return;
+
+                    try {
+                        const body = new URLSearchParams();
+                        body.append('acao', 'deletar');
+                        body.append('id', a._id_servidor);
+                        const resp = await fetch('anexos.php', { method: 'POST', body, credentials: 'same-origin' });
+                        const data = await resp.json();
+                        if (!data.sucesso) {
+                            Swal.fire({ icon: 'error', title: 'Erro', text: data.mensagem || 'Erro ao excluir anexo.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                            return;
+                        }
+                    } catch (e) {
+                        Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha de comunicação ao excluir: ' + e.message, confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                        return;
+                    }
+                }
+
+                // Reconfirma o índice atual (lista pode ter mudado durante o await acima)
+                const idxAtual = arr.indexOf(a);
+                if (idxAtual === -1) { renderLista(); return; }
+                arr.splice(idxAtual, 1);
+
+                if (_idxSel === idxAtual) {
                     _idxSel = null;
                     document.getElementById('anexosPreviewNome').textContent = 'Nenhum arquivo selecionado';
                     document.getElementById('anexosPreviewContent').innerHTML = vazioHTML();
-                } else if (_idxSel !== null && _idxSel > i) {
+                } else if (_idxSel !== null && _idxSel > idxAtual) {
                     _idxSel--;
                 }
                 renderLista();
@@ -4363,21 +4891,62 @@
                 initResize();
             });
 
+            // Exposto globalmente para que anexos-integrador.js (fora desta IIFE)
+            // consiga forçar um re-render da lista depois de carregar os anexos do servidor.
+            window.renderLista = renderLista;
+
             window.abrirAnexos = function (contexto) {
+                const os = typeof osSelecionada !== 'undefined' ? osSelecionada : null;
+
+                if (contexto === 'os' && (!os || !os.id)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Nenhuma OS selecionada',
+                        text: 'Selecione uma Ordem de Serviço antes de abrir os anexos.',
+                        confirmButtonColor: '#2d7dff',
+                        scrollbarPadding: false,
+                    });
+                    return;
+                }
+
+                if (contexto === 'item') {
+                    const item = typeof itemSelecionado !== 'undefined' ? itemSelecionado : null;
+                    if (!os || !os.id) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Nenhuma OS selecionada',
+                            text: 'Selecione uma Ordem de Serviço antes de abrir os anexos.',
+                            confirmButtonColor: '#2d7dff',
+                            scrollbarPadding: false,
+                        });
+                        return;
+                    }
+                    if (!item) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Nenhum item selecionado',
+                            text: 'Selecione um item da OS antes de abrir os anexos.',
+                            confirmButtonColor: '#2d7dff',
+                            scrollbarPadding: false,
+                        });
+                        return;
+                    }
+                }
+
                 const modal = document.getElementById('modalAnexos');
                 const overlay = document.getElementById('overlayAnexos');
 
                 let chave = contexto;
                 if (contexto === 'os') {
-                    const os = typeof osSelecionada !== 'undefined' ? osSelecionada : null;
-                    chave = os ? ('os:' + os.codigo) : 'os:__geral__';
-                    const titulo = os ? ('Anexos ' + os.codigo + ' · ' + (os.descricao || '')) : 'Anexos';
+                    // Chave alinhada com anexos-integrador.js: 'os:' + id (não codigo)
+                    chave = 'os:' + os.id;
+                    const titulo = 'Anexos ' + (os.codigo || '') + ' · ' + (os.descricao || '');
                     document.getElementById('anexosTitulo').textContent = titulo;
                 } else if (contexto === 'item') {
-                    const os = typeof osSelecionada !== 'undefined' ? osSelecionada : null;
                     const item = typeof itemSelecionado !== 'undefined' ? itemSelecionado : null;
-                    chave = (os && item) ? ('item:' + os.codigo + ':' + item.codItem) : 'item:__geral__';
-                    const titulo = (os && item) ? ('Anexos' + item.codItem + ' · ' + (item.descricao || '')) : 'Anexos';
+                    // Chave alinhada com anexos-integrador.js: 'item:' + id (não codigo)
+                    chave = 'item:' + item.id;
+                    const titulo = 'Anexos ' + (item.codItem || '') + ' · ' + (item.descricao || '');
                     document.getElementById('anexosTitulo').textContent = titulo;
                 }
 
@@ -4411,22 +4980,21 @@
 
             window.maximizarAnexos = function () {
                 const modal = document.getElementById('modalAnexos');
-                const cm = document.querySelector('.container-main');
                 const overlay = document.getElementById('overlayAnexos');
                 if (!_maxAnexos) {
                     modal.dataset.prev = modal.style.cssText;
-                    cm.appendChild(modal);
-                    modal.style.position = 'absolute';
+                    modal.style.position = 'fixed';
                     modal.style.top = '0';
                     modal.style.left = '0';
+                    modal.style.right = '0';
+                    modal.style.bottom = '0';
                     modal.style.width = '100%';
                     modal.style.height = '100%';
                     modal.style.transform = 'none';
                     modal.style.maxHeight = 'none';
-                    overlay.style.display = 'none';
+                    overlay.style.display = 'block';
                     _maxAnexos = true;
                 } else {
-                    document.body.appendChild(modal);
                     modal.style.cssText = modal.dataset.prev;
                     overlay.style.display = 'block';
                     _maxAnexos = false;
@@ -4566,18 +5134,16 @@
                 </div>
                 <div class="bar-acoes busca-origem">
                     <input type="text" id="busca-cli" placeholder="Pesquisar cliente..." readonly
-                        onclick="abrirBuscaOrigem('cli',null)">
+                        onclick="abrirBuscaOrigem('cli',null,true)">
                     <div class="grupos">
                         <button onclick="limparBuscaOrigem('cli')" title="Limpar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                        <button class="btn-busca" onclick="abrirBuscaOrigem('cli',null)" title="Buscar">
+                        <button class="btn-busca" onclick="abrirBuscaOrigem('cli',null,true)" title="Buscar">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8" />
                                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg>
                         </button>
-                        <button title="Novo cadastro de cliente" onclick="limparModal('modalClientes')"
-                            style="font-size:16px;font-weight:700;letter-spacing:1px;padding:0 5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
                     </div>
                 </div>
             </div>
@@ -4883,10 +5449,8 @@
 
             <div class="erp-footer">
                 <input type="hidden" id="cli-id">
-                <button class="btn-footer-novo" onclick="limparModal('modalClientes')">Limpar</button>
                 <button class="btn-footer-salvar" onclick="salvarCliente()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
-                <button class="btn-footer-sair" onclick="fecharModal('modalClientes','overlayClientes')">&#10006;
-                    Sair</button>
+                <button class="btn-footer-sair" onclick="limparModal('modalClientes')">Limpar</button>
             </div>
         </div>
     </div>
@@ -4911,10 +5475,10 @@
                 </div>
                 <div class="bar-acoes busca-origem">
                     <input type="text" id="busca-func" placeholder="Pesquisar funcionário..." readonly
-                        onclick="abrirBuscaOrigem('func',null)">
+                        onclick="abrirBuscaOrigem('func',null,true)">
                     <div class="grupos">
                         <button onclick="limparBuscaOrigem('func')" title="Limpar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                        <button class="btn-busca" onclick="abrirBuscaOrigem('func',null)" title="Buscar">
+                        <button class="btn-busca" onclick="abrirBuscaOrigem('func',null,true)" title="Buscar">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8" />
@@ -5244,10 +5808,9 @@
 
             <div class="erp-footer">
                 <input type="hidden" id="func-id">
-                <button class="btn-footer-novo" onclick="limparModal('modalFuncionarios')">Limpar</button>
                 <button class="btn-footer-salvar" onclick="salvarFuncionario()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
                 <button class="btn-footer-sair"
-                    onclick="fecharModal('modalFuncionarios','overlayFuncionarios')">&#10006; Sair</button>
+                    onclick="limparModal('modalFuncionarios')">Limpar</button>
             </div>
         </div>
     </div>
@@ -5272,18 +5835,16 @@
                 </div>
                 <div class="bar-acoes busca-origem">
                     <input type="text" id="busca-forn" placeholder="Pesquisar fornecedor..." readonly
-                        onclick="abrirBuscaOrigem('forn',null)">
+                        onclick="abrirBuscaOrigem('forn',null,true)">
                     <div class="grupos">
                         <button onclick="limparBuscaOrigem('forn')" title="Limpar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                        <button class="btn-busca" onclick="abrirBuscaOrigem('forn',null)" title="Buscar">
+                        <button class="btn-busca" onclick="abrirBuscaOrigem('forn',null,true)" title="Buscar">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8" />
                                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg>
                         </button>
-                        <button title="Novo cadastro de fornecedor" onclick="limparModal('modalFornecedores')"
-                            style="font-size:16px;font-weight:700;letter-spacing:1px;padding:0 5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
                     </div>
                 </div>
             </div>
@@ -5561,10 +6122,9 @@
 
             <div class="erp-footer">
                 <input type="hidden" id="forn-id">
-                <button class="btn-footer-novo" onclick="limparModal('modalFornecedores')">Limpar</button>
                 <button class="btn-footer-salvar" onclick="salvarFornecedor()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
                 <button class="btn-footer-sair"
-                    onclick="fecharModal('modalFornecedores','overlayFornecedores')">&#10006; Sair</button>
+                    onclick="limparModal('modalFornecedores')">Limpar</button>
             </div>
         </div>
     </div>
@@ -5727,7 +6287,7 @@
         <a href="#" class="btn-submenu-item">Cadastro de Clientes</a>
         <a href="#" class="btn-submenu-item">Cadastro de Funcionários</a>
         <a href="#" class="btn-submenu-item">Cadastro de Fornecedores</a>
-        <a href="#" class="btn-submenu-item" onclick="usr_abrir(); return false;">Usuários</a>
+        <a href="#" class="btn-submenu-item" onclick="(window.usr_abrirSeAdmin || usr_abrir)(); return false;">Usuários</a>
     </div>
 
 
@@ -5968,9 +6528,6 @@
                 <div class="bo-lista-toolbar">
                     <span class="bo-lista-count" id="bo-count">0 registro(s)</span>
                     <div style="display:flex; gap:4px; margin-left:auto;">
-                        <button class="bo-btn-tool" title="Novo" onclick="abrirNovoDeOrigem()">&#10010; Novo</button>
-                        <button class="bo-btn-tool" id="bo-btn-editar" title="Editar selecionado"
-                            onclick="editarSelecionadoBo()" disabled>&#9998; Editar</button>
                         <button class="bo-btn-tool bo-btn-sel" id="bo-btn-selecionar" title="Selecionar"
                             onclick="selecionarOrigem()" disabled>&#10003; Selecionar</button>
                     </div>
@@ -5994,12 +6551,8 @@
 
         </div>
 
-        <div class="bo-footer">
-            <span class="bo-footer-sel" id="bo-footer-sel">Nenhum registro selecionado</span>
-            <button class="btn-footer-salvar" id="bo-btn-ok" onclick="selecionarOrigem()" disabled>&#10003;
-                Selecionar</button>
-            <button class="btn-footer-sair" onclick="fecharModal('modalBuscaOrigem','overlayBuscaOrigem')">&#10006;
-                Fechar</button>
+        <div class="bo-footer" style="justify-content:flex-end;">
+            <span class="bo-footer-sel" id="bo-footer-sel" style="text-align:right;">Nenhum registro selecionado</span>
         </div>
     </div>
 
@@ -6067,10 +6620,11 @@
                 forn: ['Código', 'Razão Social', 'CNPJ', 'Contato', 'Telefone', 'Cidade'],
             };
 
-            window.abrirBuscaOrigem = function (tipo, callback) {
+            window.abrirBuscaOrigem = function (tipo, callback, origemPropria) {
                 _tipo = tipo || 'cli';
                 _callback = callback || null;
                 _linhaSel = null;
+                window._buscaOrigemTipoAtual = _tipo;
 
                 document.getElementById('buscaOrigemTitulo').textContent = TITULOS[_tipo] || 'Pesquisar';
 
@@ -6132,7 +6686,7 @@
 
                 document.getElementById('bo-count').textContent = linhas.length + ' registro(s)';
                 tbody.innerHTML = linhas.map(function (cols, idx) {
-                    return '<tr class="bo-row" data-idx="' + idx + '" onclick="selecionarLinhaBo(this)">' +
+                    return '<tr class="bo-row" data-idx="' + idx + '" onclick="selecionarLinhaBo(this)" ondblclick="selecionarLinhaBo(this); selecionarOrigem();">' +
                         cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
                         '</tr>';
                 }).join('');
@@ -6183,27 +6737,63 @@
                 var nome = tr.cells[1]?.textContent || '';
                 document.getElementById('bo-footer-sel').textContent = 'Selecionado: ' + nome;
 
-                document.getElementById('bo-btn-editar').disabled = false;
                 document.getElementById('bo-btn-selecionar').disabled = false;
-                document.getElementById('bo-btn-ok').disabled = false;
             };
 
             window.selecionarOrigem = function () {
                 if (!_linhaSel) return;
 
                 var cols = Array.from(_linhaSel.cells).map(function (c) { return c.textContent || ''; });
-
-                if (CAMPOS[_tipo]) CAMPOS[_tipo](cols);
-
-                atualizarCampoBusca(_tipo, cols[1] || cols[0] || '');
+                var idSel = _linhaSel.getAttribute('data-id') || '';
 
                 if (typeof _callback === 'function') {
                     var dados = {};
                     COLUNAS[_tipo].forEach(function (col, i) { dados[col] = cols[i] || ''; });
+                    dados['_id'] = idSel;
                     _callback(dados);
+                } else if (idSel && typeof window.carregarOrigemNoForm === 'function') {
+                    // Busca feita de dentro do próprio formulário de cadastro (busca-cli/func/forn):
+                    // carrega o registro completo (com ID) para garantir que o Salvar atualize,
+                    // em vez de criar um cadastro duplicado.
+                    window.carregarOrigemNoForm(_tipo, idSel);
+                } else {
+                    if (CAMPOS[_tipo]) CAMPOS[_tipo](cols);
+                    atualizarCampoBusca(_tipo, cols[1] || cols[0] || '');
                 }
 
                 fecharModal('modalBuscaOrigem', 'overlayBuscaOrigem');
+            };
+
+            // ── Resolve o ID de um cliente/técnico a partir do nome exato,
+            //    preenchendo window._origemSelecionadaId para que o botão de
+            //    "Cadastrar / Editar" (três pontinhos) saiba qual registro abrir
+            //    mesmo quando a OS só guarda o nome em texto. ──
+            window.resolverIdOrigemPorNome = async function (tipo, campoAlvoId, nome) {
+                nome = (nome || '').trim();
+                if (!nome) return null;
+
+                const cfg = {
+                    cli:  { url: 'clientes.php',     campo: 'nome' },
+                    func: { url: 'funcionarios.php', campo: 'nome' },
+                }[tipo];
+                if (!cfg) return null;
+
+                try {
+                    const data = await window.apiPost(cfg.url, { acao: 'listar', busca: nome });
+                    if (!data || !data.sucesso || !Array.isArray(data.dados)) return null;
+
+                    const match = data.dados.find(r => (r.nome || '').trim().toLowerCase() === nome.toLowerCase())
+                        || data.dados[0];
+
+                    if (match && match.id) {
+                        window._origemSelecionadaId = window._origemSelecionadaId || {};
+                        window._origemSelecionadaId[campoAlvoId] = match.id;
+                        return match.id;
+                    }
+                } catch (e) {
+                    console.error('[resolverIdOrigemPorNome]', e);
+                }
+                return null;
             };
 
             window.abrirBuscaOrigemCampo = function (tipo, campoAlvoId, valorInicial, isFiltroPrincipal) {
@@ -6222,6 +6812,10 @@
                         var campo = document.getElementById(campoAlvoId);
                         if (campo) campo.value = nome;
                     }
+                    // Guarda o ID do registro selecionado, vinculado ao campo de origem,
+                    // para permitir editar (em vez de duplicar) a partir do botão de cadastro.
+                    window._origemSelecionadaId = window._origemSelecionadaId || {};
+                    window._origemSelecionadaId[campoAlvoId] = dados['_id'] || '';
                     if (isFiltroPrincipal && typeof aplicarFiltros === 'function') aplicarFiltros();
                 });
 
@@ -6242,7 +6836,22 @@
 
             window.editarSelecionadoBo = function () {
                 if (!_linhaSel) return;
-                abrirNovoDeOrigem();
+
+                var map = { cli: ['modalClientes', 'overlayClientes'], func: ['modalFuncionarios', 'overlayFuncionarios'], forn: ['modalFornecedores', 'overlayFornecedores'] };
+                var ids = map[_tipo];
+                if (!ids) return;
+
+                var idSel = _linhaSel.getAttribute('data-id') || '';
+
+                fecharModal('modalBuscaOrigem', 'overlayBuscaOrigem');
+                abrirModal(ids[0], ids[1]);
+
+                if (idSel && typeof window.carregarOrigemNoForm === 'function') {
+                    window.carregarOrigemNoForm(_tipo, idSel);
+                } else {
+                    // Sem ID real (modo demo) — não há como carregar o registro existente
+                    limparModal(ids[0]);
+                }
             };
 
             window.limparTodosFiltrosBo = function () {
@@ -6267,7 +6876,7 @@
             }
 
             function _desativarBotoes() {
-                ['bo-btn-editar', 'bo-btn-selecionar', 'bo-btn-ok'].forEach(function (id) {
+                ['bo-btn-selecionar'].forEach(function (id) {
                     var el = document.getElementById(id);
                     if (el) el.disabled = true;
                 });
@@ -6303,7 +6912,7 @@
                             if (id.includes('Funcionarios')) tipo = 'func';
                             else if (id.includes('Fornecedores')) tipo = 'forn';
                         }
-                        abrirBuscaOrigem(tipo, null);
+                        abrirBuscaOrigem(tipo, null, true);
                     });
                 });
             });
@@ -6327,7 +6936,7 @@
             transform: translateX(-50%);
             width: 680px;
             height: 460px;
-            background: #0b1b2b;
+            background: #111111;
             border: 2px solid #737373;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
             color: #e5e7eb;
@@ -6346,7 +6955,7 @@
         }
 
         .relat-titlebar {
-            background: linear-gradient(to bottom, #253150 0px, #253150 20px, #2d3e69 20px, #16213b 110%);
+            background: linear-gradient(to bottom, #222222 0px, #222222 16px, #2a2a2a 20px, #111111 110%);
             padding: 6px 10px;
             display: flex;
             justify-content: space-between;
@@ -6369,7 +6978,7 @@
 
         .relat-titlebar-titulo span {
             font-size: 13px;
-            color: #a6c8ff;
+            color: #e2e8f0;
             font-weight: 600;
             letter-spacing: 0.2px;
         }
@@ -6402,12 +7011,12 @@
             gap: 6px;
             padding: 0 8px;
             border-bottom: 1px solid #737373;
-            background: linear-gradient(to bottom, #253150 0px, #253150 16px, #2d3e69 20px, #16213b 130%);
+            background: linear-gradient(to bottom, #222222 0px, #222222 16px, #2a2a2a 20px, #111111 130%);
             flex-shrink: 0;
         }
 
         .relat-btn-acao {
-            background: #253150;
+            background: #1a1a1a;
             border: 1px solid #737373;
             color: #a6a6a6;
             padding: 3px 12px;
@@ -6423,7 +7032,7 @@
         }
 
         .relat-btn-acao:hover:not(:disabled) {
-            background: #2f3e63;
+            background: #2a2a2a;
             color: #e2e8f0;
         }
 
@@ -6433,27 +7042,27 @@
         }
 
         .relat-btn-acao.primario {
-            background: #1f4a8a;
+            background: #1a1a1a;
             border-color: #2d7dff;
             color: #a6c8ff;
         }
 
         .relat-btn-acao.primario:hover:not(:disabled) {
-            background: #2d5faa;
+            background: #1e1e1e;
         }
 
         .relat-separador {
             width: 1px;
             height: 18px;
-            background: #353e52;
+            background: #333333;
             flex-shrink: 0;
         }
 
         .relat-busca-wrap {
             display: flex;
             align-items: center;
-            background: #112035;
-            border: 1px solid #2a3a5c;
+            background: #141414;
+            border: 1px solid #333333;
             border-radius: 4px;
             height: 24px;
             overflow: hidden;
@@ -6473,7 +7082,7 @@
         }
 
         .relat-busca-wrap input::placeholder {
-            color: #3a5080;
+            color: #555555;
         }
 
         .relat-busca-wrap button {
@@ -6481,8 +7090,8 @@
             height: 100%;
             background: transparent;
             border: none;
-            border-left: 1px solid #2a3a5c;
-            color: #5c6b91;
+            border-left: 1px solid #333333;
+            color: #6b6b6b;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -6491,7 +7100,7 @@
         }
 
         .relat-busca-wrap button:hover {
-            color: #a6c8ff;
+            color: #e2e8f0;
         }
 
         .relat-busca-wrap button svg {
@@ -6509,7 +7118,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #0b1b2b;
+            background: #111111;
             overflow: hidden;
         }
 
@@ -6517,8 +7126,8 @@
             height: 28px;
             display: flex;
             align-items: center;
-            background: linear-gradient(to bottom, #1e2f52, #141e35);
-            border-bottom: 1px solid #2a3a5c;
+            background: linear-gradient(to bottom, #222222, #111111);
+            border-bottom: 1px solid #333333;
             flex-shrink: 0;
         }
 
@@ -6526,7 +7135,7 @@
             padding: 0 12px;
             font-size: 11px;
             font-weight: 600;
-            color: #a6c8ff;
+            color: #9aa5b5;
             letter-spacing: 0.2px;
             text-transform: uppercase;
             white-space: nowrap;
@@ -6551,7 +7160,7 @@
             flex: 1;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #2d3e69 #0b1b2b;
+            scrollbar-color: #2a2a2a #111111;
         }
 
         .relat-lista-scroll::-webkit-scrollbar {
@@ -6559,18 +7168,18 @@
         }
 
         .relat-lista-scroll::-webkit-scrollbar-track {
-            background: #0b1b2b;
+            background: #111111;
         }
 
         .relat-lista-scroll::-webkit-scrollbar-thumb {
-            background: #2d3e69;
+            background: #2a2a2a;
             border-radius: 3px;
         }
 
         .relat-item {
             display: flex;
             align-items: center;
-            border-bottom: 1px solid #1a2744;
+            border-bottom: 1px solid #1f1f1f;
             cursor: pointer;
             transition: background 0.1s;
             min-height: 36px;
@@ -6578,11 +7187,12 @@
         }
 
         .relat-item:hover {
-            background: #1a2e4a;
+            background: #1e1e1e;
         }
 
         .relat-item.selecionado {
-            background: #1f4a8a !important;
+            background: #1e1e1e !important;
+            box-shadow: inset 2px 0 0 #2d7dff;
         }
 
         .relat-item.selecionado .relat-cell {
@@ -6612,7 +7222,7 @@
         .relat-cell.relat-col-grupo {
             width: 180px;
             flex-shrink: 0;
-            color: #7aa3e0;
+            color: #8a8a8a;
         }
 
         .relat-cell.relat-col-ativo {
@@ -6641,13 +7251,13 @@
             align-items: center;
             justify-content: center;
             padding-left: 8px;
-            color: #3a5080;
+            color: #555555;
             font-size: 14px;
             transition: color 0.1s;
         }
 
         .relat-item:hover .relat-icone {
-            color: #5c7aaa;
+            color: #7a7a7a;
         }
 
         .relat-item.selecionado .relat-icone {
@@ -6660,7 +7270,7 @@
             display: flex;
             flex-direction: column;
             border-left: 1px solid #737373;
-            background: #0d1f35;
+            background: #111111;
         }
 
         .relat-detalhe-header {
@@ -6670,11 +7280,11 @@
             padding: 0 10px;
             font-size: 11px;
             font-weight: 600;
-            color: #a6c8ff;
+            color: #9aa5b5;
             letter-spacing: 0.4px;
             text-transform: uppercase;
             border-bottom: 1px solid #737373;
-            background: linear-gradient(to bottom, #1e2f52, #141e35);
+            background: linear-gradient(to bottom, #222222, #111111);
             flex-shrink: 0;
             gap: 6px;
         }
@@ -6687,7 +7297,7 @@
             gap: 14px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #2d3e69 #0d1f35;
+            scrollbar-color: #2a2a2a #111111;
         }
 
         .relat-detalhe-vazio {
@@ -6697,7 +7307,7 @@
             justify-content: center;
             flex: 1;
             gap: 10px;
-            color: #2a3a5c;
+            color: #444444;
             font-size: 12px;
             text-align: center;
             padding: 20px;
@@ -6717,7 +7327,7 @@
 
         .relat-info-label {
             font-size: 10px;
-            color: #4a6080;
+            color: #666666;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.06em;
@@ -6744,7 +7354,7 @@
 
         .relat-divider {
             height: 1px;
-            background: #1e2d44;
+            background: #2a2a2a;
             margin: 2px 0;
         }
 
@@ -6756,13 +7366,13 @@
             padding: 0 12px;
             gap: 8px;
             flex-shrink: 0;
-            background: linear-gradient(to bottom, #253150, #16213b);
+            background: linear-gradient(to bottom, #222222, #111111);
             justify-content: space-between;
         }
 
         .relat-footer-info {
             font-size: 11px;
-            color: #5c6b91;
+            color: #6b6b6b;
             flex: 1;
             white-space: nowrap;
             overflow: hidden;
@@ -6834,7 +7444,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: 560px;
-            background: #0b1b2b;
+            background: #111111;
             border: 2px solid #737373;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
             color: #e5e7eb;
@@ -6845,7 +7455,7 @@
         }
 
         .filtros-relat-titlebar {
-            background: linear-gradient(to bottom, #253150 0px, #253150 20px, #2d3e69 20px, #16213b 110%);
+            background: linear-gradient(to bottom, #222222 0px, #222222 16px, #2a2a2a 20px, #111111 110%);
             padding: 6px 10px;
             display: flex;
             justify-content: space-between;
@@ -6895,8 +7505,8 @@
             align-items: center;
             gap: 8px;
             padding: 8px 12px;
-            background: #0d1f35;
-            border-bottom: 1px solid #2a3a5c;
+            background: #111111;
+            border-bottom: 1px solid #333333;
             flex-shrink: 0;
         }
 
@@ -6914,7 +7524,7 @@
 
         .filtros-relat-nome-sub {
             font-size: 11px;
-            color: #5c6b91;
+            color: #6b6b6b;
             margin-left: auto;
         }
 
@@ -6926,7 +7536,7 @@
             flex-direction: column;
             gap: 14px;
             scrollbar-width: thin;
-            scrollbar-color: #2d3e69 #0b1b2b;
+            scrollbar-color: #2a2a2a #111111;
         }
 
         .filtros-relat-corpo::-webkit-scrollbar {
@@ -6934,11 +7544,11 @@
         }
 
         .filtros-relat-corpo::-webkit-scrollbar-track {
-            background: #0b1b2b;
+            background: #111111;
         }
 
         .filtros-relat-corpo::-webkit-scrollbar-thumb {
-            background: #2d3e69;
+            background: #2a2a2a;
             border-radius: 3px;
         }
 
@@ -6951,10 +7561,10 @@
         .filtros-secao-titulo {
             font-size: 11px;
             font-weight: 600;
-            color: #7a93b0;
+            color: #888888;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            border-bottom: 1px solid #2e3d55;
+            border-bottom: 1px solid #2a2a2a;
             padding-bottom: 4px;
         }
 
@@ -6978,7 +7588,7 @@
 
         .filtros-campo label {
             font-size: 11px;
-            color: #7aa3e0;
+            color: #8a8a8a;
             font-weight: 500;
         }
 
@@ -6988,7 +7598,7 @@
             display: flex;
             align-items: center;
             border: 1px solid #737373;
-            background: #253150;
+            background: #1a1a1a;
             border-radius: 4px;
             overflow: visible;
         }
@@ -7000,7 +7610,7 @@
             padding-left: 8px;
             font-size: 12px;
             color: #fff;
-            background: #253150;
+            background: #1a1a1a;
             border: none;
             outline: none;
             font-family: inherit;
@@ -7033,7 +7643,7 @@
             width: 26px;
             height: 100%;
             border-left: 1px solid #737373;
-            background: #253150;
+            background: #1a1a1a;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -7045,7 +7655,7 @@
         }
 
         .filtros-campo .grupos button:hover {
-            background: #2f3e63;
+            background: #2a2a2a;
             color: #fff;
         }
 
@@ -7058,12 +7668,12 @@
             display: flex;
             align-items: flex-start;
             gap: 8px;
-            background: #0d1f35;
-            border: 1px solid #2a3a5c;
+            background: #111111;
+            border: 1px solid #333333;
             border-radius: 4px;
             padding: 10px 12px;
             font-size: 11px;
-            color: #5c6b91;
+            color: #6b6b6b;
             line-height: 1.5;
         }
 
@@ -7081,7 +7691,7 @@
             padding: 0 12px;
             gap: 8px;
             flex-shrink: 0;
-            background: linear-gradient(to bottom, #253150, #16213b);
+            background: linear-gradient(to bottom, #222222, #111111);
             justify-content: flex-end;
         }
     </style>
@@ -7101,7 +7711,7 @@
         </div>
 
         <div class="relat-barra-acoes">
-            <button id="btnProsseguir" onclick="rl_abrirFiltros()"></button>
+
             <div class="relat-busca-wrap">
                 <input type="text" id="relat-busca" placeholder="Pesquisar relatório..." oninput="rl_filtrarLista()">
                 <button onclick="rl_filtrarLista()">
@@ -7132,7 +7742,7 @@
                         </div>
                     </div>
                     <div id="relat-vazio"
-                        style="display:none; text-align:center; padding:50px 20px; color:#3a5080; font-size:13px;">
+                        style="display:none; text-align:center; padding:50px 20px; color:#555555; font-size:13px;">
                         Nenhum relatório encontrado
                     </div>
                 </div>
@@ -7335,10 +7945,7 @@
             };
 
             window.fecharRelatorios = function () {
-                if (_maximizado) {
-                    document.body.appendChild(modal);
-                    _maximizado = false;
-                }
+                _maximizado = false;
                 overlay.style.display = 'none';
                 modal.style.display = 'none';
                 rl_fecharFiltros();
@@ -7347,18 +7954,18 @@
             window.maximizarRelatorios = function () {
                 if (!_maximizado) {
                     modal.dataset.prev = modal.style.cssText;
-                    containerMain.appendChild(modal);
                     modal.classList.add('maximizado');
-                    modal.style.position = 'absolute';
+                    modal.style.position = 'fixed';
                     modal.style.top = '0';
                     modal.style.left = '0';
+                    modal.style.right = '0';
+                    modal.style.bottom = '0';
                     modal.style.width = '100%';
                     modal.style.height = '100%';
                     modal.style.transform = 'none';
-                    overlay.style.display = 'none';
+                    overlay.style.display = 'block';
                     _maximizado = true;
                 } else {
-                    document.body.appendChild(modal);
                     modal.classList.remove('maximizado');
                     modal.style.cssText = modal.dataset.prev;
                     overlay.style.display = 'block';
@@ -7378,7 +7985,6 @@
                 if (!_relatSel) return;
 
                 document.getElementById('relat-footer-info').textContent = 'Selecionado: ' + _relatSel.nome;
-                document.getElementById('btnProsseguir').disabled = false;
                 document.getElementById('btnProsseguirFooter').disabled = false;
             };
 
@@ -7532,6 +8138,8 @@
             function _getOverlay() { return _overlay || (_overlay = document.getElementById('overlayUsuarios')); }
 
             window.usr_abrir = function () {
+                if (!_exigirAdmin('o Gerenciamento de Usuários')) return;
+
                 var modal = _getModal();
                 var overlay = _getOverlay();
                 var cm = document.querySelector('.container-main');
@@ -7583,21 +8191,22 @@
             window.usr_maximizar = function () {
                 var modal = _getModal();
                 var overlay = _getOverlay();
-                var cm = document.querySelector('.container-main');
                 if (!_max) {
                     modal.dataset.prev = modal.style.cssText;
-                    cm.appendChild(modal);
                     modal.classList.add('maximizado');
-                    modal.style.position = 'absolute';
+                    modal.style.position = 'fixed';
                     modal.style.top = '0';
                     modal.style.left = '0';
+                    modal.style.right = '0';
+                    modal.style.bottom = '0';
                     modal.style.width = '100%';
                     modal.style.height = '100%';
                     modal.style.transform = 'none';
-                    overlay.style.display = 'none';
+                    modal.style.zIndex = '10900';
+                    overlay.style.display = 'block';
+                    overlay.style.zIndex = '10800';
                     _max = true;
                 } else {
-                    document.body.appendChild(modal);
                     modal.classList.remove('maximizado');
                     modal.style.cssText = modal.dataset.prev;
                     overlay.style.display = 'block';
@@ -7957,6 +8566,7 @@
     <script src="assets/js/auditoria.js"></script>
     <script src="assets/js/db_real.js"></script>
     <script src="assets/js/carregarLogsAuditoria.js"></script>
+    <script src="assets/js/anexos-integrador.js"></script>
 
     <script>
         function _gVal(id) {
@@ -8088,8 +8698,8 @@
         background:#1a1a1a; border:1px solid #737373; border-radius:4px;
         box-shadow:0 4px 16px rgba(0,0,0,0.55); min-width:180px;">
         <a href="#" onclick="event.preventDefault(); usr_abrirRedefinirSenha();" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:#d0d0d0;text-decoration:none;transition:background .12s;" onmouseover="this.style.background='#2a2a2a'" onmouseout="this.style.background=''" >Redefinir Senha</a>
-        <a href="#" onclick="event.preventDefault();" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:#d0d0d0;text-decoration:none;transition:background .12s;" onmouseover="this.style.background='#2a2a2a'" onmouseout="this.style.background=''">Histórico de Acesso</a>
-        <a href="#" onclick="event.preventDefault();" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:#d0d0d0;text-decoration:none;transition:background .12s;" onmouseover="this.style.background='#2a2a2a'" onmouseout="this.style.background=''">Exportar Lista</a>
+        <a href="#" onclick="event.preventDefault(); usr_abrirHistoricoAcesso();" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:#d0d0d0;text-decoration:none;transition:background .12s;" onmouseover="this.style.background='#2a2a2a'" onmouseout="this.style.background=''">Histórico de Acesso</a>
+        <a href="#" onclick="event.preventDefault(); usr_exportarLista();" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:#d0d0d0;text-decoration:none;transition:background .12s;" onmouseover="this.style.background='#2a2a2a'" onmouseout="this.style.background=''">Exportar Lista</a>
     </div>
     <script>
         (function () {
@@ -8374,6 +8984,226 @@
         })();
     </script>
 
+    <div class="overlay-modal" id="overlayHistoricoAcesso" style="display:none;z-index:99990;"></div>
+
+    <div id="modalHistoricoAcesso" style="
+        display:none; position:fixed; z-index:99991;
+        width:560px; max-height:70vh;
+        background:#111111;
+        border:2px solid #737373;
+        border-radius:4px;
+        box-shadow:0 8px 30px rgba(0,0,0,0.75);
+        flex-direction:column;
+        top:50%; left:50%;
+        transform:translate(-50%,-50%);">
+
+        <div id="dragHistoricoAcesso" style="
+            background:linear-gradient(to bottom,#222222 0px,#222222 20px,#2a2a2a 20px,#111111 110%);
+            padding:6px 10px; display:flex; justify-content:space-between;
+            align-items:center; border-bottom:1px solid #737373;
+            height:36px; flex-shrink:0; cursor:move; user-select:none;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#e2e8f0;">
+                Histórico de Acesso
+            </div>
+            <div class="erp-controls">
+                <button onclick="usr_fecharHistoricoAcesso()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+        </div>
+
+        <div id="hac-info-bar" style="
+            display:flex; align-items:center; gap:10px;
+            padding:10px 14px; background:#1a1a1a;
+            border-bottom:1px solid #333333; flex-shrink:0;">
+            <span style="font-size:20px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <div>
+                <div id="hac-nome-usr" style="font-size:13px;font-weight:600;color:#e2e8f0;">—</div>
+                <div id="hac-login-usr" style="font-size:11px;color:#8a8a8a;margin-top:1px;">—</div>
+            </div>
+        </div>
+
+        <div style="padding:10px 14px; overflow-y:auto; flex:1;">
+            <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead>
+                    <tr style="text-align:left; color:#8a8a8a; border-bottom:1px solid #333333;">
+                        <th style="padding:6px 4px;">Evento</th>
+                        <th style="padding:6px 4px;">Data/Hora</th>
+                        <th style="padding:6px 4px;">IP</th>
+                    </tr>
+                </thead>
+                <tbody id="hac-tbody">
+                    <tr><td colspan="3" style="text-align:center;padding:20px;color:#6b6b6b;">—</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function _ativarDragHac() {
+                var modal  = document.getElementById('modalHistoricoAcesso');
+                var handle = document.getElementById('dragHistoricoAcesso');
+                if (!handle || handle.dataset.drag) return;
+                handle.dataset.drag = '1';
+                handle.addEventListener('mousedown', function (e) {
+                    var rect = modal.getBoundingClientRect();
+                    var sx = e.clientX - rect.left;
+                    var sy = e.clientY - rect.top;
+                    function mv(e) {
+                        modal.style.left      = e.clientX - sx + 'px';
+                        modal.style.top       = e.clientY - sy + 'px';
+                        modal.style.transform = 'none';
+                    }
+                    document.addEventListener('mousemove', mv);
+                    document.addEventListener('mouseup', function () {
+                        document.removeEventListener('mousemove', mv);
+                    }, { once: true });
+                });
+            }
+
+            function _ehLoginOuLogout(acaoLog) {
+                var s = (acaoLog || '').toLowerCase();
+                return s.indexOf('login') !== -1 || s.indexOf('logout') !== -1 || s.indexOf('saiu') !== -1 || s.indexOf('entrou') !== -1;
+            }
+
+            function _escapeHtml(s) {
+                return (s || '').toString()
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            window.usr_abrirHistoricoAcesso = async function () {
+                var menu = document.getElementById('usrMaisOpcMenu');
+                if (menu) menu.style.display = 'none';
+
+                if (!window._usrSel || !window._usrSel.id) {
+                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Selecione um usuário primeiro.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+                var u = window._usrSel;
+
+                document.getElementById('hac-nome-usr').textContent  = u.nome  || '—';
+                document.getElementById('hac-login-usr').textContent = u.login ? '@' + u.login : '—';
+
+                var tbody = document.getElementById('hac-tbody');
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;color:#6b6b6b;">⏳ Carregando...</td></tr>';
+
+                document.getElementById('overlayHistoricoAcesso').style.display = 'block';
+                document.getElementById('modalHistoricoAcesso').style.display   = 'flex';
+                _ativarDragHac();
+
+                try {
+                    var fd = new FormData();
+                    fd.append('acao', 'listar');
+                    fd.append('usuario_id', u.id);
+
+                    var r = await fetch('logs.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+
+                    if (r.status === 401) {
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;color:#ff6b6b;">Sessão expirada. Faça login novamente.</td></tr>';
+                        return;
+                    }
+                    if (r.status === 403) {
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;color:#ff6b6b;">Apenas administradores podem visualizar o histórico de acesso.</td></tr>';
+                        return;
+                    }
+
+                    var data = await r.json();
+
+                    if (!data.sucesso) {
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;color:#ff6b6b;">' + _escapeHtml(data.mensagem || 'Erro ao carregar histórico.') + '</td></tr>';
+                        return;
+                    }
+
+                    var logs = (data.dados || []).filter(function (l) { return _ehLoginOuLogout(l.acao); });
+
+                    if (!logs.length) {
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;color:#6b6b6b;">Nenhum acesso registrado para este usuário.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = logs.map(function (l) {
+                        var dt = '—';
+                        try {
+                            dt = new Date(l.created_at).toLocaleString('pt-BR', {
+                                day: '2-digit', month: '2-digit', year: 'numeric',
+                                hour: '2-digit', minute: '2-digit', second: '2-digit'
+                            });
+                        } catch (e) {}
+                        return '<tr style="border-bottom:1px solid #222;">' +
+                            '<td style="padding:6px 4px;">' + _escapeHtml(l.acao) + '</td>' +
+                            '<td style="padding:6px 4px;color:#aaa;">' + dt + '</td>' +
+                            '<td style="padding:6px 4px;color:#aaa;">' + _escapeHtml(l.ip || '—') + '</td>' +
+                            '</tr>';
+                    }).join('');
+
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;color:#ff6b6b;">Erro de comunicação com o servidor.</td></tr>';
+                }
+            };
+
+            window.usr_fecharHistoricoAcesso = function () {
+                document.getElementById('overlayHistoricoAcesso').style.display = 'none';
+                document.getElementById('modalHistoricoAcesso').style.display   = 'none';
+            };
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var ov = document.getElementById('overlayHistoricoAcesso');
+                if (ov) ov.addEventListener('click', window.usr_fecharHistoricoAcesso);
+            });
+
+            // ── Exportar Lista (CSV) ────────────────────────────────
+            function _csvEscape(v) {
+                var s = (v === null || v === undefined) ? '' : String(v);
+                if (/[",;\n]/.test(s)) {
+                    s = '"' + s.replace(/"/g, '""') + '"';
+                }
+                return s;
+            }
+
+            window.usr_exportarLista = function () {
+                var menu = document.getElementById('usrMaisOpcMenu');
+                if (menu) menu.style.display = 'none';
+
+                var lista = window._usrDados || [];
+                if (!lista.length) {
+                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Não há usuários carregados para exportar.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    return;
+                }
+
+                var colunas = [
+                    { campo: 'id',          rotulo: 'ID' },
+                    { campo: 'nome',        rotulo: 'Nome' },
+                    { campo: 'login',       rotulo: 'Login' },
+                    { campo: 'email',       rotulo: 'E-mail' },
+                    { campo: 'grupo',       rotulo: 'Grupo' },
+                    { campo: 'setor',       rotulo: 'Setor' },
+                    { campo: 'status',      rotulo: 'Status' },
+                    { campo: 'created_at',  rotulo: 'Criado em' },
+                ];
+
+                var linhas = [colunas.map(function (c) { return _csvEscape(c.rotulo); }).join(';')];
+
+                lista.forEach(function (u) {
+                    linhas.push(colunas.map(function (c) { return _csvEscape(u[c.campo]); }).join(';'));
+                });
+
+                var csv = '\uFEFF' + linhas.join('\r\n');
+                var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                var url  = URL.createObjectURL(blob);
+
+                var a = document.createElement('a');
+                a.href = url;
+                var hoje = new Date().toISOString().slice(0, 10);
+                a.download = 'usuarios_' + hoje + '.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                Swal.fire({ icon: 'success', title: 'Exportado!', text: lista.length + ' usuário(s) exportado(s) com sucesso.', timer: 1800, showConfirmButton: false, scrollbarPadding: false });
+            };
+        })();
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var fpCfg = { dateFormat: 'd/m/Y', allowInput: false, disableMobile: true };
@@ -8517,6 +9347,301 @@
     })();
     </script>
 
+
+    <!-- Modal de Usuários movido para ser filho direto do body, evitando ficar preso dentro de .container-main/#telaOS -->
+<div class="overlay-modal" id="overlayUsuarios" style="display:none; z-index:10800;"></div>
+
+            <div class="erp-modal" id="modalUsuarios"
+                style="display:none; width:1100px; height:680px; flex-direction:column; z-index:10900;">
+
+                <div class="erp-titlebar" id="dragUsuarios">
+                    <span>Gerenciamento de Usuários</span>
+                    <div class="erp-controls">
+                        <button onclick="usr_maximizar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></button>
+                        <button onclick="usr_fechar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    </div>
+                </div>
+
+                <div class="erp-content"
+                    style="display:flex; flex-direction:column; flex:1; overflow:hidden; padding:0;">
+
+                    <!-- Barra de ações topo -->
+                    <div class="barra-topo">
+                        <div class="acoes-esquerda">
+                            <button onclick="usr_abrirNovo()"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> Novo</button>
+                            <button id="btnEditarUsr" onclick="usr_abrirEdicao()" disabled><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+                                Editar</button>
+                            <button id="btnExcluirUsr" onclick="usr_excluir()" disabled><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span>
+                                Excluir</button>
+                            <button id="btnMaisOpcUsr" onclick="usr_toggleMaisOpcoes(event)"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></span> Mais Opções</button>
+                        </div>
+                        <span id="usr-status-bar"
+                            style="margin-left:auto;font-size:11px;color:#6b6b6b;padding-right:4px;">Nenhum usuário
+                            selecionado</span>
+                        <div class="pesquisa-direita" style="margin-left:0;">
+                            <input type="text" id="usr-pesquisa-topo" placeholder="Pesquisar..."
+                                oninput="usr_filtrar()">
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
+
+                        <div class="usr-filtro">
+                            <div class="usr-painel-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                                </svg>
+                                Filtros
+                            </div>
+                            <div class="usr-filtro-body">
+                                <div class="usr-filtro-grupo">
+                                    <span class="usr-filtro-label">Nome</span>
+                                    <div class="bar-acoes">
+                                        <input type="text" id="usr-filtro-nome" placeholder="Buscar nome…"
+                                            oninput="usr_filtrar()">
+                                    </div>
+                                </div>
+                                <div class="usr-filtro-grupo">
+                                    <span class="usr-filtro-label">Status</span>
+                                    <div class="usr-status-filtros">
+                                        <label class="usr-status-item"><input type="checkbox" checked
+                                                onchange="usr_filtrar()"> Ativo</label>
+                                        <label class="usr-status-item"><input type="checkbox" checked
+                                                onchange="usr_filtrar()"> Inativo</label>
+                                        <label class="usr-status-item"><input type="checkbox" checked
+                                                onchange="usr_filtrar()"> Suspenso</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="usr-filtro-rodape">
+                                <button class="usr-btn-limpar" onclick="usr_limparFiltros()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Limpar</button>
+                                <button class="usr-btn-buscar" onclick="usr_filtrar()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                        <circle cx="11" cy="11" r="8" />
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                    </svg>
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div
+                            style="flex:1;display:flex;flex-direction:column;min-width:0;background:#111111;border-right:1px solid #737373;">
+                            <div
+                                style="height:34px;display:flex;align-items:center;padding:0 10px;gap:6px;border-bottom:1px solid #737373;background:linear-gradient(to bottom,#222222 0px,#222222 16px,#2a2a2a 20px,#111111 130%);flex-shrink:0;">
+                                <span
+                                    style="font-size:11px;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:0.4px;">Usuários</span>
+                                <span id="usr-contador" style="font-size:11px;color:#8a8a8a;margin-left:auto;">0
+                                    registros</span>
+                            </div>
+                            <div style="flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:#2a2a2a #111111;">
+                                <table class="usr-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:80px;">Código</th>
+                                            <th>Nome</th>
+                                            <th style="width:140px;">Setor</th>
+                                            <th style="width:90px;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usr-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="usr-form-wrap">
+
+                            <div class="usr-form-bloqueio" id="usr-form-bloqueio">
+                                <div style="font-size:12px;color:#6b6b6b;text-align:center;line-height:1.6;">
+                                    Selecione um usuário e clique em<br>
+                                    <strong style="color:#9aa5b5;">Editar</strong>, ou clique em <strong
+                                        style="color:#9aa5b5;">Novo</strong><br>
+                                    para habilitar o formulário.
+                                </div>
+                            </div>
+
+                            <div class="usr-form-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                <span id="usr-form-titulo">Dados do Usuário</span>
+                            </div>
+
+                            <div class="usr-form-scroll">
+
+                                <div class="usr-secao-titulo">Identificação</div>
+
+                                <div class="usr-campo">
+                                    <label>Nome completo</label>
+                                    <div class="bar-acoes">
+                                        <input type="text" id="usr-f-nome" placeholder="Nome do usuário" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="usr-campo">
+                                    <label>Funcionário</label>
+                                    <div class="bar-acoes">
+                                        <input type="text" id="usr-f-funcionario" placeholder="Vínculo de funcionário"
+                                            disabled>
+                                        <div class="grupos">
+                                            <button class="btn-limpar" title="Limpar"
+                                                onclick="usr_limparCampo('usr-f-funcionario')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                            <button class="btn-busca" title="Buscar funcionário"
+                                                onclick="usr_buscarFuncionario()">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <circle cx="11" cy="11" r="8" />
+                                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                                </svg>
+                                            </button>
+                                            <div class="usr-mais-wrap" style="position:relative;">
+                                                <button class="btn-mais" title="Mais opções" id="usr-func-mais-btn"
+                                                    onclick="usr_toggleMais('usr-func-mais', event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
+                                                <div class="usr-mais-menu" id="usr-func-mais" style="display:none;">
+                                                    <div onclick="usr_buscarFuncionario()">Buscar funcionário</div>
+                                                    <div onclick="usr_limparCampo('usr-f-funcionario'); usr_limparCampo('usr-f-setor')">Desvincular</div>
+                                                    <div onclick="usr_abrirFuncionario()">Abrir cadastro</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="usr-campo">
+                                    <label>Setor</label>
+                                    <div class="bar-acoes usr-setor-container" style="position:relative;">
+                                        <input type="text" id="usr-f-setor" placeholder="Selecione..." readonly
+                                            disabled style="flex:1;cursor:pointer;"
+                                            onclick="usr_toggleSetor(event)">
+                                        <div class="grupos">
+                                            <button class="btn-dropdown" id="usr-setor-mais-btn" disabled
+                                                onclick="usr_toggleSetor(event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+                                        </div>
+                                        <div class="usr-setor-menu" id="usr-setor-menu" style="display:none;
+                                            position:absolute; top:100%; left:0; width:100%;
+                                            background:#1a1a1a; border:1px solid #737373; border-radius:4px;
+                                            z-index:9999; flex-direction:column;">
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('TI')">TI</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Financeiro')">Financeiro</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Técnico')">Técnico</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Administrativo')">Administrativo</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('Comercial')">Comercial</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarSetor('RH')">RH</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="usr-campo">
+                                    <label>Grupo de Acesso</label>
+                                    <div class="bar-acoes usr-grupo-container" style="position:relative;">
+                                        <input type="text" id="usr-f-grupo" placeholder="Selecione..." readonly
+                                            disabled style="flex:1;cursor:pointer;"
+                                            onclick="usr_toggleGrupo(event)">
+                                        <div class="grupos">
+                                            <button class="btn-dropdown" id="usr-grupo-btn" disabled
+                                                onclick="usr_toggleGrupo(event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+                                        </div>
+                                        <div class="usr-grupo-menu" id="usr-grupo-menu" style="display:none;
+                                            position:absolute; top:100%; left:0; width:100%;
+                                            background:#1a1a1a; border:1px solid #737373; border-radius:4px;
+                                            z-index:9999; flex-direction:column;">
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Admin')">Admin</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Funcionário')">Funcionário</div>
+                                            <div class="usr-grupo-item" onclick="usr_selecionarGrupo('Técnico')">Técnico</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="usr-secao-titulo">Contato &amp; Acesso</div>
+
+                                <div class="usr-campo">
+                                    <label>E-mail</label>
+                                    <div class="bar-acoes">
+                                        <input id="usr-f-email" placeholder="email@empresa.com" disabled type="email" inputmode="email" maxlength="100">
+                                    </div>
+                                </div>
+
+                                <div class="usr-campo">
+                                    <label>Login</label>
+                                    <div class="bar-acoes">
+                                        <input type="text" id="usr-f-login" placeholder="Nome de usuário" disabled maxlength="40" autocomplete="username">
+                                    </div>
+                                </div>
+
+                                <div class="usr-campo">
+                                    <label>Senha</label>
+                                    <div class="bar-acoes">
+                                        <input type="password" id="usr-f-senha" placeholder="••••••••" disabled oninput="usr_validarForcaSenha()" maxlength="100" autocomplete="new-password">
+                                    </div>
+                                    <span id="usr-dica-forca-senha" style="font-size:10px;color:#6b6b6b;margin-top:1px;line-height:1.4;">A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais (!@#$%&*).</span>
+                                </div>
+
+                                <div class="usr-campo">
+                                    <label>Confirmar Senha</label>
+                                    <div class="bar-acoes">
+                                        <input type="password" id="usr-f-senha-conf" placeholder="••••••••" disabled
+                                            oninput="usr_validarSenhas()" maxlength="100" autocomplete="new-password">
+                                    </div>
+                                    <span id="usr-dica-senha"
+                                        style="font-size:10px;color:#6b6b6b;margin-top:1px;"></span>
+                                </div>
+
+                                <div class="usr-secao-titulo">Observações</div>
+
+                                <div class="usr-campo">
+                                    <label>Observações</label>
+                                    <textarea class="usr-obs-textarea" id="usr-f-obs"
+                                        placeholder="Anotações sobre o usuário…" disabled></textarea>
+                                </div>
+
+                                <div class="usr-secao-titulo">Situação</div>
+
+                                <div style="display:flex;align-items:center;gap:8px;padding:5px 0;">
+                                    <input type="checkbox" id="usr-f-suspenso" disabled
+                                        style="accent-color:#ff6b6b;width:14px;height:14px;cursor:pointer;">
+                                    <label for="usr-f-suspenso"
+                                        style="font-size:12px;color:#c8a0a0;cursor:pointer;user-select:none;">Usuário
+                                        Suspenso</label>
+                                </div>
+
+                                <div class="usr-campo">
+                                    <label>Data de Saída</label>
+                                    <div class="bar-acoes">
+                                        <input type="text" id="usr-f-data-saida" class="campo-data"
+                                            placeholder="dd/mm/aaaa" disabled>
+                                        <button class="btn-data" id="usr-btn-cal-saida" onclick="usr_abrirCalSaida()"
+                                            disabled>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <rect x="3" y="5" width="18" height="16" rx="3" />
+                                                <line x1="3" y1="9" x2="21" y2="9" />
+                                                <line x1="8" y1="3" x2="8" y2="7" />
+                                                <line x1="16" y1="3" x2="16" y2="7" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style="height:6px;"></div>
+                            </div>
+
+                            <div class="usr-form-footer">
+                                <button class="usr-btn-cancelar" onclick="usr_cancelar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancelar</button>
+                                <button class="usr-btn-salvar" onclick="usr_salvar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+        </div>
 </body>
 
 </html>
