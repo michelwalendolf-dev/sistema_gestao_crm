@@ -155,7 +155,12 @@
     function itemTelaParaDb(it) {
         function parseMoeda(v) {
             if (!v || v === '—') return 0;
-            return parseFloat(String(v).replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
+            // Remove tudo que não for dígito ou vírgula (R$, espaços, pontos de
+            // milhar), depois troca a vírgula decimal por ponto. Isso evita o
+            // bug em que "1.000,00" virava 1 (o ponto de milhar era
+            // interpretado como ponto decimal).
+            const limpo = String(v).replace(/[^0-9,]/g, '');
+            return parseFloat(limpo.replace(',', '.')) || 0;
         }
         return {
             cod_item: it.codItem || '',
@@ -347,7 +352,9 @@
         }
 
         // Converte valor monetário para número
-        const valorRaw = parseFloat(valorStr.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
+        // Remove tudo que não for dígito ou vírgula (inclui "R$", espaços e os
+        // pontos de milhar), depois troca a vírgula decimal por ponto.
+        const valorRaw = parseFloat(valorStr.replace(/[^0-9,]/g, '').replace(',', '.')) || 0;
 
         // Coleta itens: em edição usa o código da OS, em criação usa '__novo__'
         const chaveItens = isEdicao ? (window.osSelecionada.codigo || '__novo__') : '__novo__';

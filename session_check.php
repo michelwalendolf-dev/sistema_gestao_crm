@@ -64,6 +64,15 @@ function requireSession(bool $adminOnly = false, bool $jsonResponse = true): voi
     }
 
     $_SESSION['last_activity'] = time();
+
+    // Libera o lock do arquivo de sessão assim que possível. Sem isso, o PHP
+    // mantém a sessão "travada" durante toda a execução do script — e como
+    // a tela de Auditoria dispara duas requisições quase simultâneas
+    // (logs.php e usuarios.php, por ex.), a segunda fica parada esperando
+    // a primeira terminar, mesmo que o servidor esteja respondendo
+    // normalmente. Nenhum endpoint de listagem/CRUD volta a escrever em
+    // $_SESSION depois deste ponto, então é seguro fechar a escrita aqui.
+    session_write_close();
 }
 
 function sessionUser(): array

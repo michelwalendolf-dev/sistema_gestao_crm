@@ -809,8 +809,9 @@ body.swal2-height-auto {
 .barra-topo-auditoria, .barra-inferior-auditoria{
     height: 42px;
     margin-top: -15px;
-    width: 1098px;
+    width: calc(100% + 30px);
     margin-left: -15px;
+    margin-right: -15px;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -1142,7 +1143,14 @@ body.swal2-height-auto {
     border:1px solid var(--border-medium, rgba(255,255,255,0.10));
     background: var(--bg-panel, #111111);
     overflow:auto;
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a3a var(--bg-panel, #111111);
 }
+
+.auditoria-grid::-webkit-scrollbar { width: 6px; height: 6px; }
+.auditoria-grid::-webkit-scrollbar-track { background: var(--bg-panel, #111111); }
+.auditoria-grid::-webkit-scrollbar-thumb { background: #3a3a3a; border-radius: 3px; }
+.auditoria-grid::-webkit-scrollbar-thumb:hover { background: #4a4a4a; }
 
 .tabela-auditoria{
     width:100%;
@@ -2127,6 +2135,15 @@ body.swal2-height-auto {
     gap: 4px;
 }
 
+/* Campos automáticos / bloqueados — gerados pelo sistema, sem edição manual */
+.input-auto,
+input.input-auto {
+    cursor: not-allowed !important;
+    background: var(--bg-base, #0a0a0a) !important;
+    color: var(--text-muted, #666666) !important;
+    border-color: var(--border-subtle, rgba(255,255,255,0.06)) !important;
+}
+
 .campo-completo label {
     font-size: 12px;
     color: #cfd8e3;
@@ -2135,6 +2152,16 @@ body.swal2-height-auto {
 .campo-full {
     grid-column: 1 / -1;
 }
+
+/* ── Painel "Item" — grid de 12 colunas com larguras variadas ───── */
+#panel-item-dados .erp-grid {
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px 12px;
+}
+#panel-item-dados .campo-completo.span-3  { grid-column: span 3; }
+#panel-item-dados .campo-completo.span-4  { grid-column: span 4; }
+#panel-item-dados .campo-completo.span-6  { grid-column: span 6; }
+#panel-item-dados .campo-completo.span-12 { grid-column: span 12; }
 
 .erp-panel {
     padding-top: 4px;

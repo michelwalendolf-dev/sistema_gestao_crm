@@ -1,3 +1,4 @@
 Inicialzador do servidor local na porta 8000
-php -S 0.0.0.0:8000
+php -S localhost:8000
 Codigo para descobrir o IPV4 do computador: ipconfig
+cloudflared tunnel --protocol http2 --url http://localhost:8000

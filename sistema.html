@@ -465,10 +465,9 @@
                 <div class="erp-panel" id="panel-os">
                     <div class="erp-grid">
                         <div class="campo-completo">
-                            <label>Nº da OS <span style="color:#6b7280;font-size:10px;">(automático)</span></label>
+                            <label>Nº da OS <span style="color:var(--text-muted,#666666);font-size:10px;">(automático)</span></label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-codigo" readonly
-                                    style="cursor:not-allowed;color:#a6c8ff;background:#1a2a40;"
+                                <input type="text" id="cad-codigo" readonly class="input-auto"
                                     title="O número da OS é gerado automaticamente e não pode ser alterado">
                                 <div class="grupos">
                                 </div>
@@ -536,10 +535,9 @@
                             </div>
                         </div>
                         <div class="campo-completo">
-                            <label>Dt. Criação <span style="color:#4a6080;font-size:10px;">(automático)</span></label>
+                            <label>Dt. Criação <span style="color:var(--text-muted,#666666);font-size:10px;">(automático)</span></label>
                             <div class="bar-acoes ">
-                                <input type="text" id="cad-dtCriacao" class="campo-data" readonly
-                                    style="cursor:not-allowed;color:#7aa3e0;background:#1a2a40;"
+                                <input type="text" id="cad-dtCriacao" class="campo-data input-auto" readonly
                                     title="A data de criação é preenchida automaticamente e não pode ser alterada">
                                 <div class="grupos">
                                 </div>
@@ -594,8 +592,8 @@
                         <div class="campo-completo">
                             <label>Valor Total</label>
                             <div class="bar-acoes " style="position:relative;">
-                                <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
-                                <input type="text" id="cad-valor" style="padding-left:28px;">
+                                <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text-secondary,#a8a8a8);font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                                <input type="text" id="cad-valor" placeholder="0,00" style="padding-left:28px;">
                                 <div class="grupos">
                                 </div>
                             </div>
@@ -710,13 +708,15 @@
 
                     <div class="erp-panel" id="panel-item-dados" style="padding:12px 12px 0;">
                         <div class="erp-grid">
-                            <div class="campo-completo">
-                                <label>Cód. Item</label>
-                                <div class="bar-acoes"><input type="text" id="item-codItem" maxlength="30">
+                            <!-- Linha 1: identificação curta (4 campos pequenos) -->
+                            <div class="campo-completo span-3">
+                                <label>Cód. Item <span style="color:var(--text-muted,#666666);font-size:10px;">(automático)</span></label>
+                                <div class="bar-acoes"><input type="text" id="item-codItem" readonly class="input-auto"
+                                    title="O código do item é gerado automaticamente e não pode ser alterado">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+                            <div class="campo-completo span-3">
                                 <label>Status</label>
                                 <div class="bar-acoes dropdown-container" id="item-status-container">
                                     <input type="text" id="item-status" placeholder="Selecione..." readonly>
@@ -731,7 +731,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+                            <div class="campo-completo span-3">
                                 <label>Tipo</label>
                                 <div class="bar-acoes dropdown-container" id="item-tipo-container">
                                     <input type="text" id="item-tipo" placeholder="Tipo" maxlength="50">
@@ -744,28 +744,39 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+                            <div class="campo-completo span-3">
+                                <label>Dt. Criação <span style="color:var(--text-muted,#666666);font-size:10px;">(automático)</span></label>
+                                <div class="bar-acoes">
+                                    <input type="text" id="item-dtCriacao" readonly class="input-auto"
+                                        title="A data de criação é preenchida automaticamente e não pode ser alterada">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+
+                            <!-- Linha 2: descrição (campo de texto livre, linha inteira) -->
+                            <div class="campo-completo span-12">
                                 <label>Descrição</label>
                                 <div class="bar-acoes"><input type="text" id="item-descricao" maxlength="200">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+
+                            <!-- Linha 3: máquina + produto consumido (texto médio) -->
+                            <div class="campo-completo span-6">
                                 <label>Máquina</label>
                                 <div class="bar-acoes"><input type="text" id="item-maquina" maxlength="80">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
-                                <label>Dt. Criação <span style="color:#4a6080;font-size:10px;">(automático)</span></label>
-                                <div class="bar-acoes">
-                                    <input type="text" id="item-dtCriacao" readonly
-                                        style="cursor:not-allowed;color:#7aa3e0;background:#1a2a40;"
-                                        title="A data de criação é preenchida automaticamente e não pode ser alterada">
+                            <div class="campo-completo span-6">
+                                <label>Produto Consumido</label>
+                                <div class="bar-acoes"><input type="text" id="item-produto" maxlength="120">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+
+                            <!-- Linha 4: data solução + cód. barras (pequenos) + técnico (com botões) -->
+                            <div class="campo-completo span-3">
                                 <label>Dt. Solução</label>
                                 <div class="bar-acoes">
                                     <input type="text" id="item-dtSolucao" class="campo-data" placeholder="dd/mm/aaaa" readonly style="cursor:pointer;">
@@ -785,7 +796,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+                            <div class="campo-completo span-3">
+                                <label>Cód. Barras</label>
+                                <div class="bar-acoes"><input type="text" id="item-codBarras" maxlength="50" inputmode="numeric">
+                                    <div class="grupos"></div>
+                                </div>
+                            </div>
+                            <div class="campo-completo span-6">
                                 <label>Técnico</label>
                                 <div class="bar-acoes">
                                     <input type="text" id="item-tecnico" maxlength="80" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['item-tecnico']='';">
@@ -807,19 +824,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
-                                <label>Cód. Barras</label>
-                                <div class="bar-acoes"><input type="text" id="item-codBarras" maxlength="50" inputmode="numeric">
-                                    <div class="grupos"></div>
-                                </div>
-                            </div>
-                            <div class="campo-completo">
-                                <label>Produto Consumido</label>
-                                <div class="bar-acoes"><input type="text" id="item-produto" maxlength="120">
-                                    <div class="grupos"></div>
-                                </div>
-                            </div>
-                            <div class="campo-completo">
+
+                            <!-- Linha 5: resp. execução (com botões) + horas (pequenos) -->
+                            <div class="campo-completo span-6">
                                 <label>Resp. Execução</label>
                                 <div class="bar-acoes"><input type="text" id="item-respExec" maxlength="80" placeholder="Responsável pela execução" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['item-respExec']='';">
                                     <div class="grupos">
@@ -839,31 +846,33 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+                            <div class="campo-completo span-3">
                                 <label>Hrs. Estimadas</label>
                                 <div class="bar-acoes"><input type="number" id="item-hrsEst" step="0.5" min="0" max="9999">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+                            <div class="campo-completo span-3">
                                 <label>Hrs. Realizadas</label>
                                 <div class="bar-acoes"><input type="number" id="item-hrsReal" step="0.5" min="0" max="9999">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+
+                            <!-- Linha 6: valores (destaque, metade da linha cada) -->
+                            <div class="campo-completo span-6">
                                 <label>Valor de Serviço</label>
                                 <div class="bar-acoes" style="position:relative;">
-                                    <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
-                                    <input type="text" id="item-vlrServico" style="padding-left:28px;">
+                                    <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text-secondary,#a8a8a8);font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                                    <input type="text" id="item-vlrServico" placeholder="0,00" style="padding-left:28px;">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
-                            <div class="campo-completo">
+                            <div class="campo-completo span-6">
                                 <label>Valor Total</label>
                                 <div class="bar-acoes" style="position:relative;">
-                                    <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
-                                    <input type="text" id="item-vlrTotal" style="padding-left:28px;">
+                                    <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text-secondary,#a8a8a8);font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                                    <input type="text" id="item-vlrTotal" placeholder="0,00" style="padding-left:28px;">
                                     <div class="grupos"></div>
                                 </div>
                             </div>
@@ -1114,24 +1123,28 @@
                     <label>Início</label>
                     <div class="bar-acoes">
                         <input type="text" id="aud-dtInicio" placeholder="dd/mm/aaaa" readonly>
-                        <button class="btn-data" onclick="window._fpAudInicio && window._fpAudInicio.open()">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="5" width="18" height="16" rx="3"></rect>
-                                <line x1="3" y1="9" x2="21" y2="9"></line>
-                                <line x1="8" y1="3" x2="8" y2="7"></line>
-                                <line x1="16" y1="3" x2="16" y2="7"></line>
-                                <rect x="7" y="11.5" width="10" height="7" rx="1.6"></rect>
-                                <path d="M14 11.5 L17 11.5 L17 14.5" fill="none"></path>
-                                <g fill="currentColor" stroke="none">
-                                    <rect x="8.8" y="13" width="2" height="1.5" rx="0.3" />
-                                    <rect x="11" y="13" width="2" height="1.5" rx="0.3" />
-                                    <rect x="13.2" y="13" width="2" height="1.5" rx="0.3" />
-                                    <rect x="8.8" y="14.7" width="2" height="1.5" rx="0.3" />
-                                    <rect x="11" y="14.7" width="2" height="1.5" rx="0.3" />
-                                    <rect x="13.2" y="14.7" width="2" height="1.5" rx="0.3" />
-                                </g>
-                            </svg>
-                        </button>
+                        <div class="grupos">
+                            <button class="btn-limpar" title="Limpar"
+                                onclick="document.getElementById('aud-dtInicio').value=''; if(window._fpAudInicio) window._fpAudInicio.clear(); if(typeof filtrarAuditoria==='function') filtrarAuditoria();"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                            <button class="btn-data" onclick="window._fpAudInicio && window._fpAudInicio.open()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="8" y1="3" x2="8" y2="7"></line>
+                                    <line x1="16" y1="3" x2="16" y2="7"></line>
+                                    <rect x="7" y="11.5" width="10" height="7" rx="1.6"></rect>
+                                    <path d="M14 11.5 L17 11.5 L17 14.5" fill="none"></path>
+                                    <g fill="currentColor" stroke="none">
+                                        <rect x="8.8" y="13" width="2" height="1.5" rx="0.3" />
+                                        <rect x="11" y="13" width="2" height="1.5" rx="0.3" />
+                                        <rect x="13.2" y="13" width="2" height="1.5" rx="0.3" />
+                                        <rect x="8.8" y="14.7" width="2" height="1.5" rx="0.3" />
+                                        <rect x="11" y="14.7" width="2" height="1.5" rx="0.3" />
+                                        <rect x="13.2" y="14.7" width="2" height="1.5" rx="0.3" />
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1139,31 +1152,35 @@
                     <label>Término</label>
                     <div class="bar-acoes">
                         <input type="text" id="aud-dtTermino" placeholder="dd/mm/aaaa" readonly>
-                        <button class="btn-data" onclick="window._fpAudTermino && window._fpAudTermino.open()">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="5" width="18" height="16" rx="3"></rect>
-                                <line x1="3" y1="9" x2="21" y2="9"></line>
-                                <line x1="8" y1="3" x2="8" y2="7"></line>
-                                <line x1="16" y1="3" x2="16" y2="7"></line>
-                                <rect x="7" y="11.5" width="10" height="7" rx="1.6"></rect>
-                                <path d="M14 11.5 L17 11.5 L17 14.5" fill="none"></path>
-                                <g fill="currentColor" stroke="none">
-                                    <rect x="8.8" y="13" width="2" height="1.5" rx="0.3" />
-                                    <rect x="11" y="13" width="2" height="1.5" rx="0.3" />
-                                    <rect x="13.2" y="13" width="2" height="1.5" rx="0.3" />
-                                    <rect x="8.8" y="14.7" width="2" height="1.5" rx="0.3" />
-                                    <rect x="11" y="14.7" width="2" height="1.5" rx="0.3" />
-                                    <rect x="13.2" y="14.7" width="2" height="1.5" rx="0.3" />
-                                </g>
-                            </svg>
-                        </button>
+                        <div class="grupos">
+                            <button class="btn-limpar" title="Limpar"
+                                onclick="document.getElementById('aud-dtTermino').value=''; if(window._fpAudTermino) window._fpAudTermino.clear(); if(typeof filtrarAuditoria==='function') filtrarAuditoria();"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                            <button class="btn-data" onclick="window._fpAudTermino && window._fpAudTermino.open()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="8" y1="3" x2="8" y2="7"></line>
+                                    <line x1="16" y1="3" x2="16" y2="7"></line>
+                                    <rect x="7" y="11.5" width="10" height="7" rx="1.6"></rect>
+                                    <path d="M14 11.5 L17 11.5 L17 14.5" fill="none"></path>
+                                    <g fill="currentColor" stroke="none">
+                                        <rect x="8.8" y="13" width="2" height="1.5" rx="0.3" />
+                                        <rect x="11" y="13" width="2" height="1.5" rx="0.3" />
+                                        <rect x="13.2" y="13" width="2" height="1.5" rx="0.3" />
+                                        <rect x="8.8" y="14.7" width="2" height="1.5" rx="0.3" />
+                                        <rect x="11" y="14.7" width="2" height="1.5" rx="0.3" />
+                                        <rect x="13.2" y="14.7" width="2" height="1.5" rx="0.3" />
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="campo-completo dropdown-container">
+                <div class="campo-completo dropdown-container" id="aud-evento-container">
                     <label>Evento</label>
                     <div class="bar-acoes">
-                        <input type="text" placeholder="Evento">
+                        <input type="text" id="aud-evento" placeholder="Evento">
                         <div class="grupo-botoes">
                             <button class="btn-dropdown"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
                         </div>
@@ -1180,10 +1197,14 @@
                 <div class="campo-completo">
                     <label>Usuário</label>
                     <div class="bar-acoes">
-                        <input type="text">
+                        <input type="text" id="aud-usuario" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['aud-usuario']=''; filtrarAuditoria();">
                         <div class="grupos">
-                            <button class="btn-limpar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                            <button class="btn-busca">
+                            <button class="btn-limpar" title="Limpar"
+                                onclick="document.getElementById('aud-usuario').value=''; if(window._origemSelecionadaId) window._origemSelecionadaId['aud-usuario']=''; filtrarAuditoria();"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                            <button class="btn-mais" title="Gerenciar usuários" id="aud-usuario-mais-btn"
+                                onclick="if(typeof usr_abrir==='function') usr_abrir();"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
+                            <button class="btn-busca" title="Buscar usuário"
+                                onclick="abrirBuscaOrigemCampo('usr','aud-usuario',function(dados){document.getElementById('aud-usuario').value=dados['Nome']||'';window._origemSelecionadaId=window._origemSelecionadaId||{};window._origemSelecionadaId['aud-usuario']=dados['_id']||'';filtrarAuditoria();},false);">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2">
                                     <circle cx="11" cy="11" r="8"></circle>
@@ -1197,10 +1218,14 @@
                 <div class="campo-completo">
                     <label>Funcionário</label>
                     <div class="bar-acoes">
-                        <input type="text">
+                        <input type="text" id="aud-funcionario" oninput="if(window._origemSelecionadaId) window._origemSelecionadaId['aud-funcionario']=''; filtrarAuditoria();">
                         <div class="grupos">
-                            <button class="btn-limpar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                            <button class="btn-busca">
+                            <button class="btn-limpar" title="Limpar"
+                                onclick="document.getElementById('aud-funcionario').value=''; if(window._origemSelecionadaId) window._origemSelecionadaId['aud-funcionario']=''; filtrarAuditoria();"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                            <button class="btn-mais" title="Cadastrar / Editar funcionário" id="aud-funcionario-mais-btn"
+                                onclick="(function(){var id=(window._origemSelecionadaId&&window._origemSelecionadaId['aud-funcionario'])||'';if(id&&typeof carregarOrigemNoForm==='function'){abrirModal('modalFuncionarios','overlayFuncionarios');carregarOrigemNoForm('func',id);}else{limparModal('modalFuncionarios');abrirModal('modalFuncionarios','overlayFuncionarios');}})();"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg></button>
+                            <button class="btn-busca" title="Buscar funcionário"
+                                onclick="abrirBuscaOrigemCampo('func','aud-funcionario',function(dados){document.getElementById('aud-funcionario').value=dados['Nome']||'';window._origemSelecionadaId=window._origemSelecionadaId||{};window._origemSelecionadaId['aud-funcionario']=dados['_id']||'';filtrarAuditoria();},false);">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2">
                                     <circle cx="11" cy="11" r="8"></circle>
@@ -1214,14 +1239,14 @@
                 <div class="campo-completo">
                     <label>Estação</label>
                     <div class="bar-acoes">
-                        <input type="text">
+                        <input type="text" id="aud-estacao">
                     </div>
                 </div>
 
                 <div class="campo-completo campo-full">
                     <label>Pesquisa</label>
                     <div class="bar-acoes">
-                        <input type="text">
+                        <input type="text" id="aud-pesquisa">
                     </div>
                 </div>
 
@@ -1319,6 +1344,56 @@
                 }
             });
         });
+    </script>
+    <script>
+        // ── Máscara monetária (R$) para todos os campos de valor ────────
+        // Formata o número conforme o usuário digita (estilo "caixa eletrônico":
+        // os dígitos entram da direita para a esquerda, sempre como centavos),
+        // produzindo o padrão "1.234,56" — o mesmo formato já usado na
+        // exibição (fmtMoeda) e esperado pelo parser ao salvar (parseMoeda).
+        (function () {
+            'use strict';
+
+            function mascaraMoeda(valor) {
+                let digitos = String(valor || '').replace(/\D/g, '');
+                if (!digitos) return '';
+                digitos = digitos.replace(/^0+(?=\d)/, '');
+                while (digitos.length < 3) digitos = '0' + digitos;
+                const centavos = digitos.slice(-2);
+                const inteiro = digitos.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                return `${inteiro},${centavos}`;
+            }
+
+            function vincularMascaraMoeda(id) {
+                const el = document.getElementById(id);
+                if (!el || el.dataset.mascaraMoedaAplicada) return;
+                el.dataset.mascaraMoedaAplicada = '1';
+                el.setAttribute('inputmode', 'decimal');
+                el.addEventListener('input', function () {
+                    this.value = mascaraMoeda(this.value);
+                    // Mantém o cursor sempre no final — os dígitos de um valor
+                    // monetário são sempre digitados da direita para a esquerda
+                    const pos = this.value.length;
+                    if (typeof this.setSelectionRange === 'function') this.setSelectionRange(pos, pos);
+                });
+            }
+
+            const CAMPOS_MOEDA = ['cad-valor', 'item-vlrServico', 'item-vlrTotal', 'func-salario', 'cli-limite', 'forn-limite'];
+
+            function iniciarMascarasMoeda() {
+                CAMPOS_MOEDA.forEach(vincularMascaraMoeda);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', iniciarMascarasMoeda);
+            } else {
+                iniciarMascarasMoeda();
+            }
+
+            // Reexpõe para reaplicar caso algum campo seja recriado dinamicamente
+            window._vincularMascaraMoeda = vincularMascaraMoeda;
+            window._mascaraMoeda = mascaraMoeda;
+        })();
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -2529,7 +2604,6 @@
             cadCodigo.value = "";
             cadCodigo.readOnly = true;
             cadCodigo.title = "O número da OS é gerado automaticamente e não pode ser alterado";
-            cadCodigo.style.color = "#a6c8ff";
             _abrirModal();
             try {
                 const resp = await fetch("os.php", { method: "POST", body: new URLSearchParams({ acao: "proximo_numero" }) });
@@ -2787,10 +2861,11 @@
         }
 
         function filtrarAuditoria() {
-            const inputs = Array.from(modalAud.querySelectorAll(".erp-grid input"));
-            const evento   = inputs[2] ? inputs[2].value.trim().toLowerCase() : "";
-            const usuario  = inputs[3] ? inputs[3].value.trim().toLowerCase() : "";
-            const pesquisa = inputs[6] ? inputs[6].value.trim().toLowerCase() : "";
+            const evento      = (document.getElementById("aud-evento")      || {}).value?.trim().toLowerCase() || "";
+            const usuario     = (document.getElementById("aud-usuario")     || {}).value?.trim().toLowerCase() || "";
+            const funcionario = (document.getElementById("aud-funcionario") || {}).value?.trim().toLowerCase() || "";
+            const estacao     = (document.getElementById("aud-estacao")     || {}).value?.trim().toLowerCase() || "";
+            const pesquisa    = (document.getElementById("aud-pesquisa")    || {}).value?.trim().toLowerCase() || "";
 
             const fpIni = window._fpAudInicio;
             const fpFim = window._fpAudTermino;
@@ -2799,9 +2874,11 @@
             if (dtFim) dtFim.setHours(23, 59, 59, 999);
 
             audDadosFiltrados = _dadosAuditoria.filter(r => {
-                if (evento  && !r.evento.toLowerCase().includes(evento))   return false;
-                if (usuario && !r.usuario.toLowerCase().includes(usuario)) return false;
-                if (pesquisa && !r.descricao.toLowerCase().includes(pesquisa) && !r.estacao.toLowerCase().includes(pesquisa)) return false;
+                if (evento      && !r.evento.toLowerCase().includes(evento))           return false;
+                if (usuario     && !r.usuario.toLowerCase().includes(usuario))         return false;
+                if (funcionario && !r.usuario.toLowerCase().includes(funcionario))     return false;
+                if (estacao     && !r.estacao.toLowerCase().includes(estacao))         return false;
+                if (pesquisa    && !r.descricao.toLowerCase().includes(pesquisa) && !r.estacao.toLowerCase().includes(pesquisa)) return false;
                 if (dtIni || dtFim) {
                     const dt = r._raw && r._raw.created_at ? new Date(r._raw.created_at) : null;
                     if (dt) {
@@ -2818,6 +2895,10 @@
             modalAud.querySelectorAll("input").forEach(i => i.value = "");
             if (window._fpAudInicio)  window._fpAudInicio.clear();
             if (window._fpAudTermino) window._fpAudTermino.clear();
+            ["aud-usuario-mais", "aud-funcionario-mais"].forEach(id => {
+                const m = document.getElementById(id);
+                if (m) m.style.display = "none";
+            });
             audDadosFiltrados = [..._dadosAuditoria];
             renderizarAuditoria(audDadosFiltrados);
             _mostrarDetalheAuditoria(null);
@@ -2836,6 +2917,54 @@
 
         modalAud.querySelectorAll(".erp-grid input").forEach(inp => {
             inp.addEventListener("input", filtrarAuditoria);
+        });
+
+        // ── Dropdown do campo Evento (dedicado, não conflita com outros .dropdown-container da página) ──
+        (function () {
+            const cont = document.getElementById("aud-evento-container");
+            if (!cont) return;
+            const btn = cont.querySelector(".btn-dropdown");
+            const menu = cont.querySelector(".dropdown-menu");
+            const inp = document.getElementById("aud-evento");
+            if (!btn || !menu || !inp) return;
+
+            btn.addEventListener("click", e => { e.stopPropagation(); cont.classList.toggle("ativo"); });
+            cont.addEventListener("click", e => {
+                if (e.target === inp) return;
+                e.stopPropagation();
+                cont.classList.toggle("ativo");
+            });
+            menu.querySelectorAll(".item").forEach(item => {
+                item.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    inp.value = item.textContent.trim();
+                    cont.classList.remove("ativo");
+                    filtrarAuditoria();
+                });
+            });
+            document.addEventListener("click", (e) => {
+                if (!cont.contains(e.target)) cont.classList.remove("ativo");
+            });
+        })();
+
+        // ── Botões "⋮ Mais opções" dos campos Usuário/Funcionário da Auditoria ──
+        window.audToggleMais = function (menuId, e) {
+            e.stopPropagation();
+            const menu = document.getElementById(menuId);
+            if (!menu) return;
+            ["aud-usuario-mais", "aud-funcionario-mais"].forEach(id => {
+                if (id !== menuId) {
+                    const m = document.getElementById(id);
+                    if (m) m.style.display = "none";
+                }
+            });
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        };
+        document.addEventListener("click", function () {
+            ["aud-usuario-mais", "aud-funcionario-mais"].forEach(id => {
+                const m = document.getElementById(id);
+                if (m) m.style.display = "none";
+            });
         });
     </script>
     <script>
@@ -2968,7 +3097,7 @@
             if (typeof fecharRecurso === 'function') fecharRecurso();
         }
 
-        function abrirNovoItem() {
+        async function abrirNovoItem() {
             if (!osSelecionada) {
                 Swal.fire({ icon: "warning", title: "Atenção", text: "Selecione uma OS primeiro.", confirmButtonColor: "#2d7dff", scrollbarPadding: false });
                 return;
@@ -2982,6 +3111,18 @@
             const _mmItem = String(_hojeItem.getMonth() + 1).padStart(2, "0");
             const _yyyyItem = _hojeItem.getFullYear();
             document.getElementById("item-dtCriacao").value = `${_ddItem}/${_mmItem}/${_yyyyItem}`;
+            // Cód. Item é gerado automaticamente — nunca preenchido pelo usuário
+            const _chaveOSNovoItem = osSelecionada.codigo || "__novo__";
+            if (!window._dadosItens) window._dadosItens = {};
+            if (osSelecionada.id && (!window._dadosItens[_chaveOSNovoItem] || window._dadosItens[_chaveOSNovoItem].length === 0)) {
+                try {
+                    window._dadosItens[_chaveOSNovoItem] = await window.DB.buscarItensPorOS(_chaveOSNovoItem, true);
+                } catch (_e) {
+                    window._dadosItens[_chaveOSNovoItem] = window._dadosItens[_chaveOSNovoItem] || [];
+                }
+            }
+            const _listaItensAtual = window._dadosItens[_chaveOSNovoItem] || [];
+            document.getElementById("item-codItem").value = _proximoCodItem(_listaItensAtual);
             document.getElementById("item-status").value = "Aberto";
             if (window._fpDtSolucao) window._fpDtSolucao.clear();
             _abrirModalItem();
@@ -5398,7 +5539,7 @@
                     <div class="campo-completo">
                         <label>Limite de Cr&#233;dito</label>
                         <div class="bar-acoes" style="position:relative;">
-                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text-secondary,#a8a8a8);font-size:13px;pointer-events:none;z-index:1;">R$</span>
                             <input type="text" id="cli-limite" placeholder="0,00" style="padding-left:28px;">
                             <div class="grupos"></div>
                         </div>
@@ -5760,7 +5901,7 @@
                     <div class="campo-completo">
                         <label>Sal&#225;rio</label>
                         <div class="bar-acoes" style="position:relative;">
-                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text-secondary,#a8a8a8);font-size:13px;pointer-events:none;z-index:1;">R$</span>
                             <input type="text" id="func-salario" placeholder="0,00" style="padding-left:28px;">
                             <div class="grupos"></div>
                         </div>
@@ -6078,7 +6219,7 @@
                     <div class="campo-completo">
                         <label>Limite de Cr&#233;dito</label>
                         <div class="bar-acoes" style="position:relative;">
-                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#a6c8ff;font-size:13px;pointer-events:none;z-index:1;">R$</span>
+                            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text-secondary,#a8a8a8);font-size:13px;pointer-events:none;z-index:1;">R$</span>
                             <input type="text" id="forn-limite" placeholder="0,00" style="padding-left:28px;">
                             <div class="grupos"></div>
                         </div>
@@ -6603,21 +6744,24 @@
                 cli: ['Cód.', 'Nome / Razão Social', 'CPF / CNPJ', 'Telefone', 'E-mail', 'Cidade'],
                 func: ['Cód.', 'Nome', 'CPF', 'Cargo', 'Telefone', 'E-mail'],
                 forn: ['Cód.', 'Razão Social', 'CNPJ', 'Contato', 'Telefone', 'Cidade'],
+                usr: ['Login', 'Nome', 'Grupo', 'Setor', 'E-mail', 'Status'],
             };
 
             var FILTROS_IDS = ['bo-f-codigo', 'bo-f-nome', 'bo-f-doc', 'bo-f-tel', 'bo-f-email', 'bo-f-cidade'];
 
-            var TITULOS = { cli: 'Pesquisar Clientes', func: 'Pesquisar Funcionários', forn: 'Pesquisar Fornecedores' };
+            var TITULOS = { cli: 'Pesquisar Clientes', func: 'Pesquisar Funcionários', forn: 'Pesquisar Fornecedores', usr: 'Pesquisar Usuários' };
 
             var PLACEHOLDERS = {
                 cli: ['Ex.: 001', 'Nome / Razão Social...', 'CPF / CNPJ...', 'Telefone...', 'E-mail...', 'Cidade...'],
                 func: ['Ex.: 001', 'Nome do funcionário...', 'CPF...', 'Cargo...', 'Telefone...', 'E-mail...'],
                 forn: ['Ex.: 001', 'Razão Social...', 'CNPJ...', 'Contato...', 'Telefone...', 'Cidade...'],
+                usr: ['Login...', 'Nome do usuário...', 'Admin / Técnico...', 'Setor...', 'E-mail...', 'Ativo / Inativo...'],
             };
             var LABELS = {
                 cli: ['Código', 'Nome', 'CPF / CNPJ', 'Telefone', 'E-mail', 'Cidade'],
                 func: ['Código', 'Nome', 'CPF', 'Cargo', 'Telefone', 'E-mail'],
                 forn: ['Código', 'Razão Social', 'CNPJ', 'Contato', 'Telefone', 'Cidade'],
+                usr: ['Login', 'Nome', 'Grupo', 'Setor', 'E-mail', 'Status'],
             };
 
             window.abrirBuscaOrigem = function (tipo, callback, origemPropria) {
@@ -6635,6 +6779,7 @@
                     if (inp) {
                         inp.value = '';
                         inp.placeholder = phs[i] || '';
+                        inp.setAttribute('autocomplete', 'off');
                     }
                     var wrap = inp && inp.closest('.bo-filtro-grupo');
                     if (wrap) {
@@ -6648,8 +6793,15 @@
                     return '<th>' + c + '</th>';
                 }).join('');
 
-                _resetLista('Informe os filtros e clique em <strong>Buscar</strong>');
+                _resetLista(_tipo === 'usr'
+                    ? 'Carregando usuários...'
+                    : 'Informe os filtros e clique em <strong>Buscar</strong>');
                 _desativarBotoes();
+
+                if (_tipo === 'usr') {
+                    _usuariosCache = null;
+                    carregarUsuariosReais();
+                }
 
                 var modal = document.getElementById('modalBuscaOrigem');
                 var overlay = document.getElementById('overlayBuscaOrigem');
@@ -6679,23 +6831,126 @@
                 _desativarBotoes();
 
                 if (!linhas.length) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">Nenhum registro encontrado</td></tr>';
+                    var msgVazio = 'Nenhum registro encontrado';
+                    if (_tipo === 'usr') {
+                        if (_usuariosCarregando) {
+                            msgVazio = 'Carregando usuários...';
+                        } else if (_usuariosErro) {
+                            msgVazio = _usuariosErro;
+                        }
+                    }
+                    tbody.innerHTML = '<tr><td colspan="6" class="bo-vazio">' + msgVazio + '</td></tr>';
                     document.getElementById('bo-count').textContent = '0 registro(s)';
                     return;
                 }
 
                 document.getElementById('bo-count').textContent = linhas.length + ' registro(s)';
                 tbody.innerHTML = linhas.map(function (cols, idx) {
-                    return '<tr class="bo-row" data-idx="' + idx + '" onclick="selecionarLinhaBo(this)" ondblclick="selecionarLinhaBo(this); selecionarOrigem();">' +
+                    var idAttr = (_idsAtuais[idx] !== undefined) ? ' data-id="' + _idsAtuais[idx] + '"' : '';
+                    return '<tr class="bo-row"' + idAttr + ' data-idx="' + idx + '" onclick="selecionarLinhaBo(this)" ondblclick="selecionarLinhaBo(this); selecionarOrigem();">' +
                         cols.map(function (c) { return '<td>' + (c || '—') + '</td>'; }).join('') +
                         '</tr>';
                 }).join('');
             };
 
-            function coletarDados(filtros) {
-                var modalId = { cli: 'modalClientes', func: 'modalFuncionarios', forn: 'modalFornecedores' }[_tipo];
-                var modal = document.getElementById(modalId);
+            var _usuariosCache = null;
+            var _usuariosCarregando = false;
+            var _usuariosErro = null;
+            var _idsAtuais = [];
+            // Token incremental: identifica qual chamada de carregarUsuariosReais()
+            // é a mais recente. Sem isso, se a busca for aberta/fechada/reaberta
+            // rapidamente, uma resposta antiga (mais lenta) pode chegar DEPOIS da
+            // mais nova e sobrescrever o cache/renderização com dados desatualizados,
+            // ou pior: zerar o cache no meio de uma renderização já concluída,
+            // deixando a tela travada em "Carregando usuários...".
+            var _usuariosReqId = 0;
 
+            function _comTimeout(promise, ms) {
+                return Promise.race([
+                    promise,
+                    new Promise(function (_, reject) {
+                        setTimeout(function () {
+                            reject(new Error('Tempo de espera excedido ao buscar usuários.'));
+                        }, ms);
+                    }),
+                ]);
+            }
+
+            async function carregarUsuariosReais() {
+                var meuReqId = ++_usuariosReqId;
+                _usuariosCarregando = true;
+                _usuariosErro = null;
+
+                var novoCache = [];
+                var novoErro = null;
+
+                try {
+                    // Reaproveita a mesma fonte de dados da tela "Usuários"
+                    // (window.carregarUsuarios / window._usrDados), em vez de
+                    // fazer uma requisição própria a usuarios.php. Isso evita
+                    // ter dois caminhos de código diferentes buscando a mesma
+                    // coisa, e usa exatamente o que já está comprovadamente
+                    // funcionando.
+                    if (typeof window.carregarUsuarios !== 'function') {
+                        throw new Error('Função window.carregarUsuarios não encontrada (db_real.js carregado?).');
+                    }
+
+                    await _comTimeout(window.carregarUsuarios(), 15000);
+
+                    var lista = window._usrDados;
+                    if (Array.isArray(lista)) {
+                        // window._usrDados já vem mapeado com os campos
+                        // nome/login/email/grupo/setor/status/id — mesmos
+                        // nomes que coletarDados() espera.
+                        novoCache = lista;
+                    } else {
+                        novoErro = 'Não foi possível carregar a lista de usuários.';
+                    }
+                } catch (e) {
+                    console.error('[BuscaOrigem:usr]', e);
+                    novoErro = 'Erro ao carregar usuários: ' + (e && e.message ? e.message : 'falha de conexão.');
+                }
+
+                // Se outra chamada mais nova já foi disparada enquanto esta
+                // esperava resposta, esta aqui está obsoleta — descarta o
+                // resultado e não mexe mais em nada (evita sobrescrever um
+                // carregamento mais recente, e evita resetar o cache no meio
+                // de uma renderização que já tinha dado certo).
+                if (meuReqId !== _usuariosReqId) {
+                    console.warn('[BuscaOrigem:usr] resposta obsoleta descartada (reqId ' + meuReqId + ' != ' + _usuariosReqId + ')');
+                    return;
+                }
+
+                _usuariosCache = novoCache;
+                _usuariosErro = novoErro;
+                _usuariosCarregando = false;
+
+                console.log('[DEBUG-BUSCA-USR] tipo atual:', _tipo, '| cache:', _usuariosCache.length, '| erro:', _usuariosErro, '| bo-tbody existe?', !!document.getElementById('bo-tbody'), '| modal visível?', document.getElementById('modalBuscaOrigem')?.style.display);
+
+                if (_tipo === 'usr') filtrarBuscaOrigem();
+
+                console.log('[DEBUG-BUSCA-USR] depois de filtrarBuscaOrigem, conteúdo do bo-tbody:', document.getElementById('bo-tbody')?.innerHTML.slice(0, 300));
+            }
+
+            function coletarDados(filtros) {
+                if (_tipo === 'usr') {
+                    _idsAtuais = [];
+                    if (!Array.isArray(_usuariosCache)) return [];
+                    var linhas = [];
+                    _usuariosCache.forEach(function (u) {
+                        var cols = [u.login || '', u.nome || '', u.grupo || '', u.setor || '', u.email || '', u.status || ''];
+                        var ok = filtros.every(function (f, i) {
+                            return !f || (cols[i] || '').toLowerCase().includes(f);
+                        });
+                        if (ok) {
+                            linhas.push(cols);
+                            _idsAtuais.push(u.id || '');
+                        }
+                    });
+                    return linhas;
+                }
+
+                _idsAtuais = [];
                 return dadosDemo(filtros);
             }
 
