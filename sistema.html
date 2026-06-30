@@ -5486,7 +5486,7 @@
                     <div class="campo-completo">
                         <label>CEP</label>
                         <div class="bar-acoes"><input type="text" id="cli-cep" placeholder="00000-000" maxlength="9" inputmode="numeric">
-                            <div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg
+                            <div class="grupos"><button class="btn-busca" id="cli-cep-busca-btn" title="Buscar CEP" onclick="buscarCEP('cli')"><svg
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
@@ -5824,7 +5824,7 @@
                     <div class="campo-completo">
                         <label>CEP</label>
                         <div class="bar-acoes"><input type="text" id="func-cep" placeholder="00000-000" maxlength="9" inputmode="numeric">
-                            <div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg
+                            <div class="grupos"><button class="btn-busca" id="func-cep-busca-btn" title="Buscar CEP" onclick="buscarCEP('func')"><svg
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
@@ -6160,7 +6160,7 @@
                     <div class="campo-completo">
                         <label>CEP</label>
                         <div class="bar-acoes"><input type="text" id="forn-cep" placeholder="00000-000" maxlength="9" inputmode="numeric">
-                            <div class="grupos"><button class="btn-busca" title="Buscar CEP"><svg
+                            <div class="grupos"><button class="btn-busca" id="forn-cep-busca-btn" title="Buscar CEP" onclick="buscarCEP('forn')"><svg
                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
@@ -9594,6 +9594,67 @@
             return v.slice(0,5) + '-' + v.slice(5);
         }
 
+        // ── Busca de endereço por CEP (ViaCEP) ──────────────────────
+        // Usado pelos formulários de Cliente, Funcionário e Fornecedor.
+        // prefixo: 'cli' | 'func' | 'forn' -> ids dos campos: {prefixo}-cep, -uf, -rua, -bairro, -cidade
+        window.buscarCEP = async function (prefixo) {
+            var elCep = document.getElementById(prefixo + '-cep');
+            if (!elCep || elCep.disabled) return;
+
+            var cep = onlyDigits(elCep.value || '');
+            if (cep.length !== 8) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe um CEP válido com 8 dígitos.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                } else {
+                    alert('Informe um CEP válido com 8 dígitos.');
+                }
+                return;
+            }
+
+            var btnReal = document.getElementById(prefixo + '-cep-busca-btn');
+            if (btnReal) { btnReal.disabled = true; }
+
+            try {
+                var resp = await fetch('https://viacep.com.br/ws/' + cep + '/json/');
+                var dados = await resp.json();
+
+                if (!resp.ok || dados.erro) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'warning', title: 'CEP não encontrado', text: 'Verifique o CEP informado.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                    } else {
+                        alert('CEP não encontrado.');
+                    }
+                    return;
+                }
+
+                var campos = {
+                    uf:      dados.uf || '',
+                    rua:     dados.logradouro || '',
+                    bairro:  dados.bairro || '',
+                    cidade:  dados.localidade || '',
+                };
+
+                Object.keys(campos).forEach(function (campo) {
+                    var el = document.getElementById(prefixo + '-' + campo);
+                    if (el && !el.disabled) el.value = campos[campo];
+                });
+
+                // Foca no número, já que o ViaCEP não retorna esse dado.
+                var elNum = document.getElementById(prefixo + '-num');
+                if (elNum && !elNum.disabled) elNum.focus();
+
+            } catch (e) {
+                console.error('[buscarCEP]', e);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha ao buscar o CEP. Verifique sua conexão.', confirmButtonColor: '#2d7dff', scrollbarPadding: false });
+                } else {
+                    alert('Falha ao buscar o CEP.');
+                }
+            } finally {
+                if (btnReal) { btnReal.disabled = false; }
+            }
+        };
+
         function maskRG(v) {
             var d = v.replace(/[^0-9Xx]/gi, '').slice(0, 9);
             if (d.length <= 2) return d;
@@ -9660,6 +9721,18 @@
             numericOnly('forn-num');
             numericOnly('forn-ie');
             numericOnly('forn-im');
+
+            // Busca automática de endereço: Enter no campo, ou ao completar os 8 dígitos do CEP.
+            ['cli', 'func', 'forn'].forEach(function (prefixo) {
+                var el = document.getElementById(prefixo + '-cep');
+                if (!el) return;
+                el.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') { e.preventDefault(); buscarCEP(prefixo); }
+                });
+                el.addEventListener('input', function () {
+                    if (onlyDigits(el.value).length === 8) buscarCEP(prefixo);
+                });
+            });
 
             applyMask('bo-f-doc', maskCPFouCNPJ);
             applyMask('bo-f-tel', maskTel);
