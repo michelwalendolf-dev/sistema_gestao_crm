@@ -1402,9 +1402,18 @@
             const btnLista = document.getElementById("btnLista");
 
             if (toggleMenuSistema && dropdownSistema && btnLista) {
-                toggleMenuSistema.addEventListener("click", () => {
+                toggleMenuSistema.addEventListener("click", (e) => {
+                    e.stopPropagation();
                     dropdownSistema.classList.toggle("ativo");
                     btnLista.innerHTML = dropdownSistema.classList.contains("ativo") ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+                });
+
+                // Fecha o menu ao clicar fora dele (fora do toggle e do próprio dropdown).
+                document.addEventListener("click", (e) => {
+                    if (!dropdownSistema.classList.contains("ativo")) return;
+                    if (dropdownSistema.contains(e.target) || toggleMenuSistema.contains(e.target)) return;
+                    dropdownSistema.classList.remove("ativo");
+                    btnLista.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
                 });
             }
             const statusDropdown = document.querySelector('.dropdown-container');
