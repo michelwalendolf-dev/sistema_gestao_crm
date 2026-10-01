@@ -1,0 +1,4 @@
+Ubuntu[[:space:]]Server/**/*.vdi filter=lfs diff=lfs merge=lfs -text
+Ubuntu[[:space:]]Server/**/*.vmdk filter=lfs diff=lfs merge=lfs -text
+Ubuntu[[:space:]]Server/**/*.vbox filter=lfs diff=lfs merge=lfs -text
+Ubuntu[[:space:]]Server/** filter=lfs diff=lfs merge=lfs -text
