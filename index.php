@@ -253,11 +253,11 @@ $logo = file_exists($logoPath)
 // ============================================================
 //  Carrega e preenche o template HTML
 // ============================================================
-$templatePath = __DIR__ . '/index.html';
+$templatePath = __DIR__ . '/relatorio.html';
 if (!file_exists($templatePath)) {
     paginaErro(500,
         'Template do relatório não encontrado',
-        'O arquivo de modelo do relatório (index.html) não foi encontrado no servidor.'
+        'O arquivo de modelo do relatório (relatorio.html) não foi encontrado no servidor.'
     );
 }
 

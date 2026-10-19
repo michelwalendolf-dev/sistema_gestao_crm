@@ -12,7 +12,7 @@ function logout() {
     }).then(result => {
         if (result.isConfirmed) {
             fetch("../actions/logout.php").then(() => {
-                window.location.href = "../login.html";
+                window.location.href = "../index.html";
             });
         }
     });
@@ -229,7 +229,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     title: "Senha alterada com sucesso",
                     confirmButtonColor: "#2d7dff"
                 }).then(() => {
-                    window.location.href = "../login.html";
+                    window.location.href = "../index.html";
                 });
             } else {
                 Swal.fire({ icon: "error", title: "Erro", text: res.mensagem || "Não foi possível alterar a senha.", confirmButtonColor: "#2d7dff" });

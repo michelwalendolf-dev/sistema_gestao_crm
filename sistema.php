@@ -45,7 +45,7 @@ if ($acao === 'logout') {
 
     echo json_encode([
         'sucesso'   => true,
-        'redirect'  => 'login.html',
+        'redirect'  => 'index.html',
     ]);
     exit;
 }

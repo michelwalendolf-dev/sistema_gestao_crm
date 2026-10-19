@@ -32,7 +32,7 @@
                         scrollbarPadding: false,
                     });
                 }
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
             return { sucesso: false, titulo: 'Sessão expirada', mensagem: 'Faça login novamente.' };
         }

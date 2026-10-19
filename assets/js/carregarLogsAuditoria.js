@@ -57,7 +57,7 @@ async function carregarLogsAuditoria() {
         // Erros HTTP
         if (resp.status === 401) {
             if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#e74c3c;padding:16px;">❌ Sessão expirada. Faça login novamente.</td></tr>';
-            setTimeout(() => window.location.href = 'login.html', 1500);
+            setTimeout(() => window.location.href = 'index.html', 1500);
             return;
         }
         if (resp.status === 403) {

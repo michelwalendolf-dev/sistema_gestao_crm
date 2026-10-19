@@ -23,7 +23,7 @@ session_start();
  * Se não houver, redireciona para login (HTML) ou retorna 401 (JSON).
  * 
  * @param bool $adminOnly Se true, requer que o usuário seja Admin
- * @param bool $jsonResponse Se true, retorna JSON 401; se false, redireciona para login.html
+ * @param bool $jsonResponse Se true, retorna JSON 401; se false, redireciona para index.html
  */
 function requireSession(bool $adminOnly = false, bool $jsonResponse = true): void
 {
@@ -44,7 +44,7 @@ function requireSession(bool $adminOnly = false, bool $jsonResponse = true): voi
             ]);
             exit;
         }
-        header('Location: login.html');
+        header('Location: index.html');
         exit;
     }
 
@@ -59,7 +59,7 @@ function requireSession(bool $adminOnly = false, bool $jsonResponse = true): voi
             ]);
             exit;
         }
-        header('Location: login.html');
+        header('Location: index.html');
         exit;
     }
 
