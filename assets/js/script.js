@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (formLogin) {
         formLogin.addEventListener("submit", async function (e) {
             e.preventDefault();
-            const resultado = await safeFetch("../actions/login.php", {
+            const resultado = await safeFetch("../actions/index.php", {
                 method: "POST",
                 body: new FormData(formLogin)
             });

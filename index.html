@@ -70,7 +70,7 @@ form.addEventListener("submit", async function(e){
 
     overlay.style.display = "flex";
 
-    const resposta = await fetch("login.php", {
+    const resposta = await fetch("index.php", {
         method: "POST",
         body: new FormData(form),
         credentials: "same-origin"
